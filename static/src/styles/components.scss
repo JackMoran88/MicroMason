@@ -1,0 +1,11 @@
+@import "colors.scss";
+
+@mixin btn-outline-success{
+    color: $color-secondary;
+    border-color: $color-secondary;
+  &:hover{
+    color: $color-main-ad ;
+    background-color: $color-secondary ;
+    border-color: $color-main-ad ;
+  }
+}

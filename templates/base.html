@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="{% static '/build/styles/style.css' %}">
     {# !Styles #}
 
+    {# Scripts #}
+    <script src="{% static '/build/js/script.js' %}"></script>
+    {# !Scripts #}
+
     {# Links #}
     {% block links %}{% endblock %}
     {# !Links #}
@@ -35,6 +39,49 @@
 <div class="page w-100">
 
     {% block top %}
+        <section class="header">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand" href="">MicroMason</a>
+
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+
+                    <form class="form-search form-inline mt-2 mt-md-0 mx-auto col-6 row">
+                        <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <img class="nav-link-img" src="{% static '/svg/comparison-outline.png' %}" alt="">
+                                <img class="nav-link-img" src="{% static '/svg/comparison-filled.png' %}" alt="">
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <img class="nav-link-img" src="{% static '/svg/heart-black-outline.png' %}" alt="">
+                                <img class="nav-link-img" src="{% static '/svg/heart-black-filled.png' %}" alt="">
+                            </a>
+                        </li>
+                        <li class="nav-item">
+{#                            <a class="nav-link" href="#">#}
+{#                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">#}
+{#                            </a>#}
+                            <a class="nav-link" href="#">
+                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">
+                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-hover.png' %}" alt="">
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+                <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarCollapse"
+                        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+        </section>
     {% endblock %}
 
     <div class="wrapper row w-100">
@@ -52,10 +99,9 @@
 
     {% block bottom %}
         <section class="footer">
-        FOOTER
+            FOOTER
         </section>
     {% endblock %}
-
 
 
 </div>
