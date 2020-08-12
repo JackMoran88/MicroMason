@@ -19,43 +19,47 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {# !Bootstarp 4 #}
 
-{# Styles #}
-    <link rel="stylesheet" href="{% static 'build/styles/style.css'%}">
-{# !Styles #}
+    {# Styles #}
+    <link rel="stylesheet" href="{% static '/build/styles/style.css' %}">
+    {# !Styles #}
 
-{# Links #}
-{% block links %} {% endblock %}
-{# !Links #}
+    {# Links #}
+    {% block links %}{% endblock %}
+    {# !Links #}
 
 
-    <title>{% block title %} {% endblock %}</title>
+    <title>{% block title %} Micro Mason {% endblock %}</title>
 </head>
 <body>
 
-{% block page %}
+<div class="page w-100">
 
     {% block top %}
-
     {% endblock %}
 
-    {% block left %}
+    <div class="wrapper row w-100">
 
-    {% endblock %}
+        {% block left %}
+        {% endblock %}
 
-    {% block center %}
+        {% block center %}
+        {% endblock %}
 
-    {% endblock %}
+        {% block right %}
+        {% endblock %}
 
-    {% block right %}
-
-    {% endblock %}
+    </div>
 
     {% block bottom %}
-
+        <section class="footer">
+        FOOTER
+        </section>
     {% endblock %}
 
 
-{% endblock %}
+
+</div>
+
 
 </body>
 </html>

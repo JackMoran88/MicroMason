@@ -1,4 +1,50 @@
-body{
+body {
+  font-weight: bolder;
+}
+
+//Прижатие футера
+html, body, div.page {
   height: 100%;
-  background: red;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+div.wrapper {
+  height: 100%;
+  flex: 1 0 auto;
+}
+
+section.footer {
+  flex-shrink: 0;
+}
+
+//!Прижатие футера
+
+section.top {
+  background: yellow;
+}
+
+div.page {
+  .wrapper {
+
+    margin: 0 !important;
+
+    section.left {
+      background: blue;
+    }
+
+    section.center {
+      background: red;
+    }
+
+    section.right {
+      background: green;
+    }
+  }
+  section.footer {
+    background: black;
+  }
 }
