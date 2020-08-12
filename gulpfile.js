@@ -100,7 +100,7 @@ gulp.task('watch', () => {
    //Следить за файлами со стилями с нужным расширением
    gulp.watch('./static/src/styles/**/*.scss', gulp.series('styles'));
    //Следить за JS файлами
-   // gulp.watch('./static/src/js/**/*.js', gulp.series('scripts'));
+   gulp.watch('./static/src/js/**/*.js', gulp.series('scripts'));
    //При изменении HTML запустить синхронизацию
    // gulp.watch("./*.html").on('change', browserSync.reload);
 });
