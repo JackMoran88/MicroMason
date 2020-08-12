@@ -24,9 +24,9 @@ class Image(Model):
 
 
 class Category(Model):
-    parent = ForeignKey("self", on_delete=CASCADE)
+    parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True)
     name = CharField(max_length=120, null=False)
-    description = TextField()
+    description = TextField(blank=True)
 
 
 class Product(Model):
@@ -34,7 +34,7 @@ class Product(Model):
     code = PositiveIntegerField(null=False)
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
-    description = TextField()
+    description = TextField(blank=True)
     main_image = FilePathField(path=images_path)
 
     category = ManyToManyField(Category)
@@ -44,7 +44,8 @@ class Product(Model):
                               through_fields=(
                                   "product",
                                   "option_parameter"
-                              ))
+                              ),
+                              blank=True)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, *args, **kwargs):
