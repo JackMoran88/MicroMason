@@ -33,6 +33,14 @@
     {% block links %}{% endblock %}
     {# !Links #}
 
+    {# VueJs #}
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    {# !VueJs #}
+
+    {# Axios #}
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    {# !Axios #}
+
 
     <title>{% block title %} Micro Mason {% endblock %}</title>
 </head>
@@ -140,6 +148,9 @@
     <div class="wrapper row container align-self-center">
 
         {% block left %}
+
+
+
         {% endblock %}
 
         {% block center %}
@@ -167,32 +178,10 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body row">
-                    <form action="" class="col-12">
-                        <fieldset>
-                            <label for="i_email">Эл.почта</label>
-                            <input type="email" id="i_email">
-                        </fieldset>
-                        <fieldset>
-                            <label for="i_pass">Пароль</label>
-                            <input type="password" id="i_pass">
-                        </fieldset>
-                        <div class="checkbox-line">
-                            <div>
-                                <input type="checkbox" id="i_remember">
-                                <label for="i_remember">Запомнить меня</label>
-                            </div>
-                            <a href="">Забыл пароль</a>
-                        </div>
-                        <div class="social_auth">
-                            <button class="btn"><img src="{% static 'svg/social_auth/google-icon.svg' %}" alt="">
-                            </button>
-                            <button class="btn"><img src="{% static 'svg/social_auth/telegram.svg' %}" alt=""></button>
-                        </div>
+                <div id="auth_test" class="modal-body row">
 
-                        <button type="submit" class="btn btn-success">Войти</button>
-                        <a class="another_method" href="">Зарегистрироваться</a>
-                    </form>
+                    {% include 'basepage/sign_in.html' %}
+
                     <div class="col-12"></div>
                 </div>
                 {#                <div class="modal-footer">#}
@@ -208,6 +197,9 @@
 
 {# Scripts #}
 <script src="{% static '/build/js/script.js' %}"></script>
+
+<script src="{% static 'app.js' %}"></script>
+
 {# !Scripts #}
 </body>
 </html>

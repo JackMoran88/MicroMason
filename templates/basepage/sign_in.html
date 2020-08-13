@@ -1,0 +1,27 @@
+{% load static %}
+
+<form id="auth_in" action="" class="col-12">
+    <fieldset>
+        <label for="i_email">Эл.почта</label>
+        <input type="email" id="i_email">
+    </fieldset>
+    <fieldset>
+        <label for="i_pass">Пароль</label>
+        <input type="password" id="i_pass">
+    </fieldset>
+    <div class="checkbox-line">
+        <div>
+            <input type="checkbox" id="i_remember">
+            <label for="i_remember">Запомнить меня</label>
+        </div>
+        <a href="">Забыл пароль</a>
+    </div>
+    <div class="social_auth">
+        <button class="btn"><img src="{% static 'svg/social_auth/google-icon.svg' %}" alt="">
+        </button>
+        <button class="btn"><img src="{% static 'svg/social_auth/telegram.svg' %}" alt=""></button>
+    </div>
+
+    <button type="submit" class="btn btn-success">Войти</button>
+    <a id="to_sign-up" class="another_method" onclick="form_sign_up(this)">Зарегистрироваться</a>
+</form>

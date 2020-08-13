@@ -13,6 +13,7 @@ body {
 
 a, a:hover{
   text-decoration: none;
+  cursor: pointer;
 }
 
 .page {
@@ -376,7 +377,7 @@ div.modal#auth {
     }
     button[type='submit'] {
       width: 100%;
-      margin: .2rem 0;
+      margin: .5rem 0;
     }
     a.another_method {
       width: 100%;
