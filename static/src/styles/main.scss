@@ -11,6 +11,11 @@ body {
   flex-direction: column;
 }
 
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
 div.wrapper {
   height: 100%;
   flex: 1 0 auto;
@@ -25,15 +30,17 @@ section.footer {
 //NAVBAR
 @media (max-width: 992px) {
   .navbar-collapse {
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 0;
     left: 0;
     padding-left: 15px;
     padding-right: 15px;
     padding-bottom: 15px;
     width: 70%;
     height: 100vh;
-    padding: 1rem !important;
+    padding: 1rem;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
 
   .navbar-collapse.collapsing {
@@ -104,6 +111,7 @@ section.header {
 
 //Custom NavBar-Toggler
 button.navbar-toggler.custom-toggler {
+  z-index: 99;
   .navbar-toggler-icon {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgb(185, 205, 218)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
   }
@@ -167,7 +175,7 @@ div.page {
 
 //Dropdown
 .navbar-nav-dropdown {
-  display: flex !important;
+  display: flex;
   flex-direction: column !important;
 }
 
@@ -222,3 +230,17 @@ div.page {
 }
 
 //!Dropdown
+
+//
+@media (max-width: 991px) {
+  .navbar-collapse {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    .navbar-nav {
+      width: 100%;
+    }
+  }
+}
+
+//

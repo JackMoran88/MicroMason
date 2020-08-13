@@ -52,7 +52,7 @@
                         <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Поиск</button>
                     </form>
 
-                    <ul class="navbar-nav navbar-nav-dropdown">
+                    <ul class="navbar-nav navbar-nav-dropdown d-block d-lg-none">
                         <div class="dropdown">
                             <div class="dropdown__btn">
                                 <div>Компьютеры</div>
@@ -64,7 +64,7 @@
                         </div>
                     </ul>
 
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav justify-content-around mt-auto">
                         <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <img class="nav-link-img" src="{% static '/svg/comparison-outline.png' %}" alt="">
@@ -96,13 +96,12 @@
                 </button>
 
 
-                <form class="form-search form-inline mt-2 mt-md-0 mx-auto col-8 row d-sm-flex d-lg-none">
+                <form class="form-search form-inline mt-0 mt-md-0 mx-auto col-8 row d-sm-flex d-lg-none">
                     <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 </form>
 
                 <ul class="navbar-nav d-flex d-lg-none" style="padding: 0.25rem 0.75rem;">
-
                     <li class="nav-item">
                         {#                            <a class="nav-link" href="#">#}
                         {#                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">#}
@@ -118,7 +117,7 @@
         </section>
     {% endblock %}
 
-    <div class="wrapper row w-100">
+    <div class="wrapper row container align-self-center">
 
         {% block left %}
         {% endblock %}
