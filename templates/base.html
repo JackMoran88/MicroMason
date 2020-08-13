@@ -43,7 +43,7 @@
     {% block top %}
         <section class="header">
             <nav class="navbar navbar-expand-lg fixed-top">
-<button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
+                <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarCollapse"
                         aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -57,15 +57,23 @@
                     </form>
 
                     <ul class="navbar-nav navbar-nav-dropdown d-block d-lg-none">
-                        <div class="dropdown">
-                            <div class="dropdown__btn">
-                                <div>Компьютеры</div>
-                                <i class="fa fa-caret-right" aria-hidden="true"></i>
+                        {% for category in categories %}
+                            <div class="dropdown">
+                                {% if category.parent == 'None' %}
+                                    <div class="dropdown__btn">
+                                    <div>{{ category.name }}</div>
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                </div>
+                                {% endif %}
+                                <div class="dropdown__btn">
+                                    <div>{{ category.parent }}</div>
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                </div>
+                                <div class="dropdown__content">
+                                    <p><a href="">{{ category.name }}</a></p>
+                                </div>
                             </div>
-                            <div class="dropdown__content">
-                                <p><a href="">Mac</a></p>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </ul>
 
                     <ul class="navbar-nav justify-content-around mt-auto">
@@ -137,8 +145,8 @@
 
 </div>
 
-    {# Scripts #}
-    <script src="{% static '/build/js/script.js' %}"></script>
-    {# !Scripts #}
+{# Scripts #}
+<script src="{% static '/build/js/script.js' %}"></script>
+{# !Scripts #}
 </body>
 </html>

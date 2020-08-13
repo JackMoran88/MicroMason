@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Category
 
 
 def base(request):
@@ -6,4 +7,5 @@ def base(request):
 
 
 def index(request):
-    return render(request, "basepage/index.html")
+    categories = Category.objects.all()
+    return render(request, "basepage/index.html", {'categories':categories})
