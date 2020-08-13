@@ -1,6 +1,6 @@
 import os
 from django.conf import settings
-from django.template.defaultfilters import slugify
+from django.utils.text import slugify
 
 from django.db.models import Model, CASCADE
 from django.db.models import CharField, FloatField, TextField, FilePathField, PositiveIntegerField, SlugField
@@ -38,15 +38,15 @@ class Category(Model):
     name = CharField(max_length=120, null=False)
     description = TextField(blank=True)
 
-    slug = SlugField(blank=True)
+    slug = SlugField(blank=True, allow_unicode=True)
 
     def __str__(self):
         return f"{self.parent} => {self.id}: {self.name}"
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if not self.slug:
-            self.slug = slugify(self.name)
+        if self.slug == "":
+            self.slug = slugify(self.name, allow_unicode=True)
 
         super(Category, self).save(force_insert, force_update, using,
                                    update_fields)
@@ -60,10 +60,10 @@ class Product(Model):
     description = TextField(blank=True)
     main_image = FilePathField(path=images_path)
 
-    slug = SlugField(blank=True)
+    slug = SlugField(blank=True, allow_unicode=True)
 
     category = ManyToManyField(Category)
-    images = ManyToManyField(Image)
+    images = ManyToManyField(Image, blank=True)
     options = ManyToManyField(OptionParameter,
                               through='OptionProduct',
                               through_fields=(
@@ -72,20 +72,13 @@ class Product(Model):
                               ),
                               blank=True)
 
-    @property
-    def main_image_url(self):
-        if self.main_image == "":
-            return os.path.join(images_path(), "default", "")
-        else:
-            return self.main_image
-
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
 
         # self.quantity.editable = False
 
-        if not self.slug:
-            self.slug = slugify(self.name)
+        if self.slug == "":
+            self.slug = slugify(self.name, allow_unicode=True)
 
         super(Product, self).save(force_insert, force_update, using, update_fields)
 
