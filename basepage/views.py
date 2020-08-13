@@ -40,6 +40,4 @@ def get_categories():
     for category in parent_categories:
         categories[category] = Category.objects.filter(parent__exact=category)
 
-    print(categories)
-
     return categories
