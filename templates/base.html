@@ -43,7 +43,11 @@
     {% block top %}
         <section class="header">
             <nav class="navbar navbar-expand-lg fixed-top">
-
+<button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarCollapse"
+                        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                 <div class="collapse navbar-collapse container-md" id="navbarCollapse">
                     <a class="navbar-brand" href=""><h2>MicroMason</h2></a>
 
@@ -89,18 +93,12 @@
                     </ul>
 
                 </div>
-                <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarCollapse"
-                        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
 
 
                 <form class="form-search form-inline mt-0 mt-md-0 mx-auto col-8 row d-sm-flex d-lg-none">
                     <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 </form>
-
                 <ul class="navbar-nav d-flex d-lg-none" style="padding: 0.25rem 0.75rem;">
                     <li class="nav-item">
                         {#                            <a class="nav-link" href="#">#}
@@ -112,8 +110,8 @@
                         </a>
                     </li>
                 </ul>
-
             </nav>
+
         </section>
     {% endblock %}
 

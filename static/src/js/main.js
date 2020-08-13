@@ -31,17 +31,28 @@ observer.observe(document, {
 //Отступ для контента от Header
 $(document).ready(function () {
     $('div.wrapper').css({'padding-top': $('nav.navbar').outerHeight()})
-    $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
+
+    if ($(window).width() <= 991) {
+        console.log('<= 991')
+        $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
+    } else {
+        console.log('> 991')
+        $('div.navbar-collapse').css({'padding-top': 0})
+    }
 
     $(window).on('resize', function () {
         var win = $(this); //this = window
         $('div.wrapper').css({'padding-top': $('nav.navbar').outerHeight()})
-        if (win.width() <= 991){
-            $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
+        if (win.width() <= 991) {
+            if ($('.navbar-toggler').is(':visible')) {
+                $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
+            }
         }
-        else{
+        else {
             $('div.navbar-collapse').css({'padding-top': 0})
         }
     });
+
+
 })
 //!Отступ для контента от Header
