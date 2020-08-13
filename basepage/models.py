@@ -58,7 +58,7 @@ class Product(Model):
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
     description = TextField(blank=True)
-    main_image = FilePathField(path=images_path)
+    main_image = FilePathField(path=images_path, blank=True)
 
     slug = SlugField(blank=True, allow_unicode=True)
 
@@ -77,13 +77,24 @@ class Product(Model):
 
         # self.quantity.editable = False
 
-        if self.slug == "":
-            self.slug = slugify(self.name, allow_unicode=True)
+        self.__fill_empty_main_image()
+        self.__fill_empty_slug()
 
         super(Product, self).save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return f"{self.id}: {self.name}"
+
+    """
+    Addition function for saving mode
+    """
+    def __fill_empty_main_image(self):
+        if self.main_image == "":
+            self.main_image = os.path.join(images_path(), "default", "product", "not_found.png")
+
+    def __fill_empty_slug(self):
+        if self.slug == "":
+            self.slug = slugify(self.name, allow_unicode=True)
 
 
 class OptionProduct(Model):
