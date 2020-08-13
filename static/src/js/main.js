@@ -30,6 +30,9 @@ observer.observe(document, {
 
 //Отступ для контента от Header
 $(document).ready(function () {
+    $('div.wrapper').css({'padding-top': $('nav.navbar').outerHeight()})
+    $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
+
     $(window).on('resize', function () {
         var win = $(this); //this = window
         $('div.wrapper').css({'padding-top': $('nav.navbar').outerHeight()})
