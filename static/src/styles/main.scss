@@ -11,6 +11,10 @@ body {
   flex-direction: column;
 }
 
+a, a:hover{
+  text-decoration: none;
+}
+
 .page {
   display: flex;
   flex-direction: column;
@@ -323,12 +327,12 @@ div.page {
 //Modal AUTH
 div.modal#auth {
 
-  .modal-body{
+  .modal-body {
     margin: 0;
   }
 
   form {
-    label{
+    label {
       cursor: pointer;
     }
     fieldset {
@@ -347,32 +351,37 @@ div.modal#auth {
         width: 100%;
       }
     }
-    .checkbox-line{
+    .checkbox-line {
       display: flex;
       justify-content: space-between;
       padding: 0 .3rem;
-      a{
+      a {
         text-decoration: none;
       }
     }
-    .social_auth{
+    .social_auth {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      button{
+      button {
         width: 60px;
         height: 60px;
         //background: red;
         border-radius: 50px;
-        img{
+        img {
           max-width: 100%;
           max-height: 100%;
         }
       }
     }
-    button[type='submit']{
+    button[type='submit'] {
       width: 100%;
       margin: .2rem 0;
+    }
+    a.another_method {
+      width: 100%;
+      display: inline-block;
+      text-align: center;
     }
   }
 
