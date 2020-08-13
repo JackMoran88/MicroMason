@@ -1,11 +1,215 @@
 @import "colors.scss";
 
-@mixin btn-outline-success{
-    color: $color-secondary;
-    border-color: $color-secondary;
-  &:hover{
-    color: $color-main-ad ;
-    background-color: $color-secondary ;
-    border-color: $color-main-ad ;
+@mixin btn-outline-success {
+  color: $color-secondary;
+  border-color: $color-secondary;
+  &:hover {
+    color: $color-main-ad;
+    background-color: $color-secondary;
+    border-color: $color-main-ad;
   }
 }
+
+
+
+
+//BUTTONS
+
+.btn-primary {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+  &:hover {
+    color: #fff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+  }
+  &:focus, &.focus {
+    color: #fff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+  }
+  &.disabled, &:disabled {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+}
+
+.btn-secondary {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+
+  &:hover {
+    color: #fff;
+    background-color: #5a6268;
+    border-color: #545b62;
+  }
+
+  &:focus, &.focus {
+    color: #fff;
+    background-color: #5a6268;
+    border-color: #545b62;
+    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+  }
+
+  &.disabled, &:disabled {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+}
+
+.btn-success {
+  color: #fff;
+  background-color: #28a745;
+  border-color: #28a745;
+
+  &:hover {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+
+  &:focus, &.focus {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+    box-shadow: 0 0 0 0.2rem rgba(72, 180, 97, 0.5);
+  }
+
+  &.disabled, &:disabled {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+
+  &:hover {
+    color: #fff;
+    background-color: #138496;
+    border-color: #117a8b;
+  }
+
+  &:focus, &.focus {
+    color: #fff;
+    background-color: #138496;
+    border-color: #117a8b;
+    box-shadow: 0 0 0 0.2rem rgba(58, 176, 195, 0.5);
+  }
+
+  &.disabled, &:disabled {
+    color: #fff;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+  }
+}
+
+.btn-warning {
+  color: #212529;
+  background-color: #ffc107;
+  border-color: #ffc107;
+
+  &:hover {
+    color: #212529;
+    background-color: #e0a800;
+    border-color: #d39e00;
+  }
+
+  &:focus, &.focus {
+    color: #212529;
+    background-color: #e0a800;
+    border-color: #d39e00;
+    box-shadow: 0 0 0 0.2rem rgba(222, 170, 12, 0.5);
+  }
+
+  &.disabled, &:disabled {
+    color: #212529;
+    background-color: #ffc107;
+    border-color: #ffc107;
+  }
+}
+
+.btn-danger {
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
+
+  &:hover {
+    color: #fff;
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+
+  &:focus, &.focus {
+    color: #fff;
+    background-color: #c82333;
+    border-color: #bd2130;
+    box-shadow: 0 0 0 0.2rem rgba(225, 83, 97, 0.5);
+  }
+
+  &.disabled, &:disabled {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+}
+
+.btn-light {
+  color: #212529;
+  background-color: #f8f9fa;
+  border-color: #f8f9fa;
+
+  &:hover {
+    color: #212529;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+  }
+
+  &:focus, &.focus {
+    color: #212529;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+    box-shadow: 0 0 0 0.2rem rgba(216, 217, 219, 0.5);
+  }
+
+  &.disabled, &:disabled {
+    color: #212529;
+    background-color: #f8f9fa;
+    border-color: #f8f9fa;
+  }
+}
+
+.btn-dark {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #343a40;
+
+  &:hover {
+    color: #fff;
+    background-color: #23272b;
+    border-color: #1d2124;
+  }
+
+  &:focus, &.focus {
+    color: #fff;
+    background-color: #23272b;
+    border-color: #1d2124;
+    box-shadow: 0 0 0 0.2rem rgba(82, 88, 93, 0.5);
+  }
+
+  &.disabled, &:disabled {
+    color: #fff;
+    background-color: #343a40;
+    border-color: #343a40;
+  }
+}
+
+//!BUTTONS!
