@@ -47,6 +47,13 @@
 <body>
 
 <div class="page w-100">
+        <div class="test">
+            {% for key, value in categories.items %}
+                <p>{{ key.name }}</p>
+                <p>{{ key }}</p>
+                <p>{{ value }}</p>
+            {% endfor %}
+        </div>
 
     {% block top %}
         <section class="header">
@@ -79,17 +86,17 @@
                     </form>
 
                     <ul class="navbar-nav navbar-nav-dropdown d-block d-lg-none">
-{#                        {% for category in categories %}#}
+                        {% for category in categories %}
                             <div class="dropdown">
                                 <div class="dropdown__btn">
-{#                                    <div>{{ category.parent }}</div>#}
+                                    <div>{{ category.name }}</div>
                                     <i class="fa fa-caret-right" aria-hidden="true"></i>
                                 </div>
                                 <div class="dropdown__content">
-{#                                    <p><a href="">{{ category.name }}</a></p>#}
+                                    <p><a href="{{ category.slug }}">{{ category.children }}</a></p>
                                 </div>
                             </div>
-{#                        {% endfor %}#}
+                        {% endfor %}
                     </ul>
 
                     <ul class="navbar-nav justify-content-around mt-auto">

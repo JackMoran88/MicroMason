@@ -32,7 +32,8 @@ const styleFiles = [
 //Порядок подключения js файлов
 const scriptFiles = [
    // './src/js/lib.js',
-   './static/src/js/main.js'
+   './static/src/js/main.js',
+   './static/src/js/ResizeSensor.js'
 ]
 
 //Таск для обработки стилей
