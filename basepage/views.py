@@ -25,7 +25,12 @@ Main views
 
 
 def index(request):
-    return render(request, "basepage/index.html", {'categories': get_categories()})
+    context = {'parent_categories': (parents := get_parent_categories()),
+               'subcatgories': get_second_categories(parents)}
+
+    print(context)
+
+    return render(request, "basepage/index.html", context=context)
 
 
 """
@@ -33,11 +38,13 @@ Support functions
 """
 
 
-def get_categories():
-    categories = {}
-    parent_categories = Category.objects.filter(parent__isnull=True)
+def get_parent_categories():
+    return Category.objects.filter(parent__isnull=True)
 
-    for category in parent_categories:
-        categories[category] = Category.objects.filter(parent__exact=category)
+
+def get_second_categories(parents: list):
+    categories = []
+    for category in parents:
+        categories.append(Category.objects.filter(parent__exact=category))
 
     return categories
