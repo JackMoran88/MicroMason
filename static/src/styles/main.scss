@@ -304,7 +304,7 @@ div.page {
   flex-direction: column;
   justify-content: center;
   overflow: auto;
-  max-width: none!important;
+  //max-width: none!important;
   @media(max-width: 768px) {
     min-height: calc(100vh - 20px);
   }
