@@ -9,11 +9,16 @@
 {#{% endblock %}#}
 
 {% block left %}
-    <section class="left col-12 col-md-12 col-lg-2">LEFT</section>
+    <section class="left col-12 col-md-12 col-lg-2">
+
+    </section>
 {% endblock %}
 
 {% block center %}
-    <section class="center col-12 col-md-12 col-lg-8">CENTER</section>
+    <section class="center col-12 col-md-12 col-lg-8">
+        {% include 'basepage/card_board.html' %}
+    </section>
+
 {% endblock %}
 
 {% block right %}

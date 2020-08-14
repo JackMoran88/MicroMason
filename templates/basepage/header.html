@@ -29,15 +29,23 @@
                 <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Поиск</button>
             </form>
             <ul class="navbar-nav navbar-nav-dropdown d-block d-lg-none">
-                {% for category in categories %}
+                {% for parent, children in categories.items %}
                     <div class="dropdown">
                         <div class="dropdown__btn">
-                            <div>{{ category.name }}</div>
-                            <i class="fa fa-caret-right" aria-hidden="true"></i>
+                            {% if children %}
+                                 {{ parent.name }}
+                                <i class="fa fa-caret-right" aria-hidden="true"></i>
+                            {% else %}
+                                <div><a href="{{ parent.slug }}">{{ parent.name }}</a></div>
+                            {% endif %}
                         </div>
-                        <div class="dropdown__content">
-                            <p><a href="{{ category.slug }}">{{ category.children }}</a></p>
-                        </div>
+                        {% if children %}
+                            <div class="dropdown__content">
+                                {% for child in children %}
+                                    <p><a href="{{ child.slug }}">{{ child.name }}</a></p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </ul>
@@ -59,7 +67,7 @@
                     {#                            <a class="nav-link" data-toggle="modal" data-target="#cartModal">#}
                     {#                                <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-empty.png' %}" alt="">#}
                     {#                            </a>#}
-                    <a class="nav-link"  data-toggle="modal" data-target="#cartModal">
+                    <a class="nav-link" data-toggle="modal" data-target="#cartModal">
                         <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-empty.png' %}" alt="">
                         <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-hover.png' %}" alt="">
                     </a>
