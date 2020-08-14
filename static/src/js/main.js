@@ -31,20 +31,20 @@ observer.observe(document, {
 //Отступ для контента от Header
 $(document).ready(function () {
 
-    $('div.page').css({'padding-top': $('nav.navbar').outerHeight()})
+    // $('div.page').css({'padding-top': $('nav.navbar').outerHeight()})
 
-    if ($(window).width() <= 991) {
-        console.log('<= 991')
+    if ($(window).width() <= 992) {
+        console.log('<= 992')
         $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
     } else {
-        console.log('> 991')
+        console.log('> 992')
         $('div.navbar-collapse').css({'padding-top': 0})
     }
 
     new ResizeSensor($('nav.navbar'), function () {
         var win = $(window);
         $('div.page').css({'padding-top': $('nav.navbar').outerHeight()})
-        if (win.width() <= 991) {
+        if (win.width() <= 992) {
             if ($('.navbar-toggler').is(':visible')) {
                 $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
             }

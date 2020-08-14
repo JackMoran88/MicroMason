@@ -11,9 +11,13 @@ body {
   flex-direction: column;
 }
 
-a, a:hover{
+a, a:hover {
   text-decoration: none;
   cursor: pointer;
+}
+
+.row {
+  margin: 0;
 }
 
 .page {
@@ -33,7 +37,7 @@ section.footer {
 //!Прижатие футера
 
 //NAVBAR
-@media (max-width: 991px) {
+@media (max-width: 992px) {
   .navbar-collapse {
     position: fixed;
     top: 0;
@@ -175,9 +179,6 @@ div.page {
       background: green;
     }
   }
-  section.footer {
-    background: black;
-  }
 }
 
 //Dropdown
@@ -239,7 +240,7 @@ div.page {
 //!Dropdown
 
 //
-@media (max-width: 991px) {
+@media (max-width: 992px) {
   .navbar-collapse {
     display: flex;
     flex-direction: column;
@@ -303,12 +304,13 @@ div.page {
   flex-direction: column;
   justify-content: center;
   overflow: auto;
+  max-width: none!important;
   @media(max-width: 768px) {
     min-height: calc(100vh - 20px);
   }
 }
 
-@media (max-width: 991px) {
+@media (max-width: 992px) {
   .modal-dialog {
     width: 100%;
     height: 100%;
@@ -389,3 +391,60 @@ div.modal#auth {
 }
 
 //!Modal AUTH
+
+//Footer
+section.footer {
+  background: $color-main-al;
+  color: $color-accent;
+  ul {
+    list-style: none;
+    padding-left: 0;
+    li {
+      list-style: none;
+    }
+  }
+  display: flex;
+  justify-content: space-around;
+  ul.row {
+    padding: .4rem 0;
+    //flex-wrap: wrap;
+    flex-direction: column;
+
+    &:last-of-type {
+      flex-direction: row;
+    }
+    li.footer-item {
+      &-header {
+        width: 100%;
+      }
+
+      img.footer-item-social {
+        height: 50px;
+        width: 50px;
+        margin: .5em;
+      }
+
+    }
+  }
+
+}
+
+@media (max-width: 768px) {
+  section.footer {
+    justify-content: flex-start;
+    ul.row {
+      width: 50%;
+    }
+  }
+}
+@media (max-width: 576px) {
+  section.footer {
+    ul.row {
+      width: 100%;
+    }
+  }
+}
+
+
+
+//!Footer!

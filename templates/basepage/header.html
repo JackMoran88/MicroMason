@@ -1,0 +1,89 @@
+{% load static %}
+
+<section class="header">
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse container-md" id="navbarCollapse">
+            <div class="navbar-nav-userline">
+                <ul class="navbar-nav">
+                    <span>38000000000</span>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-link language">
+                        <span><a href="">RU</a></span> | <span><a href="">UA</a></span>
+                    </li>
+                    <li class="nav-link user">
+                        <a href="" data-toggle="modal" data-target="#auth">Вход</a>
+                    </li>
+                </ul>
+            </div>
+
+            <a class="navbar-brand" href=""><h2>MicroMason</h2></a>
+
+            <form class="form-search form-inline mt-0 mt-md-0 mx-auto col-6 row d-lg-flex d-md-none d-sm-none d-none">
+                <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
+                <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Поиск</button>
+            </form>
+
+            <ul class="navbar-nav navbar-nav-dropdown d-block d-lg-none">
+                {% for category in categories %}
+                    <div class="dropdown">
+                        <div class="dropdown__btn">
+                            <div>{{ category.name }}</div>
+                            <i class="fa fa-caret-right" aria-hidden="true"></i>
+                        </div>
+                        <div class="dropdown__content">
+                            <p><a href="{{ category.slug }}">{{ category.children }}</a></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </ul>
+
+            <ul class="navbar-nav justify-content-around mt-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <img class="nav-link-img" src="{% static '/svg/comparison-outline.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/comparison-filled.png' %}" alt="">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <img class="nav-link-img" src="{% static '/svg/heart-black-outline.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/heart-black-filled.png' %}" alt="">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    {#                            <a class="nav-link" href="#">#}
+                    {#                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">#}
+                    {#                            </a>#}
+                    <a class="nav-link" href="#">
+                        <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/shopping-cart-hover.png' %}" alt="">
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+
+
+        <form class="form-search form-inline mt-0 mt-md-0 mx-auto col-8 row d-sm-flex d-lg-none">
+            <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+        <ul class="navbar-nav d-flex d-lg-none" style="padding: 0.25rem 0.75rem;">
+            <li class="nav-item">
+                {#                            <a class="nav-link" href="#">#}
+                {#                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">#}
+                {#                            </a>#}
+                <a class="nav-link" href="#">
+                    <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">
+                    <img class="nav-link-img" src="{% static '/svg/shopping-cart-hover.png' %}" alt="">
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>

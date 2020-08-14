@@ -1966,7 +1966,8 @@ pre code {
   }
 }
 
-@media (max-width: 991.98px) {
+/*@media (max-width: 991.98px) {*/
+@media (max-width: 992px) {
   .table-responsive-lg {
     display: block;
     width: 100%;
@@ -4319,7 +4320,8 @@ input[type="button"].btn-block {
   justify-content: space-between;
   padding: 0.5rem 1rem;
 }
-@media (min-width: 991px) {
+/*@media (min-width: 991px) {*/
+@media (min-width: 992px) {
   .navbar .container,
   .navbar .container-fluid, .navbar .container-sm, .navbar .container-md, .navbar .container-lg, .navbar .container-xl {
     display: -ms-flexbox;
@@ -4488,7 +4490,8 @@ input[type="button"].btn-block {
   }
 }
 
-@media (max-width: 991.98px) {
+/*@media (max-width: 991.98px) {*/
+@media (max-width: 992px) {
   .navbar-expand-lg > .container,
   .navbar-expand-lg > .container-fluid, .navbar-expand-lg > .container-sm, .navbar-expand-lg > .container-md, .navbar-expand-lg > .container-lg, .navbar-expand-lg > .container-xl {
     padding-right: 0;
