@@ -11,6 +11,19 @@
 }
 
 
+.btn-action{
+  height: 30px;
+  display: flex;
+  &:focus{
+    box-shadow: none;
+  }
+  img{
+    height: 100%;
+  }
+
+}
+
+
 
 
 //BUTTONS

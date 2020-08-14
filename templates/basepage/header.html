@@ -17,7 +17,7 @@
                         <span><a href="">RU</a></span> | <span><a href="">UA</a></span>
                     </li>
                     <li class="nav-link user">
-                        <a href="" data-toggle="modal" data-target="#auth">Вход</a>
+                        <a href="" data-toggle="modal" data-target="#authModal">Вход</a>
                     </li>
                 </ul>
             </div>
@@ -28,7 +28,6 @@
                 <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
                 <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Поиск</button>
             </form>
-
             <ul class="navbar-nav navbar-nav-dropdown d-block d-lg-none">
                 {% for category in categories %}
                     <div class="dropdown">
@@ -46,23 +45,23 @@
             <ul class="navbar-nav justify-content-around mt-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="#">
-                        <img class="nav-link-img" src="{% static '/svg/comparison-outline.png' %}" alt="">
-                        <img class="nav-link-img" src="{% static '/svg/comparison-filled.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/header/comparison-outline.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/header/comparison-filled.png' %}" alt="">
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">
-                        <img class="nav-link-img" src="{% static '/svg/heart-black-outline.png' %}" alt="">
-                        <img class="nav-link-img" src="{% static '/svg/heart-black-filled.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/header/heart-black-outline.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/header/heart-black-filled.png' %}" alt="">
                     </a>
                 </li>
                 <li class="nav-item">
-                    {#                            <a class="nav-link" href="#">#}
-                    {#                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">#}
+                    {#                            <a class="nav-link" data-toggle="modal" data-target="#cartModal">#}
+                    {#                                <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-empty.png' %}" alt="">#}
                     {#                            </a>#}
-                    <a class="nav-link" href="#">
-                        <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">
-                        <img class="nav-link-img" src="{% static '/svg/shopping-cart-hover.png' %}" alt="">
+                    <a class="nav-link"  data-toggle="modal" data-target="#cartModal">
+                        <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-empty.png' %}" alt="">
+                        <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-hover.png' %}" alt="">
                     </a>
                 </li>
             </ul>
@@ -76,12 +75,12 @@
         </form>
         <ul class="navbar-nav d-flex d-lg-none" style="padding: 0.25rem 0.75rem;">
             <li class="nav-item">
-                {#                            <a class="nav-link" href="#">#}
-                {#                                <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">#}
+                {#                            <a class="nav-link" data-toggle="modal" data-target="#cartModal">#}
+                {#                                <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-empty.png' %}" alt="">#}
                 {#                            </a>#}
-                <a class="nav-link" href="#">
-                    <img class="nav-link-img" src="{% static '/svg/shopping-cart-empty.png' %}" alt="">
-                    <img class="nav-link-img" src="{% static '/svg/shopping-cart-hover.png' %}" alt="">
+                <a class="nav-link" data-toggle="modal" data-target="#cartModal">
+                    <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-empty.png' %}" alt="">
+                    <img class="nav-link-img" src="{% static '/svg/header/shopping-cart-hover.png' %}" alt="">
                 </a>
             </li>
         </ul>

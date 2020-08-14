@@ -325,10 +325,18 @@ div.page {
   }
 }
 
+@media (min-width: 768px) {
+  #cartModal {
+    .modal-dialog {
+      max-width: 960px;
+    }
+  }
+}
+
 //!Center MODAL
 
 //Modal AUTH
-div.modal#auth {
+div.modal#authModal {
 
   .modal-body {
     margin: 0;
@@ -419,9 +427,9 @@ section.footer {
       }
 
       img.footer-item-social {
-        height: 50px;
-        width: 50px;
-        margin: .5em;
+        height: 40px;
+        width: 40px;
+        margin: 0 .3em;
       }
 
     }
@@ -437,6 +445,7 @@ section.footer {
     }
   }
 }
+
 @media (max-width: 576px) {
   section.footer {
     ul.row {
@@ -445,6 +454,78 @@ section.footer {
   }
 }
 
-
-
 //!Footer!
+
+//Cart
+section.cart-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    margin: 2rem;
+  }
+}
+
+section.cart {
+  .cart-list {
+    display: flex;
+    flex-direction: column;
+    .cart-item {
+      display: grid;
+      grid-template-columns: 96px auto auto;
+      margin: .1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #dee2e6;
+      &-img {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        img {
+          max-height: 96px;
+        }
+      }
+      &-title {
+        padding: 0 1.5rem;
+        overflow: hidden;
+        a {
+          color: $color-main-al;
+          h5 {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+        }
+        h6 {
+          color: $color-secondary-ad;
+        }
+      }
+
+      &-action {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      &-price {
+        display: flex;
+        justify-content: flex-end;
+        grid-column: 1/4;
+
+        .quantity{
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .price{
+          font-size: 1em;
+          span{
+            font-size: 1.25em;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+//!Cart!
