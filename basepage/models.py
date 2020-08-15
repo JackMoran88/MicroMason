@@ -1,10 +1,14 @@
 import os
 from django.conf import settings
 from django.utils.text import slugify
+from django.core.validators import RegexValidator
 
 from django.db.models import Model, CASCADE
 from django.db.models import CharField, FloatField, TextField, FilePathField, PositiveIntegerField, SlugField
+from django.db.models import DateField, BooleanField
 from django.db.models import ManyToManyField, ForeignKey
+
+from django.contrib.auth.models import User, UnicodeUsernameValidator
 
 
 def images_path():
@@ -104,3 +108,25 @@ class OptionProduct(Model):
 
     def __str__(self):
         return f"{self.option_parameter} in {self.product} = {self.quantity}"
+
+
+class Customer(User):
+    username_validator = UnicodeUsernameValidator()
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: '+380991234567'.")
+
+    # username = CharField(
+    #     'username',
+    #     max_length=150,
+    #     unique=True,
+    #     help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.',
+    #     validators=[username_validator],
+    #     error_messages={
+    #         'unique': "A user with that username already exists.",
+    #     },
+    #     blank=True
+    # )
+    # email = EmailField('email address', blank=True)
+    phone_number = CharField(validators=[phone_regex], max_length=17, blank=True)
+    birthday = DateField(blank=True)
+    remember = BooleanField(default=False)

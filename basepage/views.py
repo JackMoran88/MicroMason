@@ -25,6 +25,8 @@ Main views
 
 
 def index(request):
+    print(request.user)
+
     return render(request, "basepage/index.html", {'categories': get_categories()})
 
 
