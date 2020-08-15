@@ -4,6 +4,8 @@
 //Прижатие футера
 html, body, div.page {
   height: 100%;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-weight: 400;
 }
 
 body {
@@ -70,6 +72,7 @@ section.footer {
 //!NAVBAR
 
 section.header {
+  z-index: 9999;
   nav.navbar {
     background: $color-main-al;
     padding-top: .3rem;
@@ -538,15 +541,15 @@ section.cart {
 section.card_board {
   .card_list {
     .card {
-      >a{
+      > a {
         position: absolute;
         height: 100%;
         width: 100%;
 
       }
       &:hover {
-        transform: scale(1.03);
-        z-index: 9999;
+        transform: scale(1.02);
+        z-index: 999;
         box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
       }
       border-radius: 0;
@@ -563,40 +566,44 @@ section.card_board {
         //max-height: 70%;
         max-height: 250px;
         display: flex;
-        a{
+        z-index: 9;
+        a {
           width: 100%;
           height: 100%;
           display: flex;
           img {
-          max-width: 100%;
-          max-height: 100%;
-          margin: auto !important;
-          padding: 1rem;
-        }
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto !important;
+            padding: 1rem 0;
+          }
         }
       }
       .card-title {
-        height: 40px;
+        height: 36px;
         overflow: hidden;
         margin-bottom: .2rem;
-        a{
+        z-index: 9;
+        a {
+          color: $color-main-ad;
           h5 {
-          font-size: 20px;
-          line-height: 20px;
-          max-height: 40px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          display: -webkit-box;
-          -webkit-line-clamp: 2; /* number of lines to show */
-          -webkit-box-orient: vertical;
-          font-weight: 400;
-        }
+            font-size: 18px;
+            line-height: 18px;
+            max-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* number of lines to show */
+            -webkit-box-orient: vertical;
+            font-weight: 400;
+          }
         }
       }
       .card-price {
         display: flex;
         justify-content: space-between;
         margin-top: auto;
+        z-index: 9;
         .price {
           display: flex;
           justify-content: center;
@@ -619,9 +626,31 @@ section.card_board {
           }
         }
       }
-
-      .cart-reviews{
+      .card-reviews {
         font-size: 14px;
+        display: flex;
+        white-space: nowrap;
+        z-index: 9;
+        a {
+          padding: 0 .2rem;
+        }
+      }
+
+      .card-action {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        //z-index: 5;
+        align-items: flex-end;
+        flex-direction: column;
+        padding: .7rem;
+        button{
+          z-index: 10;
+          margin: .2rem;
+        }
       }
 
     }
@@ -630,26 +659,49 @@ section.card_board {
 }
 
 @media (max-width: 576px) {
-  section.card_board{
-    .card{
+  section.card_board {
+    .card {
+      padding: .5rem !important;
       height: 270px !important;
-      .card-image{
+      .card-image {
         height: 60% !important;
-        img{
+        img {
           padding: .5rem !important;
         }
       }
-      .card-title{
+      .card-title {
         height: 28px !important;
-        h5{
+        h5 {
           font-size: 14px !important;
           line-height: 14px !important;
           max-height: 28px !important;
         }
       }
-      .cart-reviews{
+      .card-reviews {
         font-size: 12px !important;
+        section.star-line {
+          .star {
+            height: 12px !important;
+            width: 12px !important;
+          }
+        }
       }
+    }
+  }
+}
+
+section.star-line {
+  margin: .2rem 0;
+  display: flex;
+  width: fit-content;
+  .star {
+    height: 14px;
+    width: 14px;
+    background-image: url("/static/svg/func/stars/star-no-fill.png");
+    background-size: contain;
+    margin: 0 .1rem;
+    &.fill {
+      background-image: url("/static/svg/func/stars/star-fill.png");
     }
   }
 }

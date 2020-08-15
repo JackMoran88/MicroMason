@@ -10,21 +10,60 @@
   }
 }
 
-
-.btn-action{
+.btn-wish {
   height: 30px;
-  display: flex;
-  &:focus{
-    box-shadow: none;
-  }
-  img{
-    height: 100%;
-  }
+  width: 30px;
+  padding: 0;
 
+  background: url("/static/svg/func/heart/heart-black-filled.png") no-repeat;
+  background-size: contain;
+
+  &.fill {
+    background-image: url("/static/svg/func/heart/heart-red-filled.png");
+  }
+  &:hover {
+    background-image: url("/static/svg/func/heart/heart-red-outline.png");
+  }
 }
 
 
 
+.btn-compare {
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  background: url("/static/svg/func/compare/libra-no-fill.svg") no-repeat;
+  background-size: contain;
+
+  &.fill {
+    background-image: url("/static/svg/func/compare/libra-fill.svg");
+  }
+  &:hover {
+    background-image: url("/static/svg/func/compare/libra-fill.svg");
+  }
+}
+
+.btn-buy {
+
+  &:hover {
+    filter: invert(62%) sepia(36%) saturate(2604%) hue-rotate(359deg) brightness(101%) contrast(104%);
+  }
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.btn-action {
+  height: 30px;
+  display: flex;
+  &:focus {
+    box-shadow: none;
+  }
+  img {
+    height: 100%;
+  }
+
+}
 
 //BUTTONS
 
