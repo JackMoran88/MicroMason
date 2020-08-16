@@ -1,0 +1,96 @@
+@import "colors.scss";
+@import "components.scss";
+
+//Прижатие футера
+html, body, div.page {
+  min-height: 100%;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+a, a:hover {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.row {
+  margin: 0;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+div.wrapper {
+  height: 100%;
+  flex: 1 0 auto;
+}
+
+section.footer {
+  flex-shrink: 0;
+}
+
+//!Прижатие футера
+
+
+//Footer
+section.footer {
+  background: $color-main-al;
+  color: $color-accent;
+  ul {
+    list-style: none;
+    padding-left: 0;
+    li {
+      list-style: none;
+    }
+  }
+  display: flex;
+  justify-content: space-around;
+  ul.row {
+    padding: .4rem 0;
+    //flex-wrap: wrap;
+    flex-direction: column;
+
+    &:last-of-type {
+      flex-direction: row;
+    }
+    li.footer-item {
+      &-header {
+        width: 100%;
+      }
+
+      img.footer-item-social {
+        height: 40px;
+        width: 40px;
+        margin: 0 .3em;
+      }
+
+    }
+  }
+
+}
+
+@media (max-width: 768px) {
+  section.footer {
+    justify-content: flex-start;
+    ul.row {
+      width: 50%;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  section.footer {
+    ul.row {
+      width: 100%;
+    }
+  }
+}
+
+//!Footer!

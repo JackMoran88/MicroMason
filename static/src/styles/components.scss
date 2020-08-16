@@ -10,12 +10,13 @@
   }
 }
 
+
 .btn-wish {
   height: 30px;
   width: 30px;
   padding: 0;
 
-  background: url("/static/svg/func/heart/heart-black-filled.png") no-repeat;
+  background: white url("/static/svg/func/heart/heart-black-filled.png") no-repeat;
   background-size: contain;
 
   &.fill {
@@ -24,15 +25,17 @@
   &:hover {
     background-image: url("/static/svg/func/heart/heart-red-outline.png");
   }
+  &:focus {
+    box-shadow: none;
+  }
 }
-
-
 
 .btn-compare {
   height: 30px;
   width: 30px;
   padding: 0;
-  background: url("/static/svg/func/compare/libra-no-fill.svg") no-repeat;
+
+  background: white url("/static/svg/func/compare/libra-no-fill.svg") no-repeat;
   background-size: contain;
 
   &.fill {
@@ -41,12 +44,24 @@
   &:hover {
     background-image: url("/static/svg/func/compare/libra-fill.svg");
   }
+  &:focus {
+    box-shadow: none;
+  }
 }
 
 .btn-buy {
 
+  height: 30px;
+  width: 30px;
+  padding: 0;
+  background: url("/static/svg/card/shopping-cart.png") no-repeat;
+  background-size: contain;
+
   &:hover {
     filter: invert(62%) sepia(36%) saturate(2604%) hue-rotate(359deg) brightness(101%) contrast(104%);
+  }
+  &:focus {
+    box-shadow: none;
   }
   &:focus {
     box-shadow: none;
@@ -61,6 +76,9 @@
   }
   img {
     height: 100%;
+  }
+  &:focus {
+    box-shadow: none;
   }
 
 }
