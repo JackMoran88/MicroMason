@@ -130,7 +130,7 @@ class Customer(Model):
         },
         blank=True
     )
-    email = EmailField('email address', blank=True)
+    email = EmailField('email address', null=False)
     phone_number = CharField(
         validators=[phone_regex],
         max_length=17,
