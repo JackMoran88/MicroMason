@@ -5,7 +5,6 @@
 
 section.card_board {
   .card_list {
-    padding: 1rem;
     .card {
       > a {
         position: absolute;
@@ -22,7 +21,7 @@ section.card_board {
       border-radius: 0;
       padding: 1rem;
       color: $color-main-ad;
-      width: 100%;
+      //width: 100%;
       //height: 400px;
       //max-height: 400px;
       display: flex;
@@ -31,7 +30,7 @@ section.card_board {
         height: 70%;
         max-width: 100%;
         //max-height: 70%;
-        max-height: 250px;
+        //max-height: 250px;
         display: flex;
         z-index: 9;
         margin: .5rem 0;
@@ -136,9 +135,9 @@ section.card_board {
       //height: 300px !important;
       .card-image {
         //height: 60% !important;
-        img {
-          padding: .5rem !important;
-        }
+        //img {
+        //  padding: .5rem !important;
+        //}
       }
       .card-title {
         height: 28px !important;
@@ -168,7 +167,7 @@ section.star-line {
   .star {
     height: 14px;
     width: 14px;
-    background-image: url("/static/svg/func/stars/star-no-fill.png");
+    background: url("/static/svg/func/stars/star-no-fill.png") no-repeat;
     background-size: contain;
     margin: 0 .1rem;
     &.fill {
@@ -176,5 +175,73 @@ section.star-line {
     }
   }
 }
+
+section.card_board {
+  .card_list {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 380px) {
+  section.card_board {
+    .card_list {
+      padding: .5rem 0;
+    }
+  }
+}
+
+.card_list {
+  display: flex;
+  .card {
+
+  }
+}
+
+
+
+
+
+
+
+@media (min-width: 1200px) {
+  .card_list{
+    .card{
+      max-width: 20%;
+    }
+  }
+}
+@media (max-width: 1200px) {
+  .card_list{
+    .card{
+      max-width: 25%;
+    }
+  }
+}
+
+@media (max-width: 1200px) and (min-width: 768px){
+  .card_list{
+    .card{
+      max-width: 33.3%;
+    }
+  }
+}
+
+
+@media (max-width: 768px) {
+  .card_list{
+    .card{
+      max-width: 50%;
+    }
+  }
+}
+@media (max-width: 360px) {
+  .card_list{
+    .card{
+      max-width: 100%;
+    }
+  }
+}
+
+
 
 //!CARD!

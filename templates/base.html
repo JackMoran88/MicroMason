@@ -69,7 +69,7 @@
         {% include 'basepage/footer.html' %}
     {% endblock %}
 
-    <!-- Modal -->
+    <!-- Modals -->
     {% include 'basepage/modals.html' %}
 
 
@@ -80,6 +80,37 @@
 
 <script src="{% static 'app.js' %}"></script>
 
+<script>(CSS.paintWorklet || paintWorklet).addModule('{% static 'src/js/test.js' %}')</script>
+
 {# !Scripts #}
+
+
+{# CATALOG #}
+<section id="dropdown__categories" class="dropdown__categories">
+    <div class="dropdown__categories__inner container">
+        <ul class="category col-2">
+            <li class="list-item">Мужчинам</li>
+            <li class="list-item">Женщинам</li>
+            <li class="list-item">3</li>
+        </ul>
+        <ul class="category-sub col-10">
+            <ul class="category-sub__inner">
+                <li class="list-item--sub font-weight-bolder">1</li>
+                <li class="list-item--sub">Брюки</li>
+                <li class="list-item--sub">Верхняя одежда</li>
+            </ul>
+        </ul>
+        <ul class="category-sub col-10">
+            <ul class="category-sub__inner">
+                <li class="list-item--sub font-weight-bolder">2</li>
+                <li class="list-item--sub">Брюки</li>
+                <li class="list-item--sub">Верхняя одежда</li>
+            </ul>
+        </ul>
+    </div>
+</section>
+{# !CATALOG! #}
+
+
 </body>
 </html>

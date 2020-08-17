@@ -10,7 +10,6 @@
   }
 }
 
-
 .btn-wish {
   height: 30px;
   width: 30px;
@@ -18,6 +17,7 @@
 
   background: white url("/static/svg/func/heart/heart-black-filled.png") no-repeat;
   background-size: contain;
+  background-repeat: no-repeat;
 
   &.fill {
     background-image: url("/static/svg/func/heart/heart-red-filled.png");
@@ -37,6 +37,7 @@
 
   background: white url("/static/svg/func/compare/libra-no-fill.svg") no-repeat;
   background-size: contain;
+  background-repeat: no-repeat;
 
   &.fill {
     background-image: url("/static/svg/func/compare/libra-fill.svg");
@@ -56,6 +57,7 @@
   padding: 0;
   background: url("/static/svg/card/shopping-cart.png") no-repeat;
   background-size: contain;
+  background-repeat: no-repeat;
 
   &:hover {
     filter: invert(62%) sepia(36%) saturate(2604%) hue-rotate(359deg) brightness(101%) contrast(104%);
@@ -81,6 +83,68 @@
     box-shadow: none;
   }
 
+}
+
+.btn-burger {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+  background: 0 0;
+  border: none;
+  padding: 0;
+  span {
+    position: relative;
+    display: block;
+    width: 30px;
+    height: 4px;
+    background: #fff;
+    border-radius: 8px;
+    -webkit-transition: background 0s .2s ease;
+    transition: background 0s .2s ease;
+    &:before {
+      position: absolute;
+      left: 0;
+      content: '';
+      width: 30px;
+      height: 4px;
+      background-color: #fff;
+      border-radius: 8px;
+      -webkit-transition: -webkit-transform .3s .1s ease;
+      transition: -webkit-transform .3s .1s ease;
+      transition: transform .3s .1s ease;
+      transition: transform .3s .1s ease, -webkit-transform .3s .1s ease;
+      bottom: -10px;
+    }
+    &:after {
+      position: absolute;
+      left: 0;
+      content: '';
+      width: 30px;
+      height: 4px;
+      background-color: #fff;
+      border-radius: 8px;
+      -webkit-transition: -webkit-transform .3s .1s ease;
+      transition: -webkit-transform .3s .1s ease;
+      transition: transform .3s .1s ease;
+      transition: transform .3s .1s ease, -webkit-transform .3s .1s ease;
+      top: -10px;
+
+    }
+  }
+}
+
+.btn-burger.active {
+  span {
+    background: 0 0;
+    &:before {
+      transform: translateY(-10px) rotate(-45deg);
+    }
+    &:after {
+      transform: translateY(10px) rotate(45deg);
+    }
+  }
 }
 
 //BUTTONS

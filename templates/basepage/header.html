@@ -24,6 +24,8 @@
 
             <a class="navbar-brand" href=""><h2>MicroMason</h2></a>
 
+            <button id='btn_burger' class="btn btn-burger"><span></span></button>
+
             <form class="form-search form-inline mt-0 mt-md-0 mx-auto col-6 row d-lg-flex d-md-none d-sm-none d-none">
                 <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
                 <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Поиск</button>
@@ -33,7 +35,7 @@
                     <div class="dropdown">
                         <div class="dropdown__btn">
                             {% if children %}
-                                 {{ parent.name }}
+                                {{ parent.name }}
                                 <i class="fa fa-caret-right" aria-hidden="true"></i>
                             {% else %}
                                 <div><a href="{{ parent.slug }}">{{ parent.name }}</a></div>
@@ -94,3 +96,4 @@
         </ul>
     </nav>
 </section>
+

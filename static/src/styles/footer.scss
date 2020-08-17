@@ -2,20 +2,19 @@
 @import "components.scss";
 
 //Прижатие футера
+html, body{
+  height: 100%;
+}
+
 html, body, div.page {
   min-height: 100%;
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;;
   font-weight: 400;
 }
 
 body {
   display: flex;
   flex-direction: column;
-}
-
-a, a:hover {
-  text-decoration: none;
-  cursor: pointer;
 }
 
 .row {
@@ -28,7 +27,7 @@ a, a:hover {
 }
 
 div.wrapper {
-  height: 100%;
+  min-height: 100%;
   flex: 1 0 auto;
 }
 
