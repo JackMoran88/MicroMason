@@ -26,6 +26,9 @@ const imagemin = require('gulp-imagemin');
 //Порядок подключения файлов со стилями
 const styleFiles = [
    './static/src/styles/main.scss',
+   './static/src/styles/header.scss',
+   './static/src/styles/footer.scss',
+   './static/src/styles/card_board.scss',
    // './src/css/normalize.scss',
    // './src/css/media.css',
 ]

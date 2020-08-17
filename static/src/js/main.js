@@ -10,24 +10,6 @@ $(document).ready(function () {
 });
 
 
-MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-
-var observer = new MutationObserver(function (mutations, observer) {
-    // fired when a mutation occurs
-    // console.log(mutations, observer);
-    // ...
-});
-
-// define what element should be observed by the observer
-// and what types of mutations trigger the callback
-observer.observe(document, {
-    subtree: true,
-    attributes: true,
-    childList: true,
-    // attributeFilter: 'html',
-});
-
-
 //Отступ для контента от Header
 $(document).ready(function () {
 
@@ -44,6 +26,12 @@ $(document).ready(function () {
     new ResizeSensor($('nav.navbar'), function () {
         var win = $(window);
         $('div.page').css({'padding-top': $('nav.navbar').outerHeight()})
+
+        //CART IMAGE
+        console.log('resized')
+        $('.card-image').height($('.card-image').width());
+        //
+
         if (win.width() <= 992) {
             if ($('.navbar-toggler').is(':visible')) {
                 $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
