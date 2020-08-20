@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from .models import Category
+from .models import Category, Customer
+from .forms import SingInForm
 
 
 """ 
@@ -25,9 +26,25 @@ Main views
 
 
 def index(request):
-    print(request.user)
+    if request.method == 'POST':
+        form = SingInForm(request.POST)
 
-    return render(request, "basepage/index.html", {'categories': get_categories()})
+        if form.is_valid():
+            if sing_in_save(form.cleaned_data):
+                # redirect
+                pass
+            else:
+                # error
+                pass
+    else:
+        form = SingInForm()
+
+    context = {
+        'categories': get_categories(),
+        'form': form,
+    }
+
+    return render(request, "basepage/index.html", context=context)
 
 
 """
@@ -43,3 +60,13 @@ def get_categories():
         categories[category] = Category.objects.filter(parent__exact=category)
 
     return categories
+
+
+def sing_in_save(data_dictionary: dict) -> bool:
+    try:
+        user = Customer.objects.get(email=data_dictionary['email'])
+    except Customer.DoesNotExist:
+        return False
+
+    if user.check_password(data_dictionary["password"]):
+        return True

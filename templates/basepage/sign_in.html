@@ -1,17 +1,21 @@
 {% load static %}
 
-<form id="auth_in" action="" class="col-12">
+<form id="auth_in" action="" class="col-12" method="POST">
+    {% csrf_token %}
     <fieldset>
         <label for="i_email">Эл.почта</label>
-        <input type="email" id="i_email">
+{#        <input type="email" id="i_email">#}
+       {{ form.email }}
     </fieldset>
     <fieldset>
         <label for="i_pass">Пароль</label>
-        <input type="password" id="i_pass">
+        {{ form.password }}
+{#        <input type="password" id="i_pass">#}
     </fieldset>
     <div class="checkbox-line">
         <div>
-            <input type="checkbox" id="i_remember">
+            {{ form.remember }}
+{#            <input type="checkbox" id="i_remember">#}
             <label for="i_remember">Запомнить меня</label>
         </div>
         <a href="">Забыл пароль</a>

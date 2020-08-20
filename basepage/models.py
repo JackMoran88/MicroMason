@@ -11,7 +11,7 @@ from django.db.models import ManyToManyField, ForeignKey
 from django.contrib.auth.models import UnicodeUsernameValidator
 from django.contrib.auth import password_validation
 from django.contrib.auth.hashers import (
-    check_password, is_password_usable, make_password,
+    check_password, make_password,
 )
 
 
@@ -179,4 +179,3 @@ class Customer(Model):
     def get_full_name(self):
         full_name = "{} {}".format(self.first_name, self.last_name)
         return full_name.strip()
-
