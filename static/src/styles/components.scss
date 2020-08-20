@@ -29,6 +29,8 @@
   background-size: contain;
   background-repeat: no-repeat;
 
+  transition: background-image .25s ease-in-out;
+
   &.fill {
     background-image: url("/static/svg/func/heart/heart-red-filled.png");
   }
@@ -49,6 +51,7 @@
   background-size: contain;
   background-repeat: no-repeat;
 
+  transition: background-image .25s ease-in-out;
   &.fill {
     background-image: url("/static/svg/func/compare/libra-fill.svg");
   }
@@ -69,6 +72,8 @@
   background-size: contain;
   background-repeat: no-repeat;
 
+  transition: filter .25s ease-in-out;
+
   &:hover {
     filter: invert(62%) sepia(36%) saturate(2604%) hue-rotate(359deg) brightness(101%) contrast(104%);
   }
@@ -81,8 +86,11 @@
 }
 
 .btn-action {
-  height: 30px;
   display: flex;
+
+  height: 30px;
+
+  transition: background-image .25s ease-in-out;
   &:focus {
     box-shadow: none;
   }
