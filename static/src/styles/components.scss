@@ -14,6 +14,12 @@
   }
 }
 
+@mixin hover-effect {
+  &:hover {
+    filter: invert(.15);
+  }
+}
+
 .btn-wish {
   height: 30px;
   width: 30px;
@@ -101,6 +107,7 @@
   padding: 0;
 
   background: 0 0;
+  @include hover-effect;
 
   animation-name: burgerShake;
   animation-duration: 8s;

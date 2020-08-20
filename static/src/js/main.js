@@ -87,6 +87,14 @@ $(document).ready(function () {
         if (event.key == "Escape") {
             $('#btn_burger').removeClass('active')
             $('#categories').removeClass('active')
+
+            $('#js-input-search').blur()
+            $('#js-input-search').val("");
+        }
+        if (event.keyCode >= 65 && event.keyCode <= 90) {
+            if (!$('#js-input-search').is(':focus')) {
+                $('#js-input-search').focus().select();
+            }
         }
     });
 
@@ -98,5 +106,13 @@ $(document).ready(function () {
         $('.categories__list_sub').eq(getElementIndex(this)).addClass('active')
     })
     // console.log(category_hover)
+
+
+    $(document).ready(function () {
+        $(document).on('keydown', function (event) {
+
+
+        });
+    });
 })
 //!CATALOG!

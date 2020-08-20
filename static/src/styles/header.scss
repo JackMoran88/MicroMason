@@ -12,6 +12,8 @@ nav.navbar {
 
   .navbar-brand {
     margin-right: 2rem;
+
+    @include hover-effect;
     h2 {
       margin: 0 !important;
     }
@@ -35,7 +37,8 @@ nav.navbar {
 
           transition: opacity .35s;
 
-          filter: invert(.85);
+          filter: invert(95%) sepia(4%) saturate(1456%) hue-rotate(188deg) brightness(99%) contrast(81%);
+
           &:nth-child(2) {
             //display: none;
             opacity: 0;
@@ -92,6 +95,7 @@ nav.navbar {
     white-space: nowrap;
     .nav-link {
       padding: 0 1rem;
+      @include hover-effect;
       a {
         text-decoration: none;
         color: $color-accent;
