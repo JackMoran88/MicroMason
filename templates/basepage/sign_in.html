@@ -1,20 +1,20 @@
 {% load static %}
 
-<form id="auth_in" action="" class="col-12" method="POST">
+<form id="auth_in" action="api/sign_in/" class="col-12" method="POST">
     {% csrf_token %}
     <fieldset>
         <label for="i_email">Эл.почта</label>
+            {{ sing_in.email }}
 {#        <input type="email" id="i_email">#}
-       {{ form.email }}
     </fieldset>
     <fieldset>
         <label for="i_pass">Пароль</label>
-        {{ form.password }}
+        {{ sing_in.password }}
 {#        <input type="password" id="i_pass">#}
     </fieldset>
     <div class="checkbox-line">
         <div>
-            {{ form.remember }}
+            {{ sing_in.remember }}
 {#            <input type="checkbox" id="i_remember">#}
             <label for="i_remember">Запомнить меня</label>
         </div>
@@ -26,6 +26,6 @@
         <button class="btn"><img src="{% static 'svg/social_auth/telegram.svg' %}" alt=""></button>
     </div>
 
-    <button type="submit" class="btn btn-success">Войти</button>
+    <button type="submit"  name="sign_in_name" value="sign_in" class="btn btn-success">Войти</button>
     <a id="to_sign-up" class="another_method" onclick="form_sign_up(this)">Зарегистрироваться</a>
 </form>
