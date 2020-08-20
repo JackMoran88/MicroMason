@@ -1,11 +1,21 @@
 @import "colors.scss";
 @import "components.scss";
 
+section.header {
+  z-index: 9999;
+}
+
 nav.navbar {
-  background: $color-main-al;
   padding-top: .3rem;
+
+  background: $color-main-al;
+
   .navbar-brand {
     margin-right: 2rem;
+    h2 {
+      margin: 0 !important;
+    }
+
     color: $color-accent;
   }
   .navbar-nav {
@@ -14,6 +24,7 @@ nav.navbar {
         color: $color-secondary-al;
         &-img {
           height: 35px;
+
           filter: invert(.85);
           &:nth-child(2) {
             display: none;
@@ -49,12 +60,21 @@ nav.navbar {
 }
 
 .navbar-nav-userline {
-  width: 100%;
-  color: $color-accent;
-  //background: red;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+
+  width: 100%;
+  max-height: 100px;
+
+  color: $color-accent;
+
+  transition: max-height 1s;
+  &.hide {
+    max-height: 0 !important;
+    overflow: hidden;
+  }
+
   ul.navbar-nav {
     white-space: nowrap;
     .nav-link {
@@ -174,7 +194,7 @@ button.navbar-toggler.custom-toggler {
 //!Custom NavBar-Toggler!
 
 //Dropdown
-.navbar-nav-dropdown {
+.navbar-dropdown {
   display: flex;
   flex-direction: column !important;
 }
@@ -182,17 +202,20 @@ button.navbar-toggler.custom-toggler {
 .dropdown {
   width: 100%;
   padding: .2rem .5rem;
+
   color: $color-secondary-al;
 
   &__btn {
+    position: relative;
+
     width: 100%;
+
     cursor: pointer;
+
     font-style: normal;
     font-weight: 500;
     font-size: 1rem;
     text-transform: uppercase;
-    position: relative;
-
     div {
       width: 100%;
       a {
@@ -201,25 +224,26 @@ button.navbar-toggler.custom-toggler {
     }
 
     i {
+      display: flex;
+      align-items: center;
+
       position: absolute;
       top: 0;
       right: 0;
-      height: 100%;
 
-      display: flex;
-      align-items: center;
+      height: 100%;
     }
   }
 
   &__content,
   &__content a, &__content button {
-    font-weight: normal;
-    font-size: 0.875rem;
     display: flex;
     justify-items: center;
     flex-direction: column;
+
+    font-weight: normal;
+    font-size: 0.875rem;
     text-indent: 5px;
-    //color: $text-color-dark;
 
     p {
       padding: .2rem;

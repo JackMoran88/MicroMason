@@ -1,5 +1,9 @@
 @import "colors.scss";
 
+//Buttons
+//Scroll
+//Squircle
+
 @mixin btn-outline-success {
   color: $color-secondary;
   border-color: $color-secondary;
@@ -86,14 +90,26 @@
 }
 
 .btn-burger {
-  position: relative;
   display: inline-block;
   vertical-align: middle;
+
+  position: relative;
+
   width: 30px;
   height: 30px;
-  background: 0 0;
   border: none;
   padding: 0;
+
+  background: 0 0;
+
+  animation-name: burgerShake;
+  animation-duration: 8s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  &:hover, &.active {
+    animation-play-state: paused;
+  }
+
   span {
     position: relative;
     display: block;
@@ -133,6 +149,9 @@
 
     }
   }
+  &:focus {
+    box-shadow: none;
+  }
 }
 
 .btn-burger.active {
@@ -145,6 +164,39 @@
       transform: translateY(10px) rotate(45deg);
     }
   }
+}
+
+@keyframes burgerShake {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0)
+  }
+  1% {
+    -webkit-transform: translateX(-5px) rotateY(-7deg);
+    transform: translateX(-5px) rotateY(-7deg)
+  }
+  3% {
+    -webkit-transform: translateX(5px) rotateY(7deg);
+    transform: translateX(5px) rotateY(7deg)
+  }
+  5% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0)
+  }
+}
+
+.animate__headShake {
+  -webkit-animation-timing-function: ease-in-out;
+  animation-timing-function: ease-in-out;
+  -webkit-animation-name: headShake;
+  animation-name: headShake
+}
+
+.burgerShake {
+  -webkit-animation-timing-function: ease-in-out;
+  animation-timing-function: ease-in-out;
+  -webkit-animation-name: burgerShake;
+  animation-name: burgerShake
 }
 
 //BUTTONS
@@ -347,3 +399,59 @@
 }
 
 //!BUTTONS!
+
+//SCROLL
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e1e1e1;
+  border: 0px none #ffffff;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffffff;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #b9cdda;
+}
+
+::-webkit-scrollbar-track {
+  background: #666666;
+  border: 0px none #ffffff;
+  //border-radius: 50px;
+}
+
+::-webkit-scrollbar-track:hover {
+  background: #666666;
+}
+
+::-webkit-scrollbar-track:active {
+  background: #333333;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+//!SCROLL!
+
+// Squircle
+.squircle {
+  --smooth-corners: 4;
+  background: linear-gradient(deeppink, orangered);
+  mask-image: paint(smooth-corners);
+}
+
+// !Squircle!
+
+

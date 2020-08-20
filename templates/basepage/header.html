@@ -8,7 +8,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse container-md" id="navbarCollapse">
-            <div class="navbar-nav-userline">
+            <div class="navbar-nav-userline js-userline">
                 <ul class="navbar-nav">
                     <span>38000000000</span>
                 </ul>
@@ -30,7 +30,7 @@
                 <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
                 <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Поиск</button>
             </form>
-            <ul class="navbar-nav navbar-nav-dropdown d-block d-lg-none">
+            <ul class="navbar-nav navbar-dropdown d-block d-lg-none">
                 {% for parent, children in categories.items %}
                     <div class="dropdown">
                         <div class="dropdown__btn">

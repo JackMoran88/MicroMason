@@ -28,7 +28,7 @@ const styleFiles = [
    './static/src/styles/main.scss',
    './static/src/styles/header.scss',
    './static/src/styles/footer.scss',
-   './static/src/styles/card_board.scss',
+   './static/src/styles/card-board.scss',
    './static/src/styles/fonts.scss',
    // './src/css/normalize.scss',
    // './src/css/media.css',

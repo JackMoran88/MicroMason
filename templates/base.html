@@ -19,6 +19,10 @@
     <script src="{% static '/bootstrap/js/bootstrap.bundle.js' %}"></script>
     {# !Bootstarp 4 #}
 
+    {# Animate #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"/>
+    {# !Animate! #}
+
     {# Icons #}
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet"/>
     {# !Icons #}
@@ -46,13 +50,13 @@
 </head>
 <body>
 
-<div class="page w-100">
+<div class="page">
 
     {% block top %}
         {% include 'basepage/header.html' %}
     {% endblock %}
 
-    <div class="wrapper row container align-self-center">
+    <div class="page__wrapper container">
 
         {% block left %}
         {% endblock %}
@@ -86,25 +90,25 @@
 
 
 {# CATALOG #}
-<section id="dropdown__categories" class="dropdown__categories">
-    <div class="dropdown__categories__inner container">
-        <ul class="category col-2">
-            <li class="list-item">Мужчинам</li>
-            <li class="list-item">Женщинам</li>
-            <li class="list-item">3</li>
+<section id="categories" class="categories animate__animated animate__fadeIn">
+    <div class="categories__content container">
+        <ul class="categories__list animate__animated animate__fadeInDownBig">
+            <li class="categories__list-item">Мужчинам</li>
+            <li class="categories__list-item">Женщинам</li>
+            <li class="categories__list-item">3</li>
         </ul>
-        <ul class="category-sub col-10">
-            <ul class="category-sub__inner">
-                <li class="list-item--sub font-weight-bolder">1</li>
-                <li class="list-item--sub">Брюки</li>
-                <li class="list-item--sub">Верхняя одежда</li>
+        <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
+            <ul class="categories__content_sub">
+                <li class="categories__list-item_sub categories__list-item_sub_header">1</li>
+                <li class="categories__list-item_sub">Брюки</li>
+                <li class="categories__list-item_sub">Верхняя одежда</li>
             </ul>
         </ul>
-        <ul class="category-sub col-10">
-            <ul class="category-sub__inner">
-                <li class="list-item--sub font-weight-bolder">2</li>
-                <li class="list-item--sub">Брюки</li>
-                <li class="list-item--sub">Верхняя одежда</li>
+        <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
+            <ul class="categories__content_sub">
+                <li class="categories__list-item_sub categories__list-item_sub_header">2</li>
+                <li class="categories__list-item_sub">Брюки</li>
+                <li class="categories__list-item_sub">Верхняя одежда</li>
             </ul>
         </ul>
     </div>

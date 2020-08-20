@@ -63,6 +63,9 @@ section.footer {
       &-header {
         width: 100%;
       }
+      a{
+        color: $color-info;
+      }
 
       img.footer-item-social {
         height: 40px;
