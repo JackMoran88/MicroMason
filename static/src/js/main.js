@@ -91,7 +91,7 @@ $(document).ready(function () {
             $('#js-input-search').blur()
             $('#js-input-search').val("");
         }
-        if (event.keyCode >= 65 && event.keyCode <= 90) {
+        if (event.keyCode >= 65 && event.keyCode <= 90 && !$('input').is(':focus')) {
             if (!$('#js-input-search').is(':focus')) {
                 $('#js-input-search').focus().select();
             }

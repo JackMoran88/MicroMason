@@ -49,6 +49,13 @@ ul {
   list-style: none;
 }
 
+//MODAL
+.modal{
+  background: linear-gradient(0deg, rgba(29, 42, 62, 0.8) 0%, rgba(215, 218, 229, 0.2) 100%);
+}
+//!MODAL!
+
+
 //Center MODAL
 .modal-dialog {
   min-height: calc(100vh - 60px);
@@ -109,8 +116,8 @@ div.modal#authModal {
         width: 100%;
       }
       input {
-        border: 1px solid $color-secondary;
-        border-radius: 5px;
+        //border: 1px solid $color-secondary;
+        //border-radius: 5px;
         width: 100%;
       }
     }

@@ -470,3 +470,15 @@
 // !Squircle!
 
 
+input.input-minimal{
+  border: none !important;
+  border-bottom: 1px solid #e5e5e5 !important;
+  color: $color-secondary;
+
+  &:hover{
+
+  }
+  &:focus{
+    outline: none;
+  }
+}
