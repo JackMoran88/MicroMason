@@ -19,5 +19,6 @@ class SingInForm(Form):
         widget=CheckboxInput({
             'id': 'i_remember',
             'type': 'checkbox'
-        })
+        }),
+        required=False
     )
