@@ -62,11 +62,11 @@
         h5 {
           display: -webkit-box;
 
-          max-height: 36px;
+          max-height: 28px;
           margin: 0 !important;
 
-          font-size: 18px;
-          line-height: 18px;
+          font-size: 14px;
+          line-height: 14px;
           -webkit-line-clamp: 2; /* number of lines to show */
           -webkit-box-orient: vertical;
           font-weight: 400;
@@ -108,9 +108,13 @@
 
       z-index: 9;
 
-      font-size: 14px;
+      font-size: 12px;
       white-space: nowrap;
       a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
         padding: 0 .2rem;
       }
     }
@@ -162,11 +166,11 @@ section.star-line {
       padding: .5rem !important;
       .card__title {
         height: 28px !important;
-        h5 {
-          font-size: 14px !important;
-          line-height: 14px !important;
-          max-height: 28px !important;
-        }
+        //h5 {
+        //  font-size: 14px !important;
+        //  line-height: 14px !important;
+        //  max-height: 28px !important;
+        //}
       }
       .card__reviews {
         font-size: 12px !important;
@@ -181,7 +185,7 @@ section.star-line {
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 580px) {
   .card-board__list {
     padding: .5rem 0;
   }
