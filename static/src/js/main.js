@@ -82,6 +82,11 @@ $(document).ready(function () {
         $('#categories').toggleClass("active")
     });
 
+    $('#categories').bind('click', function () {
+        $('#btn_burger').removeClass('active')
+        $('#categories').removeClass('active')
+    })
+
     //Срабатывание на клавиши
     $(document).on('keydown', function (event) {
         if (event.key == "Escape") {
@@ -116,3 +121,15 @@ $(document).ready(function () {
     });
 })
 //!CATALOG!
+
+
+
+
+// ANIMATION BURGER
+$(document).ready(function () {
+  $('#js-custom-toggler').on('click', function () {
+
+    $('.animated-burger').toggleClass('open');
+  });
+});
+// !ANIMATION BURGER!
