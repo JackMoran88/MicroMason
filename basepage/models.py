@@ -136,16 +136,21 @@ class Customer(Model):
         max_length=17,
         blank=True
     )
-    birthday = DateField(blank=True)
+    birthday = DateField(blank=True, null=True)
     remember = BooleanField(default=False)
-    first_name = CharField(max_length=150, blank=True)
-    last_name = CharField(max_length=150, blank=True)
+    first_name = CharField(max_length=150, blank=True, null=True)
+    last_name = CharField(max_length=150, blank=True, null=True)
 
     password = CharField(max_length=128)
     _password = None
 
+    class Meta:
+        permissions = [
+            ("authorized", "Authorized customer"),
+        ]
+
     def __str__(self):
-        return self.get_username()
+        return self.get_username() + " " + self.email
 
     def save(self, *args, **kwargs):
         super(Customer, self).save(*args, **kwargs)

@@ -17,22 +17,21 @@ def api_sign_up(request):
 
 
 def api_sign_in(request):
-    # Исправить siNg на siGn
-    # Ибо я запутался
-    sing_in = SingInForm(request.POST)
+    sign_in = SingInForm(request.POST)
 
-    if sing_in.is_valid():
-        if sing_in_save(sing_in.cleaned_data):
+    if sign_in.is_valid():
+        if sign_in_save(sign_in.cleaned_data):
             # redirect
             print("Success")
-            return redirect('/')
+            sign_in_procedure(sign_in.cleaned_data, request)
+            return redirect('/', request=request)
         else:
             # error
             print("Fail")
-            return redirect('/')
+            return redirect('/', request=request)
 
     context = {
-        'sing_in': sing_in
+        'sign_in': sign_in
     }
 
     return render(request, 'basepage/sign_in.html', context=context)
@@ -45,6 +44,8 @@ Main views
 
 def index(request):
     sing_in = SingInForm()
+
+    print(request.user)
 
     context = {
         'categories': get_categories(),
@@ -69,7 +70,7 @@ def get_categories():
     return categories
 
 
-def sing_in_save(data_dictionary: dict) -> bool:
+def sign_in_save(data_dictionary: dict) -> bool:
     try:
         user = Customer.objects.get(email=data_dictionary['email'])
     except Customer.DoesNotExist:
@@ -77,3 +78,8 @@ def sing_in_save(data_dictionary: dict) -> bool:
 
     if user.check_password(data_dictionary["password"]):
         return True
+
+
+def sign_in_procedure(data_dictionary, request):
+    user = Customer.objects.get(email=data_dictionary["email"])
+    
