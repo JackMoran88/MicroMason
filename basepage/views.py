@@ -17,6 +17,8 @@ def api_sign_up(request):
 
 
 def api_sign_in(request):
+    # Исправить siNg на siGn
+    # Ибо я запутался
     sing_in = SingInForm(request.POST)
 
     if sing_in.is_valid():
@@ -29,7 +31,11 @@ def api_sign_in(request):
             print("Fail")
             return redirect('/')
 
-    return render(request, 'basepage/sign_in.html')
+    context = {
+        'sing_in': sing_in
+    }
+
+    return render(request, 'basepage/sign_in.html', context=context)
 
 
 """

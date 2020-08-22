@@ -12,18 +12,14 @@ function form_sign_up() {
 }
 
 
-
 function form_sign_in() {
     new Vue({
         el: '#auth-modal',
-        data: {
-            sing_in : 'sing_in'
-        },
+        data: {},
         created: function () {
             axios.get('/api/sign_in')
                 .then(function (response) {
                     $('#auth-modal').html(response.data)
-                    // vm.sing_in = response.data
                 })
         }
     })
