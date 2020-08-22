@@ -93,35 +93,28 @@
 <section id="categories" class="categories animate__animated animate__fadeIn">
     <div class="categories__content container">
         <ul class="categories__list animate__animated animate__fadeInDownBig">
-            {% for parent, children in categories.items %}
-                <li class="categories__list-item">{{ parent.name }}</li>
+            {% for grandparent, parents in categories.items %}
+                <li class="categories__list-item">{{ grandparent.name }}</li>
                 {#            <li class="categories__list-item">Женщинам</li>#}
                 {#            <li class="categories__list-item">3</li>#}
             {% endfor %}
         </ul>
-        {% for parent, children in categories.items %}
+        {% for grandparent, parents in categories.items %}
             <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
-            <ul class="categories__content_sub">
-            {% if children %}
-                {% for child in children %}
-                    <li class="categories__list-item_sub categories__list-item_sub_header">{{ child.name }}</li>
-                    <li class="categories__list-item_sub">Брюки</li>
-                    {#                <li class="categories__list-item_sub">Верхняя одежда</li>#}
-                {% endfor %}
-            {% endif %}
-            <ul>
+                {% if parents %}
+                    {% for parent, children in parents.items %}
+                        <ul class="categories__content_sub">
+                            <li class="categories__list-item_sub categories__list-item_sub_header"><a href="{{ parent.slug }}">{{ parent.name }}</a></li>
+                            {% if parent %}
+                                {% for child in children %}
+                                    <li class="categories__list-item_sub"><a href="{{ child.slug }}">{{ child.name }}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    {% endfor %}
+                {% endif %}
             </ul>
         {% endfor %}
-
-
-
-        <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
-            <ul class="categories__content_sub">
-                <li class="categories__list-item_sub categories__list-item_sub_header">2</li>
-                <li class="categories__list-item_sub">Брюки</li>
-                <li class="categories__list-item_sub">Верхняя одежда</li>
-            </ul>
-        </ul>
     </div>
 </section>
 {# !CATALOG! #}

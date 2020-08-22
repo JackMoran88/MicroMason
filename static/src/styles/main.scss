@@ -45,6 +45,12 @@ a, a:hover {
 
 ul {
   list-style: none;
+  li{
+    a{
+      color: inherit;
+      @include hover-effect;
+    }
+  }
 }
 
 //MODAL
@@ -52,6 +58,7 @@ ul {
   background: linear-gradient(0deg, rgba(29, 42, 62, 0.8) 0%, rgba(215, 218, 229, 0.2) 100%);
   z-index: 9999;
 }
+
 //!MODAL!
 
 //Center MODAL
@@ -278,12 +285,22 @@ section.cart {
     }
   }
   &__list_sub {
-    display: none;
+    display: flex;
     list-style: none;
     background: $color-main-al;
     color: $color-accent;
+
+    border-radius: 0 0 24px 24px;
+
+    max-width: 0;
+    overflow: hidden;
+    padding: 0;
     &.active {
-      display: flex;
+      //display: flex;
+
+      max-width: 100%;
+      transition: max-width .3s;
+
     }
     &:hover {
       display: flex;

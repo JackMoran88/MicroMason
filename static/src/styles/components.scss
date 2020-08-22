@@ -20,6 +20,17 @@
   }
 }
 
+.btn-search {
+  width: 38px;
+  height: 100%;
+  padding: 0.175rem 0.55rem;
+  img {
+    max-height: 100%;
+    max-width: 100%;
+    filter: invert(95%) sepia(4%) saturate(1456%) hue-rotate(188deg) brightness(99%) contrast(81%);
+  }
+}
+
 .card-btn {
   box-sizing: content-box;
 
