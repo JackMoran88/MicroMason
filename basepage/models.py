@@ -8,11 +8,7 @@ from django.db.models import CharField, FloatField, TextField, FilePathField, Po
 from django.db.models import DateField, BooleanField
 from django.db.models import ManyToManyField, ForeignKey
 
-from django.contrib.auth.models import UnicodeUsernameValidator
-from django.contrib.auth import password_validation
-from django.contrib.auth.hashers import (
-    check_password, make_password,
-)
+from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUser
 
 
 def images_path():
@@ -114,23 +110,14 @@ class OptionProduct(Model):
         return f"{self.option_parameter} in {self.product} = {self.quantity}"
 
 
-class Customer(Model):
+class Customer(AbstractBaseUser):
     username_validator = UnicodeUsernameValidator()
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Phone number must be entered in the format: '+380991234567'.")
 
-    username = CharField(
-        'username',
-        max_length=150,
-        unique=True,
-        help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.',
-        validators=[username_validator],
-        error_messages={
-            'unique': "A user with that username already exists.",
-        },
-        blank=True
-    )
-    email = EmailField('email address', null=False)
+    email = EmailField('email address',
+                       null=False,
+                       unique=True)
     phone_number = CharField(
         validators=[phone_regex],
         max_length=17,
@@ -141,46 +128,22 @@ class Customer(Model):
     first_name = CharField(max_length=150, blank=True, null=True)
     last_name = CharField(max_length=150, blank=True, null=True)
 
-    password = CharField(max_length=128)
-    _password = None
-
-    class Meta:
-        permissions = [
-            ("authorized", "Authorized customer"),
-        ]
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['email', 'password']
 
     def __str__(self):
-        return self.get_username() + " " + self.email
-
-    def save(self, *args, **kwargs):
-        super(Customer, self).save(*args, **kwargs)
-        if self._password is not None:
-            password_validation.password_changed(self._password, self)
-            self._password = None
-
-    def get_username(self):
-        return self.username
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
-        self._password = raw_password
-
-    def check_password(self, raw_password):
-        def setter(raw_password):
-            self.set_password(raw_password)
-            self._password = None
-            self.save(update_fields=["password"])
-
-        return check_password(raw_password, self.password, setter)
+        if self.first_name == '' and self.last_name == '':
+            return self.get_short_name()
+        else:
+            return self.get_full_name()
 
     def get_full_name(self):
         full_name = "{} {}".format(self.first_name, self.last_name)
         return full_name.strip()
+
+    def get_short_name(self):
+        return self.email
+
+
+class CustomerManager():
+    pass

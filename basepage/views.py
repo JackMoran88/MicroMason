@@ -62,10 +62,15 @@ Support functions
 
 def get_categories():
     categories = {}
-    parent_categories = Category.objects.filter(parent__isnull=True)
+    grandparent_categories = Category.objects.filter(parent__isnull=True)
 
-    for category in parent_categories:
-        categories[category] = Category.objects.filter(parent__exact=category)
+    for category in grandparent_categories:
+        categories[category] = {}
+        parents = Category.objects.filter(parent__exact=category)
+
+        for parent in parents:
+            children = Category.objects.filter(parent__exact=parent)
+            categories[category][parent] = children
 
     return categories
 
