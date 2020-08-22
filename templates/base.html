@@ -93,17 +93,28 @@
 <section id="categories" class="categories animate__animated animate__fadeIn">
     <div class="categories__content container">
         <ul class="categories__list animate__animated animate__fadeInDownBig">
-            <li class="categories__list-item">Мужчинам</li>
-            <li class="categories__list-item">Женщинам</li>
-            <li class="categories__list-item">3</li>
+            {% for parent, children in categories.items %}
+                <li class="categories__list-item">{{ parent.name }}</li>
+                {#            <li class="categories__list-item">Женщинам</li>#}
+                {#            <li class="categories__list-item">3</li>#}
+            {% endfor %}
         </ul>
-        <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
+        {% for parent, children in categories.items %}
+            <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
             <ul class="categories__content_sub">
-                <li class="categories__list-item_sub categories__list-item_sub_header">1</li>
-                <li class="categories__list-item_sub">Брюки</li>
-                <li class="categories__list-item_sub">Верхняя одежда</li>
+            {% if children %}
+                {% for child in children %}
+                    <li class="categories__list-item_sub categories__list-item_sub_header">{{ child.name }}</li>
+                    <li class="categories__list-item_sub">Брюки</li>
+                    {#                <li class="categories__list-item_sub">Верхняя одежда</li>#}
+                {% endfor %}
+            {% endif %}
+            <ul>
             </ul>
-        </ul>
+        {% endfor %}
+
+
+
         <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
             <ul class="categories__content_sub">
                 <li class="categories__list-item_sub categories__list-item_sub_header">2</li>
@@ -118,3 +129,23 @@
 
 </body>
 </html>
+
+{% for parent, children in categories.items %}
+    <div class="dropdown">
+        <div class="dropdown__btn">
+            {% if children %}
+                {{ parent.name }}
+                <i class="fa fa-caret-right" aria-hidden="true"></i>
+            {% else %}
+                <div><a href="{{ parent.slug }}">{{ parent.name }}</a></div>
+            {% endif %}
+        </div>
+        {% if children %}
+            <div class="dropdown__content">
+                {% for child in children %}
+                    <p><a href="{{ child.slug }}">{{ child.name }}</a></p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}
