@@ -1,28 +1,20 @@
+function getElementIndex(element) {
+    return Array.from(element.parentNode.children).indexOf(element);
+}
+
+//Dropdown
 $(document).ready(function () {
-    // //Dropdown
     $(".dropdown__content").hide(),
         $(".dropdown__btn").click(function () {
             $(this).siblings(".dropdown__content").slideToggle(),
                 $(this).children(".fa").toggleClass(["fa-caret-right", "fa-caret-down"])
         })
-// //!Dropdown
 
 });
-
+//!Dropdown
 
 //Отступ для контента от Header
 $(document).ready(function () {
-
-    // $('div.page').css({'padding-top': $('nav.navbar').outerHeight()})
-    //
-    // if ($(window).width() <= 992) {
-    //     console.log('<= 992')
-    //     $('div.navbar-collapse').css({'padding-top': $('nav.navbar').outerHeight()})
-    // } else {
-    //     console.log('> 992')
-    //     $('div.navbar-collapse').css({'padding-top': 0})
-    // }
-
     new ResizeSensor($('nav.navbar'), function () {
         var win = $(window);
         $('div.page').css({'padding-top': $('nav.navbar').outerHeight()})
@@ -60,13 +52,8 @@ $(document).ready(function () {
     });
 
 })
-
 //!Отступ для контента от Header
 
-
-function getElementIndex(element) {
-    return Array.from(element.parentNode.children).indexOf(element);
-}
 
 //CATALOG
 $(document).ready(function () {
@@ -105,12 +92,15 @@ $(document).ready(function () {
 
 
     $('.categories__content .categories__list  li').hover(function () {
-
         $('.categories__list_sub').removeClass('active')
         $('.categories__list').addClass('active')
         $('.categories__list_sub').eq(getElementIndex(this)).addClass('active')
     })
-    // console.log(category_hover)
+    //Если категория пуста, то при наведении, скрываю меню и делаю углы
+    $('.categories__list-item.hide').hover(function () {
+        console.log('hover')
+        $('.categories__list').removeClass('active')
+    })
 
 
     $(document).ready(function () {
@@ -123,13 +113,12 @@ $(document).ready(function () {
 //!CATALOG!
 
 
-
-
 // ANIMATION BURGER
 $(document).ready(function () {
-  $('#js-custom-toggler').on('click', function () {
+    $('#js-custom-toggler').on('click', function () {
 
-    $('.animated-burger').toggleClass('open');
-  });
+        $('.animated-burger').toggleClass('open');
+    });
 });
 // !ANIMATION BURGER!
+

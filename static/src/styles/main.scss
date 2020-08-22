@@ -45,8 +45,8 @@ a, a:hover {
 
 ul {
   list-style: none;
-  li{
-    a{
+  li {
+    a {
       color: inherit;
       @include hover-effect;
     }
@@ -261,7 +261,7 @@ section.cart {
   &__list {
     padding: 1rem 1.5rem;
     border-radius: 0 0 24px 24px;
-    width: 20%;
+    //width: 20%;
     min-width: 230px;
 
     list-style: none;
@@ -285,22 +285,34 @@ section.cart {
     }
   }
   &__list_sub {
-    display: flex;
+    //display: flex;
+    flex: auto;
+
     list-style: none;
     background: $color-main-al;
     color: $color-accent;
 
     border-radius: 0 0 24px 24px;
 
-    max-width: 0;
-    overflow: hidden;
-    padding: 0;
+    display: none;
+    //max-width: 0;
+    //max-height: 0;
+    //opacity: 0;
+    //overflow: hidden;
+    //padding: 0;
+    a:hover {
+      text-decoration: underline;
+    }
     &.active {
-      //display: flex;
-
-      max-width: 100%;
-      transition: max-width .3s;
-
+      display: flex;
+      //opacity: 1;
+      //padding: 1rem .7rem;
+      //max-width: 100%;
+      //max-height: 100%;
+      //transition: all .3s;
+    }
+    &.hide {
+      display: none;
     }
     &:hover {
       display: flex;

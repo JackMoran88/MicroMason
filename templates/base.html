@@ -94,20 +94,23 @@
     <div class="categories__content container">
         <ul class="categories__list animate__animated animate__fadeInDownBig">
             {% for grandparent, parents in categories.items %}
-                <li class="categories__list-item">{{ grandparent.name }}</li>
+                <li class="categories__list-item {% if not parents %} hide {% endif %}"><a
+                        href="{{ grandparent.slug }}">{{ grandparent.name }}</a></li>
                 {#            <li class="categories__list-item">Женщинам</li>#}
                 {#            <li class="categories__list-item">3</li>#}
             {% endfor %}
         </ul>
         {% for grandparent, parents in categories.items %}
-            <ul class="categories__list_sub col-10 animate__animated animate__fadeIn">
+            <ul class="categories__list_sub col-10 animate__animated animate__fadeIn row {% if not parents %} hide {% endif %}">
                 {% if parents %}
                     {% for parent, children in parents.items %}
-                        <ul class="categories__content_sub">
-                            <li class="categories__list-item_sub categories__list-item_sub_header"><a href="{{ parent.slug }}">{{ parent.name }}</a></li>
+                        <ul class="categories__content_sub col-4">
+                            <li class="categories__list-item_sub categories__list-item_sub_header"><a
+                                    href="{{ parent.slug }}">{{ parent.name }}</a></li>
                             {% if parent %}
                                 {% for child in children %}
-                                    <li class="categories__list-item_sub"><a href="{{ child.slug }}">{{ child.name }}</a></li>
+                                    <li class="categories__list-item_sub"><a
+                                            href="{{ child.slug }}">{{ child.name }}</a></li>
                                 {% endfor %}
                             {% endif %}
                         </ul>
@@ -123,22 +126,3 @@
 </body>
 </html>
 
-{% for parent, children in categories.items %}
-    <div class="dropdown">
-        <div class="dropdown__btn">
-            {% if children %}
-                {{ parent.name }}
-                <i class="fa fa-caret-right" aria-hidden="true"></i>
-            {% else %}
-                <div><a href="{{ parent.slug }}">{{ parent.name }}</a></div>
-            {% endif %}
-        </div>
-        {% if children %}
-            <div class="dropdown__content">
-                {% for child in children %}
-                    <p><a href="{{ child.slug }}">{{ child.name }}</a></p>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
-{% endfor %}
