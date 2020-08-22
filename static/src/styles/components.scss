@@ -63,6 +63,27 @@
   }
 }
 
+.btn-quick-view {
+  height: 30px;
+  width: 30px;
+  padding: 0;
+
+  background: white url("/static/svg/func/quick_view/eye.svg") no-repeat;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  transition: background-image .25s ease-in-out;
+  //&.fill {
+  //  background-image: url("/static/svg/func/quick_view/eye-fill.svg.svg");
+  //}
+  &:hover {
+    background-image: url("/static/svg/func/quick_view/eye-fill.svg");
+  }
+  &:focus {
+    box-shadow: none;
+  }
+}
+
 .btn-buy {
 
   height: 30px;

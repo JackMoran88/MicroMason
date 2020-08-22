@@ -30,6 +30,8 @@
 
       transform: scale(1.02);
       box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+
+      transition: all 0.2s ease-in-out;
     }
     .card__image {
       display: flex;
