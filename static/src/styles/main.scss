@@ -15,8 +15,6 @@
 
 // !СТРУКТУРА!
 
-
-
 div.page {
   width: 100%;
   .page__wrapper {
@@ -50,11 +48,11 @@ ul {
 }
 
 //MODAL
-.modal{
+.modal {
   background: linear-gradient(0deg, rgba(29, 42, 62, 0.8) 0%, rgba(215, 218, 229, 0.2) 100%);
+  z-index: 9999;
 }
 //!MODAL!
-
 
 //Center MODAL
 .modal-dialog {

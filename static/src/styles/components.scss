@@ -20,13 +20,28 @@
   }
 }
 
-.btn-wish {
-  height: 30px;
-  width: 30px;
+.card-btn {
+  box-sizing: content-box;
+
+  height: 35px;
+  width: 35px;
+
+  background-size: 80% 80% !important;
+  background-position: center !important;
+
   padding: 0;
+  border-radius: 50%;
+
+}
+
+.btn-wish {
+  //height: 30px;
+  //width: 30px;
+  //padding: 0;
+  //border-radius: 50%;
 
   background: white url("/static/svg/func/heart/heart-black-filled.png") no-repeat;
-  background-size: contain;
+  //background-size: contain;
   background-repeat: no-repeat;
 
   transition: background-image .25s ease-in-out;
@@ -43,12 +58,9 @@
 }
 
 .btn-compare {
-  height: 30px;
-  width: 30px;
-  padding: 0;
 
   background: white url("/static/svg/func/compare/libra-no-fill.svg") no-repeat;
-  background-size: contain;
+  //background-size: contain;
   background-repeat: no-repeat;
 
   transition: background-image .25s ease-in-out;
@@ -64,12 +76,9 @@
 }
 
 .btn-quick-view {
-  height: 30px;
-  width: 30px;
-  padding: 0;
 
   background: white url("/static/svg/func/quick_view/eye.svg") no-repeat;
-  background-size: contain;
+  //background-size: contain;
   background-repeat: no-repeat;
 
   transition: background-image .25s ease-in-out;
@@ -490,16 +499,15 @@
 
 // !Squircle!
 
-
-input.input-minimal{
+input.input-minimal {
   border: none !important;
   border-bottom: 1px solid #e5e5e5 !important;
   color: $color-secondary;
 
-  &:hover{
+  &:hover {
 
   }
-  &:focus{
+  &:focus {
     outline: none;
   }
 }
