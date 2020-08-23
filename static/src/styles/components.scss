@@ -105,13 +105,13 @@
 }
 
 .btn-buy {
-
   height: 30px;
   width: 30px;
   padding: 0;
+
   background: url("/static/svg/card/shopping-cart.png") no-repeat;
-  background-size: contain;
-  background-repeat: no-repeat;
+  background-size: 80% 80% !important;
+  background-position: center !important;
 
   transition: filter .25s ease-in-out;
 
@@ -523,8 +523,6 @@ input.input-minimal {
   }
 }
 
-
-
 // ANIMATION BURGER
 .animated-burger {
   width: 30px;
@@ -596,4 +594,5 @@ input.input-minimal {
     transform: rotate(-135deg);
   }
 }
+
 // !ANIMATION BURGER!

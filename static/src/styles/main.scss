@@ -56,6 +56,7 @@ ul {
 //MODAL
 .modal {
   background: linear-gradient(0deg, rgba(29, 42, 62, 0.8) 0%, rgba(215, 218, 229, 0.2) 100%);
+  backdrop-filter: blur(5px);
   z-index: 9999;
 }
 
@@ -250,6 +251,7 @@ section.cart {
   padding: .5rem 0;
 
   background: rgba(29, 42, 62, .6);
+  backdrop-filter: blur(3px);
 
   &.active {
     display: block;
@@ -270,6 +272,7 @@ section.cart {
     animation-duration: .5s;
 
     &.active {
+      height: 100%;
       border-radius: 0 0 0 24px !important;
     }
     height: max-content;
@@ -292,7 +295,7 @@ section.cart {
     background: $color-main-al;
     color: $color-accent;
 
-    border-radius: 0 0 24px 24px;
+    border-radius: 0 0 24px 0 ;
 
     display: none;
     //max-width: 0;

@@ -15,16 +15,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
             integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
             crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static '/bootstrap/css/bootstrap.css' %}">
-    <script src="{% static '/bootstrap/js/bootstrap.bundle.js' %}"></script>
+
+    <link href="{% static '/bootstrap/css/bootstrap.min.css' %}" rel="preload" as="style"
+          onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{% static '/bootstrap/css/bootstrap.min.css' %}">
+    </noscript>
+    <script defer src="{% static '/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     {# !Bootstarp 4 #}
 
     {# Animate #}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" rel="preload" as="style"
+          onload="this.onload=null;this.rel='stylesheet'"/>
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">
+    </noscript>
     {# !Animate! #}
 
     {# Icons #}
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet"/>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css" rel="preload" as="style"
+          onload="this.onload=null;this.rel='stylesheet'"/>
+    <noscript>
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+    </noscript>
     {# !Icons #}
 
 
@@ -38,11 +51,11 @@
     {# !Links #}
 
     {# VueJs #}
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
     {# !VueJs #}
 
     {# Axios #}
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     {# !Axios #}
 
 
@@ -82,7 +95,7 @@
 {# Scripts #}
 <script src="{% static '/build/js/script.js' %}"></script>
 
-<script src="{% static 'app.js' %}"></script>
+<script async src="{% static 'app.js' %}"></script>
 
 <script>(CSS.paintWorklet || paintWorklet).addModule('{% static 'src/js/test.js' %}')</script>
 
@@ -101,7 +114,7 @@
             {% endfor %}
         </ul>
         {% for grandparent, parents in categories.items %}
-            <ul class="categories__list_sub col-10 animate__animated animate__fadeIn row {% if not parents %} hide {% endif %}">
+            <ul class="categories__list_sub col-10 row {% if not parents %} hide {% endif %}">
                 {% if parents %}
                     {% for parent, children in parents.items %}
                         <ul class="categories__content_sub col-4">
