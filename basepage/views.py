@@ -47,7 +47,7 @@ def index(request):
     context = {
         'categories': get_categories(),
         'products': get_products(),
-        
+
         'sing_in': sing_in,
     }
 

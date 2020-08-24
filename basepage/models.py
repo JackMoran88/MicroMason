@@ -41,8 +41,11 @@ class Category(Model):
     parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True)
     name = CharField(max_length=120, null=False)
     description = TextField(blank=True)
+    main_image = FilePathField(path=images_path, blank=True)
 
     slug = SlugField(blank=True, allow_unicode=True)
+
+    priority = BooleanField(default=False)
 
     def __str__(self):
         return f"{self.parent} => {self.id}: {self.name}"
