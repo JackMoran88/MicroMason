@@ -2,10 +2,10 @@
 
 <section class="header">
     <nav class="navbar navbar-expand-lg fixed-top">
-        <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
+        <button id="js-custom-toggler" class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
                 data-target="#navbarCollapse"
                 aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+            <div class="animated-burger"><span></span><span></span><span></span></div>
         </button>
         <div class="collapse navbar-collapse container-md" id="navbarCollapse">
             <div class="navbar-nav-userline js-userline">
@@ -28,23 +28,23 @@
 
             <form class="form-search form-inline mt-0 mt-md-0 mx-auto col-6 row d-lg-flex d-md-none d-sm-none d-none">
                 <input class="form-control mr-sm-2 col" type="text" placeholder="Search" id="js-input-search">
-                <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Поиск</button>
+                <button class="btn btn-outline-success my-0 my-sm-0 btn-search" type="submit"><img src="{% static '/svg/func/loupe.svg' %}" alt=""></button>
             </form>
             <ul class="navbar-nav navbar-dropdown d-block d-lg-none">
-                {% for parent, children in categories.items %}
+                {% for grandparent, parents in categories.items %}
                     <div class="dropdown">
                         <div class="dropdown__btn">
-                            {% if children %}
-                                {{ parent.name }}
+                            {% if parents %}
+                                {{ grandparent.name }}
                                 <i class="fa fa-caret-right" aria-hidden="true"></i>
                             {% else %}
-                                <div><a href="{{ parent.slug }}">{{ parent.name }}</a></div>
+                                <div><a href="{{ grandparent.slug }}">{{ grandparent.name }}</a></div>
                             {% endif %}
                         </div>
-                        {% if children %}
+                        {% if parents %}
                             <div class="dropdown__content">
-                                {% for child in children %}
-                                    <p><a href="{{ child.slug }}">{{ child.name }}</a></p>
+                                {% for parent in parents %}
+                                    <p><a href="{{ parent.slug }}">{{ parent.name }}</a></p>
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -81,7 +81,7 @@
 
         <form class="form-search form-inline mt-0 mt-md-0 mx-auto col-8 row d-sm-flex d-lg-none">
             <input class="form-control mr-sm-2 col" type="text" placeholder="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <button class="btn btn-outline-success my-2 my-sm-0 btn-search" type="submit"><img src="{% static '/svg/func/loupe.svg' %}" alt=""></button>
         </form>
         <ul class="navbar-nav d-flex d-lg-none" style="padding: 0.25rem 0.75rem;">
             <li class="nav-item">

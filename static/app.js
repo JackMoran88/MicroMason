@@ -24,3 +24,16 @@ function form_sign_in() {
         }
     })
 }
+
+function shopping_cart() {
+    new Vue({
+        el: '#auth-modal',
+        data: {},
+        created: function () {
+            axios.get('/api/sign_in')
+                .then(function (response) {
+                    $('#auth-modal').html(response.data)
+                })
+        }
+    })
+}
