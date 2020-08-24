@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -83,6 +82,8 @@ DATABASES = {
     }
 }
 
+# AUTH_USER_MODEL = "basepage.Customer"
+AUTHENTICATION_BACKENDS = ('basepage.backend.AuthBackend', 'django.contrib.auth.backends.ModelBackend')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

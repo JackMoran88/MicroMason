@@ -8,7 +8,7 @@ from django.db.models import CharField, FloatField, TextField, FilePathField, Po
 from django.db.models import DateField, BooleanField
 from django.db.models import ManyToManyField, ForeignKey
 
-from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUser
+from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUser, BaseUserManager
 
 
 def images_path():
@@ -110,6 +110,26 @@ class OptionProduct(Model):
         return f"{self.option_parameter} in {self.product} = {self.quantity}"
 
 
+class CustomerManager(BaseUserManager):
+    def create_user(self, email, password=None):
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(
+            email=self.normalize_email(email)
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+        user = self.model(email=self.normalize_email(email))
+        user.set_password(password)
+        user.save(using=self._db, admin=True)
+        return user
+
+
 class Customer(AbstractBaseUser):
     username_validator = UnicodeUsernameValidator()
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
@@ -128,11 +148,26 @@ class Customer(AbstractBaseUser):
     first_name = CharField(max_length=150, blank=True, null=True)
     last_name = CharField(max_length=150, blank=True, null=True)
 
+    objects = CustomerManager()
+
+    is_active = True
+    is_admin = False
+    is_superuser = False
+
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['email', 'password']
+
+    class Meta:
+        permissions = [
+            ("authorized", "Authorized user")
+        ]
+
+    def save(self, admin=False, *args, **kwargs):
+        if admin:
+            self.is_admin = self.is_superuser = True
+        super(Customer, self).save(*args, **kwargs)
 
     def __str__(self):
-        if self.first_name == '' and self.last_name == '':
+        if (self.first_name == '' and self.last_name == '') or (not self.first_name and not self.last_name):
             return self.get_short_name()
         else:
             return self.get_full_name()
@@ -144,6 +179,6 @@ class Customer(AbstractBaseUser):
     def get_short_name(self):
         return self.email
 
-
-class CustomerManager():
-    pass
+    @property
+    def is_staff(self):
+        return self.is_admin

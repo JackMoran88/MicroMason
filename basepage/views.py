@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
-from .models import Category, Customer
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+
+from .models import Category
 from .forms import SingInForm
 
 
@@ -20,15 +23,7 @@ def api_sign_in(request):
     sign_in = SingInForm(request.POST)
 
     if sign_in.is_valid():
-        if sign_in_save(sign_in.cleaned_data):
-            # redirect
-            print("Success")
-            sign_in_procedure(sign_in.cleaned_data, request)
-            return redirect('/', request=request)
-        else:
-            # error
-            print("Fail")
-            return redirect('/', request=request)
+        sign_in_procedure(sign_in.cleaned_data, request)
 
     context = {
         'sign_in': sign_in
@@ -45,6 +40,8 @@ Main views
 def index(request):
     sing_in = SingInForm()
 
+    if request.user.is_authenticated:
+        logout(request)
     print(request.user)
 
     context = {
@@ -75,16 +72,18 @@ def get_categories():
     return categories
 
 
-def sign_in_save(data_dictionary: dict) -> bool:
-    try:
-        user = Customer.objects.get(email=data_dictionary['email'])
-    except Customer.DoesNotExist:
-        return False
+def sign_in_procedure(data_dictionary: dict, request):
+    user = authenticate(
+        request,
+        email=data_dictionary["email"],
+        password=data_dictionary["password"]
+    )
 
-    if user.check_password(data_dictionary["password"]):
-        return True
+    if user:
+        login(request, user)
+        # ToDo special flags
+        return redirect('/')
+    else:
+        # ToDo Error
+        return redirect('/')
 
-
-def sign_in_procedure(data_dictionary, request):
-    user = Customer.objects.get(email=data_dictionary["email"])
-    
