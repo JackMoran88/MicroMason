@@ -52,11 +52,21 @@ class Category(Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if self.slug == "":
-            self.slug = slugify(self.name, allow_unicode=True)
+
+        self.__fill_empty_main_image()
+        self.__fill_empty_slug()
 
         super(Category, self).save(force_insert, force_update, using,
                                    update_fields)
+
+    def __fill_empty_slug(self):
+        if self.slug == "":
+            self.slug = slugify(self.name, allow_unicode=True)
+
+    def __fill_empty_main_image(self):
+#         ToDo default picture
+        if self.main_image == "":
+            self.main_image = os.path.join(images_path(), "default", "category", "not_found.png")
 
 
 class Product(Model):
