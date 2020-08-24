@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .models import Category
+from .models import Category, Product
 from .forms import SingInForm
 
 
@@ -46,6 +46,8 @@ def index(request):
 
     context = {
         'categories': get_categories(),
+        'products': get_products(),
+        
         'sing_in': sing_in,
     }
 
@@ -72,6 +74,11 @@ def get_categories():
     return categories
 
 
+def get_products():
+    products = Product.objects.all()
+    return products
+
+
 def sign_in_procedure(data_dictionary: dict, request):
     user = authenticate(
         request,
@@ -86,4 +93,3 @@ def sign_in_procedure(data_dictionary: dict, request):
     else:
         # ToDo Error
         return redirect('/')
-
