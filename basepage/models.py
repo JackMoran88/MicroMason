@@ -64,7 +64,6 @@ class Category(Model):
             self.slug = slugify(self.name, allow_unicode=True)
 
     def __fill_empty_main_image(self):
-#         ToDo default picture
         if self.main_image == "":
             self.main_image = os.path.join(images_path(), "default", "category", "not_found.png")
 
