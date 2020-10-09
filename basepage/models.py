@@ -8,6 +8,8 @@ from django.db.models import CharField, FloatField, TextField, FilePathField, Po
 from django.db.models import DateField, BooleanField
 from django.db.models import ManyToManyField, ForeignKey
 
+from django.db.models import ImageField
+
 from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUser, BaseUserManager
 
 
@@ -31,7 +33,8 @@ class OptionParameter(Model):
 
 
 class Image(Model):
-    src = FilePathField(path=images_path, null=False)
+    # src = FilePathField(path=images_path, null=False)
+    src = ImageField("Изображение", upload_to="Image/")
 
     def __str__(self):
         return f"{self.id}: {self.src}"
@@ -41,7 +44,8 @@ class Category(Model):
     parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True)
     name = CharField(max_length=120, null=False)
     description = TextField(blank=True)
-    main_image = FilePathField(path=images_path, blank=True)
+    # main_image = FilePathField(path=images_path, blank=True)
+    main_image = ImageField("Изображение", upload_to="Categories/", blank=True)
 
     slug = SlugField(blank=True, allow_unicode=True)
 
@@ -74,7 +78,8 @@ class Product(Model):
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
     description = TextField(blank=True)
-    main_image = FilePathField(path=images_path, blank=True)
+    # main_image = FilePathField(path=images_path, blank=True)
+    main_image = ImageField("Изображение", upload_to="Products/", blank=True)
 
     slug = SlugField(blank=True, allow_unicode=True)
 

@@ -5,9 +5,12 @@ from .serializers import *
 from .models import *
 
 
+
+
+
 class CategoriesListView(APIView):
     def get(self, request):
         categories = Category.objects.all()
-        serializer = CategoryModelSerializer(categories, many=True)
-
+        serializer = CategoryListSerializer(categories, many=True)
         return Response(serializer.data)
+
