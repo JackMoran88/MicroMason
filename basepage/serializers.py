@@ -17,4 +17,4 @@ class CategoryListSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True)
     class Meta:
         model = Category
-        fields = ('id', 'name', 'children')
+        fields = ('id', 'name', 'parent', 'description', 'main_image', 'slug', 'priority', 'children')

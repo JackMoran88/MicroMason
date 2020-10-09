@@ -10,7 +10,7 @@ from .models import *
 
 class CategoriesListView(APIView):
     def get(self, request):
-        categories = Category.objects.all()
+        categories = Category.objects.all().filter(parent__isnull=True)
         serializer = CategoryListSerializer(categories, many=True)
         return Response(serializer.data)
 

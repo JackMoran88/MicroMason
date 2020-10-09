@@ -41,7 +41,7 @@ class Image(Model):
 
 
 class Category(Model):
-    parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True)
+    parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
     name = CharField(max_length=120, null=False)
     description = TextField(blank=True)
     # main_image = FilePathField(path=images_path, blank=True)
