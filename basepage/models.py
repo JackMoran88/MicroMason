@@ -4,13 +4,14 @@ from django.utils.text import slugify
 from django.core.validators import RegexValidator
 
 from django.db.models import Model, CASCADE
-from django.db.models import CharField, FloatField, TextField, FilePathField, PositiveIntegerField, SlugField, EmailField
+from django.db.models import CharField, FloatField, TextField, FilePathField, PositiveIntegerField, SlugField, \
+    EmailField
 from django.db.models import DateField, BooleanField
 from django.db.models import ManyToManyField, ForeignKey
 
 from django.db.models import ImageField
 
-from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
 def images_path():
@@ -109,6 +110,7 @@ class Product(Model):
     """
     Addition function for saving mode
     """
+
     def __fill_empty_main_image(self):
         if self.main_image == "":
             self.main_image = os.path.join(images_path(), "default", "product", "not_found.png")
@@ -128,27 +130,35 @@ class OptionProduct(Model):
 
 
 class CustomerManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, first_name, last_name, password=None):
         if not email:
             raise ValueError('Users must have an email address')
 
         user = self.model(
-            email=self.normalize_email(email)
+            email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password):
-        user = self.model(email=self.normalize_email(email))
+    def create_superuser(self, email, first_name, last_name, password):
+        user = self.model(email=self.normalize_email(email),
+                          first_name=first_name,
+                          last_name=last_name)
         user.set_password(password)
-        user.save(using=self._db, admin=True)
+        user.is_active = True
+        user.is_superuser = True
+        user.is_admin = True
+        user.is_staff = True
+        user.save(using=self._db)
         return user
 
 
-class Customer(AbstractBaseUser):
-    username_validator = UnicodeUsernameValidator()
+class Customer(AbstractBaseUser, PermissionsMixin):
+    # username_validator = UnicodeUsernameValidator()
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Phone number must be entered in the format: '+380991234567'.")
 
@@ -161,33 +171,19 @@ class Customer(AbstractBaseUser):
         blank=True
     )
     birthday = DateField(blank=True, null=True)
-    remember = BooleanField(default=False)
-    first_name = CharField(max_length=150, blank=True, null=True)
-    last_name = CharField(max_length=150, blank=True, null=True)
+    # remember = BooleanField(default=False)
+    first_name = CharField(max_length=50, default='', blank=False, null=False)
+    last_name = CharField(max_length=50, blank=False, null=False)
+
+    is_active = BooleanField(default=True)
+    is_admin = BooleanField(default=False)
+    is_superuser = BooleanField(default=False)
+    is_staff = BooleanField(default=False)
 
     objects = CustomerManager()
 
-    is_active = True
-    is_admin = False
-    is_superuser = False
-
     USERNAME_FIELD = 'email'
-
-    class Meta:
-        permissions = [
-            ("authorized", "Authorized user")
-        ]
-
-    def save(self, admin=False, *args, **kwargs):
-        if admin:
-            self.is_admin = self.is_superuser = True
-        super(Customer, self).save(*args, **kwargs)
-
-    def __str__(self):
-        if (self.first_name == '' and self.last_name == '') or (not self.first_name and not self.last_name):
-            return self.get_short_name()
-        else:
-            return self.get_full_name()
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def get_full_name(self):
         full_name = "{} {}".format(self.first_name, self.last_name)
@@ -196,6 +192,8 @@ class Customer(AbstractBaseUser):
     def get_short_name(self):
         return self.email
 
-    @property
-    def is_staff(self):
+    def has_module_perms(self, app_label):
         return self.is_admin
+
+    def has_perm(self, perm, obj=None):
+        return True
