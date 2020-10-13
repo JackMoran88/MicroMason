@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -25,6 +24,7 @@ SECRET_KEY = '!4tla#+raaqipje&y1+ju3@p-8++v*3_m8pzon+^ch2ldyosr8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
 
 ALLOWED_HOSTS = []
 
@@ -78,8 +78,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'MicroMason.wsgi.application'
+AUTH_USER_MODEL = 'basepage.Customer'
 
+
+WSGI_APPLICATION = 'MicroMason.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -109,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -123,8 +124,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -135,14 +134,12 @@ REST_FRAMEWORK = {
     # ),
 }
 
-
 # SMTP(mail)
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'dmitriy.evseev.99@gmail.com'
 EMAIL_HOST_PASSWORD = 'pniraopitkyprsbe'
 EMAIL_PORT = 587
-
 
 # Настройка auth
 DJOSER = {
@@ -155,6 +152,7 @@ DJOSER = {
 
 # Настройка auth
 from datetime import timedelta
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -181,7 +179,6 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -193,7 +190,6 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:8000",
