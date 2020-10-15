@@ -13,9 +13,10 @@ from django.db.models import ImageField
 
 from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+from autoslug import AutoSlugField
 
-def images_path():
-    return os.path.join(settings.MEDIA_ROOT, "images")
+from django.db.models import SET_NULL
+
 
 
 class Option(Model):
@@ -33,44 +34,28 @@ class OptionParameter(Model):
         return f"{self.id}: {self.name}"
 
 
-class Image(Model):
-    # src = FilePathField(path=images_path, null=False)
-    src = ImageField("Изображение", upload_to="Image/")
-
-    def __str__(self):
-        return f"{self.id}: {self.src}"
-
 
 class Category(Model):
     parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
     name = CharField(max_length=120, null=False)
     description = TextField(blank=True)
-    # main_image = FilePathField(path=images_path, blank=True)
     main_image = ImageField("Изображение", upload_to="Categories/", blank=True)
 
-    slug = SlugField(blank=True, allow_unicode=True)
+    slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
     priority = BooleanField(default=False)
 
     def __str__(self):
         return f"{self.parent} => {self.id}: {self.name}"
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
 
-        self.__fill_empty_main_image()
-        self.__fill_empty_slug()
 
-        super(Category, self).save(force_insert, force_update, using,
-                                   update_fields)
+class ProductImage(Model):
+    image = ImageField(upload_to='ProductImages/', unique=True)
 
-    def __fill_empty_slug(self):
-        if self.slug == "":
-            self.slug = slugify(self.name, allow_unicode=True)
-
-    def __fill_empty_main_image(self):
-        if self.main_image == "":
-            self.main_image = os.path.join(images_path(), "default", "category", "not_found.png")
+    class Meta:
+        verbose_name_plural = 'Фото товаров'
+        verbose_name = 'Фото товара'
 
 
 class Product(Model):
@@ -79,13 +64,12 @@ class Product(Model):
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
     description = TextField(blank=True)
-    # main_image = FilePathField(path=images_path, blank=True)
     main_image = ImageField("Изображение", upload_to="Products/", blank=True)
 
-    slug = SlugField(blank=True, allow_unicode=True)
+    slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
-    category = ManyToManyField(Category)
-    images = ManyToManyField(Image, blank=True)
+    category = ManyToManyField(Category, related_name='category')
+    images = ManyToManyField(ProductImage, blank=True, related_name='images')
     options = ManyToManyField(OptionParameter,
                               through='OptionProduct',
                               through_fields=(
@@ -94,30 +78,8 @@ class Product(Model):
                               ),
                               blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-
-        # self.quantity.editable = False
-
-        self.__fill_empty_main_image()
-        self.__fill_empty_slug()
-
-        super(Product, self).save(force_insert, force_update, using, update_fields)
-
     def __str__(self):
         return f"{self.id}: {self.name}"
-
-    """
-    Addition function for saving mode
-    """
-
-    def __fill_empty_main_image(self):
-        if self.main_image == "":
-            self.main_image = os.path.join(images_path(), "default", "product", "not_found.png")
-
-    def __fill_empty_slug(self):
-        if self.slug == "":
-            self.slug = slugify(self.name, allow_unicode=True)
 
 
 class OptionProduct(Model):
@@ -197,3 +159,19 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     def has_perm(self, perm, obj=None):
         return True
+
+
+class Review(Model):
+    author = ForeignKey(Customer, on_delete=CASCADE)
+    text = TextField("Сообщение", max_length=5000)
+    parent = ForeignKey(
+        'self', verbose_name="Родитель", on_delete=SET_NULL, blank=True, null=True
+    )
+    product = ForeignKey(Product, verbose_name="product", on_delete=CASCADE, related_name="reviews")
+
+    def __str__(self):
+        return f"{self.name} - {self.movie}"
+
+    class Meta:
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"

@@ -9,12 +9,45 @@ class RecursiveSerializer(serializers.Serializer):
         return serializer.data
 
 
-
-
-
-
 class CategoryListSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True)
+
     class Meta:
         model = Category
-        fields = ('id', 'name', 'parent', 'description', 'main_image', 'slug', 'priority', 'children')
+        fields = ('__all__')
+
+
+
+
+class ProductImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ('__all__')
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        many=True,
+        read_only=True,
+    )
+    images = ProductImagesSerializer(many=True)
+    class Meta:
+        model = Product
+        fields = ('__all__')
+
+
+
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    category = ProductDetailSerializer(many=True)
+
+    class Meta:
+        model = Category
+        # fields = ('__all__')
+        fields = ('id', 'category')
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = "__all__"

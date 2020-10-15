@@ -4,7 +4,7 @@ from .models import *
 
 admin.site.register(Product)
 admin.site.register(Category)
-admin.site.register(Image)
+admin.site.register(ProductImage)
 admin.site.register(Option)
 admin.site.register(OptionParameter)
 admin.site.register(OptionProduct)
