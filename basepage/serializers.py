@@ -9,12 +9,12 @@ class RecursiveSerializer(serializers.Serializer):
         serializer = self.parent.parent.__class__(value, context=self.context)
         return serializer.data
 
+
 class FilterReviewDetailSerializer(serializers.ListSerializer):
     # Фильтрания отзывов, только те, у кого нет родителя(главные)
     def to_representation(self, data):
         data = data.filter(parent=None)
         return super().to_representation(data)
-
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -36,7 +36,6 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 class ReviewDetailSerializer(serializers.ModelSerializer):
     # Отобразить отзывы
     children = RecursiveSerializer(many=True)
-
 
     class Meta:
         list_serializer_class = FilterReviewDetailSerializer
@@ -60,10 +59,17 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     )
     images = ProductImagesSerializer(many=True)
     reviews = ReviewDetailSerializer(many=True)
+    rating_avg = serializers.FloatField()
 
     class Meta:
         model = Product
-        fields = ('__all__')
+        fields = (
+            'id', 'name', 'code',
+            'price', 'description', 'main_image',
+            'slug', 'category', 'images',
+            'reviews', 'options', 'rating_avg',
+
+        )
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
@@ -74,3 +80,18 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         model = Category
         # fields = ('__all__')
         fields = ('id', 'category')
+
+
+class RatingCreateSerializer(serializers.ModelSerializer):
+    # Добавление рейтинга пользователем
+    class Meta:
+        model = Rating
+        fields = ('__all__')
+
+    def create(self, validated_data):
+        rating, _ = Rating.objects.update_or_create(
+            author=validated_data.get('author'),
+            product=validated_data.get('product'),
+            defaults={'star': validated_data.get("star")}
+        )
+        return rating

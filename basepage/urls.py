@@ -10,5 +10,6 @@ urlpatterns = [
     path('product/<slug>/', ProductDetailView.as_view()),
 
     path('review/', ReviewCreateView.as_view()),
+    path('rating/', AddRatingView.as_view()),
 
 ]

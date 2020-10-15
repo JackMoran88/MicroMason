@@ -15,8 +15,7 @@ from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUse
 
 from autoslug import AutoSlugField
 
-from django.db.models import SET_NULL
-
+from django.db.models import SET_NULL, SmallIntegerField
 
 
 class Option(Model):
@@ -34,7 +33,6 @@ class OptionParameter(Model):
         return f"{self.id}: {self.name}"
 
 
-
 class Category(Model):
     parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
     name = CharField(max_length=120, null=False)
@@ -47,7 +45,6 @@ class Category(Model):
 
     def __str__(self):
         return f"{self.parent} => {self.id}: {self.name}"
-
 
 
 class ProductImage(Model):
@@ -175,3 +172,34 @@ class Review(Model):
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
+
+
+class RatingStar(Model):
+    value = SmallIntegerField("Значение", default=0)
+
+    def __str__(self):
+        return f'{self.value}'
+
+    class Meta:
+        verbose_name = "Звезда рейтинга"
+        verbose_name_plural = "Звезды рейтинга"
+        ordering = ["-value"]
+
+
+class Rating(Model):
+    author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
+    star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда")
+    product = ForeignKey(
+        Product,
+        on_delete=CASCADE,
+        verbose_name="Продукт",
+        related_name="ratings",
+        blank=False,
+    )
+
+    def __str__(self):
+        return f"{self.star} - {self.product}"
+
+    class Meta:
+        verbose_name = "Рейтинг"
+        verbose_name_plural = "Рейтинги"
