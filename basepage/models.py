@@ -162,15 +162,15 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
 
 class Review(Model):
-    author = ForeignKey(Customer, on_delete=CASCADE)
-    text = TextField("Сообщение", max_length=5000)
+    author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
+    text = TextField("Сообщение", max_length=5000, blank=False)
     parent = ForeignKey(
-        'self', verbose_name="Родитель", on_delete=SET_NULL, blank=True, null=True
+        'self', verbose_name="Родитель", on_delete=SET_NULL, blank=True, null=True, related_name='children'
     )
-    product = ForeignKey(Product, verbose_name="product", on_delete=CASCADE, related_name="reviews")
+    product = ForeignKey(Product, verbose_name="product", on_delete=CASCADE, related_name="reviews", blank=False)
 
     def __str__(self):
-        return f"{self.name} - {self.movie}"
+        return f"{self.author} - {self.product}"
 
     class Meta:
         verbose_name = "Отзыв"
