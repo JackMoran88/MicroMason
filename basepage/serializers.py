@@ -51,6 +51,7 @@ class ProductImagesSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
+
     # Просмотр товара
     category = serializers.SlugRelatedField(
         slug_field='name',
@@ -59,7 +60,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     )
     images = ProductImagesSerializer(many=True)
     reviews = ReviewDetailSerializer(many=True)
-    rating_avg = serializers.FloatField()
+    rating_avg = serializers.FloatField(default=0)
 
     class Meta:
         model = Product
@@ -67,19 +68,24 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'id', 'name', 'code',
             'price', 'description', 'main_image',
             'slug', 'category', 'images',
-            'reviews', 'options', 'rating_avg',
+            'reviews', 'options',
+            'rating_avg',
 
         )
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
     # Просмотр определенной категории
-    category = ProductDetailSerializer(many=True)
-
+    rating_avg = serializers.FloatField(default=0)
     class Meta:
-        model = Category
-        # fields = ('__all__')
-        fields = ('id', 'category')
+        model = Product
+        fields = ('id', 'name', 'code',
+            'price', 'description', 'main_image',
+            'slug', 'category', 'images',
+            'reviews', 'options',
+            'rating_avg',
+)
+        # fields = ('id','name')
 
 
 class RatingCreateSerializer(serializers.ModelSerializer):

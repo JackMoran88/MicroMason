@@ -30,8 +30,10 @@ class CategoriesListView(APIView):
 class CategoryDetailView(APIView):
     # Просмотр определенной категории
     def post(self, request, slug):
-        category = Category.objects.get(slug=slug)
-        serializer = CategoryDetailSerializer(category)
+        category = Product.objects.filter(category__slug=slug).annotate(
+            rating_avg=Avg("ratings__star")
+        )
+        serializer = CategoryDetailSerializer(category, many=True)
         return Response(serializer.data)
 
 

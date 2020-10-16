@@ -15,7 +15,7 @@ from django.contrib.auth.models import UnicodeUsernameValidator, AbstractBaseUse
 
 from autoslug import AutoSlugField
 
-from django.db.models import SET_NULL, SmallIntegerField
+from django.db.models import SET_NULL, SmallIntegerField, Avg
 
 
 class Option(Model):
@@ -74,10 +74,10 @@ class Product(Model):
                                   "option_parameter"
                               ),
                               blank=True)
+    # rating_avg = FloatField(Avg('ratings__star'))
 
     def __str__(self):
         return f"{self.id}: {self.name}"
-
 
 class OptionProduct(Model):
     product = ForeignKey(Product, on_delete=CASCADE)
@@ -188,7 +188,7 @@ class RatingStar(Model):
 
 class Rating(Model):
     author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
-    star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда")
+    star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда",)
     product = ForeignKey(
         Product,
         on_delete=CASCADE,
