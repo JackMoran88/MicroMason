@@ -76,6 +76,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
     # Просмотр определенной категории
+    category = serializers.SlugRelatedField(
+        slug_field='name',
+        many=True,
+        read_only=True,
+    )
     rating_avg = serializers.FloatField(default=0)
     class Meta:
         model = Product

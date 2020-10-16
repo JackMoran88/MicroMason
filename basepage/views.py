@@ -31,7 +31,7 @@ class CategoryDetailView(APIView):
     # Просмотр определенной категории
     def post(self, request, slug):
         category = Product.objects.filter(category__slug=slug).annotate(
-            rating_avg=Avg("ratings__star")
+            rating_avg=Avg("ratings__star"),
         )
         serializer = CategoryDetailSerializer(category, many=True)
         return Response(serializer.data)
@@ -68,3 +68,4 @@ class AddRatingView(APIView):
             return Response(status=201)
         else:
             return Response(status=400)
+
