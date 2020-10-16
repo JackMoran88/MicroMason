@@ -61,7 +61,7 @@ class Product(Model):
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
     description = TextField(blank=True)
-    main_image = ImageField("Изображение", upload_to="Products/", blank=True)
+    main_image = ImageField("Изображение", upload_to="Products/", blank=True, default='images/default/product/404.png')
 
     slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
