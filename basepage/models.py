@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.core.validators import RegexValidator
 
-from django.db.models import Model, CASCADE
+from django.db.models import Model, CASCADE, PROTECT, RESTRICT, SET_NULL, SET_DEFAULT, SET
 from django.db.models import CharField, FloatField, TextField, FilePathField, PositiveIntegerField, SlugField, \
     EmailField
 from django.db.models import DateField, BooleanField
@@ -43,6 +43,10 @@ class Category(Model):
 
     priority = BooleanField(default=False)
 
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+
     def __str__(self):
         return f"{self.parent} => {self.id}: {self.name}"
 
@@ -74,10 +78,16 @@ class Product(Model):
                                   "option_parameter"
                               ),
                               blank=True)
+
     # rating_avg = FloatField(Avg('ratings__star'))
+
+    class Meta:
+        verbose_name = "Товар"
+        verbose_name_plural = "Товары"
 
     def __str__(self):
         return f"{self.id}: {self.name}"
+
 
 class OptionProduct(Model):
     product = ForeignKey(Product, on_delete=CASCADE)
@@ -116,6 +126,21 @@ class CustomerManager(BaseUserManager):
         return user
 
 
+class Cart(Model):
+    class Meta:
+        verbose_name = "Корзина"
+        verbose_name_plural = "Корзины"
+
+    def __str__(self):
+        return f'Корзина #{self.id}'
+
+    from django.db.models.signals import pre_delete
+    from django.dispatch import receiver
+
+
+
+
+
 class Customer(AbstractBaseUser, PermissionsMixin):
     # username_validator = UnicodeUsernameValidator()
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
@@ -130,9 +155,10 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         blank=True
     )
     birthday = DateField(blank=True, null=True)
-    # remember = BooleanField(default=False)
     first_name = CharField(max_length=50, default='', blank=False, null=False)
     last_name = CharField(max_length=50, blank=False, null=False)
+
+    cart = ForeignKey(Cart, on_delete=SET_NULL, null=True)
 
     is_active = BooleanField(default=True)
     is_admin = BooleanField(default=False)
@@ -143,6 +169,10 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
     def get_full_name(self):
         full_name = "{} {}".format(self.first_name, self.last_name)
@@ -156,6 +186,17 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     def has_perm(self, perm, obj=None):
         return True
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        try:
+            print(self.cart)
+            if self.cart.pk == 'null':
+                self.cart = Cart()
+                self.cart.save()
+        except:
+            self.cart = Cart()
+            self.cart.save()
+        super(Customer, self).save(force_insert, force_update, using, update_fields)
 
 
 class Review(Model):
@@ -188,11 +229,11 @@ class RatingStar(Model):
 
 class Rating(Model):
     author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
-    star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда",)
+    star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда", )
     product = ForeignKey(
         Product,
         on_delete=CASCADE,
-        verbose_name="Продукт",
+        verbose_name="Товар",
         related_name="ratings",
         blank=False,
     )
@@ -203,3 +244,50 @@ class Rating(Model):
     class Meta:
         verbose_name = "Рейтинг"
         verbose_name_plural = "Рейтинги"
+
+
+class CartProduct(Model):
+    cart = ForeignKey(Cart, on_delete=CASCADE, blank=False)
+    product = ForeignKey(Product, on_delete=CASCADE, blank=False)
+    quantity = PositiveIntegerField(verbose_name='Количество', default=1)
+
+    class Meta:
+        verbose_name = "Товар корзины"
+        verbose_name_plural = "Товары корзины"
+
+    def __str__(self):
+        return f"Корзина #{self.cart.id} - {self.product}"
+
+
+class AnonymousCustomer(Model):
+    cart = ForeignKey(Cart, on_delete=CASCADE, blank=True)
+    last_update = DateField(auto_now_add=True,)
+
+    class Meta:
+        verbose_name = "Аноним"
+        verbose_name_plural = "Анонимые пользователи"
+
+    def __str__(self):
+        return f"{self.cart}: {self.last_update}"
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        try:
+            self.cart.pk
+        except:
+            self.cart = Cart()
+            self.cart.save()
+        super(AnonymousCustomer, self).save(force_insert, force_update, using, update_fields)
+
+
+
+
+
+
+
+
+class Wish(Model):
+    customer = ForeignKey(Customer, on_delete=CASCADE, related_name='wish')
+    product = ForeignKey(Product, on_delete=CASCADE, related_name='product', )
+
+    def __str__(self):
+        return f"User: {self.customer} ,product #{self.product}"

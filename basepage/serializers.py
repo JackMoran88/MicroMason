@@ -51,7 +51,6 @@ class ProductImagesSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-
     # Просмотр товара
     category = serializers.SlugRelatedField(
         slug_field='name',
@@ -82,14 +81,15 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     rating_avg = serializers.FloatField(default=0)
+
     class Meta:
         model = Product
         fields = ('id', 'name', 'code',
-            'price', 'description', 'main_image',
-            'slug', 'category', 'images',
-            'reviews', 'options',
-            'rating_avg',
-)
+                  'price', 'description', 'main_image',
+                  'slug', 'category', 'images',
+                  'reviews', 'options',
+                  'rating_avg',
+                  )
         # fields = ('id','name')
 
 
@@ -106,3 +106,66 @@ class RatingCreateSerializer(serializers.ModelSerializer):
             defaults={'star': validated_data.get("star")}
         )
         return rating
+
+
+class CartAddSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartProduct
+        fields = ('__all__')
+
+    def create(self, validated_data):
+        cart_product, _ = CartProduct.objects.update_or_create(
+            cart=validated_data.get('cart'),
+            product=validated_data.get('product'),
+            defaults={'quantity': validated_data.get("quantity")}
+        )
+        return cart_product
+
+
+class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnonymousCustomer
+        fields = ('__all__')
+
+    def create(self, validated_data):
+        anonymous = AnonymousCustomer.objects.create()
+        anonymous.save()
+        return anonymous
+
+
+class CartDetailSerializer(serializers.ModelSerializer):
+    #
+    totals = serializers.FloatField(default=0)
+
+    class Meta:
+        model = CartProduct
+        # fields = ('id', 'quantity', 'totals')
+        exclude = ('id',)
+
+
+class AddWishSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wish
+        fields = ('__all__')
+
+    def create(self, validated_data):
+        product = Wish.objects.update_or_create(
+            customer=validated_data.get('customer'),
+            product=validated_data.get('product'),
+            defaults={'product': validated_data.get("product"), 'customer': validated_data.get('customer')}
+        )
+        return product
+
+
+
+
+
+class DetailCustomerSerializer(serializers.ModelSerializer):
+    wish = serializers.SlugRelatedField(slug_field='product_id', many=True, read_only=True, )
+
+    # wish = DetailWishSerializer(many=True, read_only=True)
+    # wish = serializers.ManyRelatedField(child_relation='product')
+
+    class Meta:
+        model = Customer
+        fields = ('id', 'email', 'phone_number', 'birthday', 'first_name', 'last_name', 'cart', 'wish')
