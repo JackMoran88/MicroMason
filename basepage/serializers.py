@@ -36,6 +36,8 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 class ReviewDetailSerializer(serializers.ModelSerializer):
     # Отобразить отзывы
     children = RecursiveSerializer(many=True)
+    author = serializers.StringRelatedField()
+
 
     class Meta:
         list_serializer_class = FilterReviewDetailSerializer
@@ -155,9 +157,6 @@ class AddWishSerializer(serializers.ModelSerializer):
             defaults={'product': validated_data.get("product"), 'customer': validated_data.get('customer')}
         )
         return product
-
-
-
 
 
 class DetailCustomerSerializer(serializers.ModelSerializer):
