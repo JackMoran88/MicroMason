@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 
+from rest_framework import *
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
@@ -45,7 +47,13 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'djoser',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+
+    'channels',
+
+
+    # 'django_celery_results',
+    # 'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -81,15 +89,20 @@ TEMPLATES = [
 AUTH_USER_MODEL = 'basepage.Customer'
 
 
-WSGI_APPLICATION = 'MicroMason.wsgi.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME':  'MicroMason',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
+
     }
 }
 
@@ -146,7 +159,7 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
+    'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {},
 }
 
@@ -199,5 +212,38 @@ CORS_ORIGIN_WHITELIST = [
     "http://192.168.1.243:8080",
     "http://192.168.1.243:8000",
 ]
+# WSGI_APPLICATION = 'MicroMason.wsgi.application'
+ASGI_APPLICATION = "MicroMason.routing.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+# CELERY_BEAT_SCHEDULE = {
+#     'task-real': {
+#         'task': 'realtime_task',
+#         'schedule': 1
+#     },
+#     'test': {
+#         'task': 'basepage.tasks.kek',
+#         'schedule': 1
+#     },
+# }
+
+
+# REDIS_HOST = '0.0.0.0'
+# REDIS_HOST = 'redis'
+# REDIS_PORT = '6379'
+# CELERY_BROCKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+# CELERY_BROCKER_TRANSPORT_OPTIONS = {'visibility_timeout': 500}
+# CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
 
 

@@ -1,38 +1,26 @@
-{% extends "base.html" %}
-{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+    What chat room would you like to enter?<br/>
+    <input id="room-name-input" type="text" size="100"/><br/>
+    <input id="room-name-submit" type="button" value="Enter"/>
 
-{#{% block title %}#}
-{#{% endblock %}#}
+    <script>
+        document.querySelector('#room-name-input').focus();
+        document.querySelector('#room-name-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#room-name-submit').click();
+            }
+        };
 
-
-{#{% block top %}#}
-{#{% endblock %}#}
-
-{% block left %}
-{#    <section class="left col-12 col-md-12 col-lg-2">#}
-{##}
-{#    </section>#}
-{% endblock %}
-
-{% block center %}
-    <section class="center col-12 col-md-12 col-lg-12">
-    <div id="catalog"></div>
-        {% include 'basepage/card-board.html' %}
-    </section>
-
-{% endblock %}
-
-{% block right %}
-{#    <section class="right col-12 col-md-12 col-lg-2">RIGHT</section>#}
-{% endblock %}
-
-{% block footer %}
-
-    {% verbatim %}
-    <div id="test">
-
-    </div>
-    {% endverbatim %}
-
-{% endblock %}
-
+        document.querySelector('#room-name-submit').onclick = function(e) {
+            var roomName = document.querySelector('#room-name-input').value;
+            window.location.pathname = 'room/' + roomName + '/';
+        };
+    </script>
+</body>
+</html>

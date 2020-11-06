@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+</head>
+<body>
+
+<div id="pt"></div>
+
+<script>
+    const Socket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/notifications'
+        + '/'
+    );
+
+    Socket.onopen = function (e) {
+        console.log('Open')
+
+        let message = ['Categories', 'Product'];
+        Socket.send(JSON.stringify({
+            'data': message
+        }))
+
+    };
+
+    Socket.onmessage = function (e) {
+        console.log(e)
+        const data = JSON.parse(e.data);
+        console.log(data.payload);
+
+    };
+
+
+    Socket.onerror = function (e) {
+        console.log('Error')
+        console.log(e)
+    };
+
+
+    Socket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+</script>
+</body>
+</html>

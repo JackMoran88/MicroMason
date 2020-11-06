@@ -2,10 +2,14 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from .models import *
 
+from asgiref.sync import sync_to_async, async_to_sync
+
+
 
 class RecursiveSerializer(serializers.Serializer):
     # Рекурсивные детки
     def to_representation(self, value):
+        print(f'\t  to_representation')
         serializer = self.parent.parent.__class__(value, context=self.context)
         return serializer.data
 
@@ -19,12 +23,21 @@ class FilterReviewDetailSerializer(serializers.ListSerializer):
 
 class CategoryListSerializer(serializers.ModelSerializer):
     # Список категорий
-    children = RecursiveSerializer(many=True)
+
+    children = RecursiveSerializer(many=True, required=False)
+    print('\t AFTER CHILDREN')
+    # children = sync_to_async(RecursiveSerializer)(many=True)
+
 
     class Meta:
         model = Category
         fields = ('__all__')
 
+    def get_group_name(self):
+        return 'Categories'
+
+    # def test(self):
+    #     print(f'\t children {self.children}')
 
 class ReviewCreateSerializer(serializers.ModelSerializer):
     # Создание отзыва
@@ -54,6 +67,7 @@ class ProductImagesSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     # Просмотр товара
+
     category = serializers.SlugRelatedField(
         slug_field='name',
         many=True,
@@ -73,6 +87,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'rating_avg',
 
         )
+    def get_group_name(self):
+        return 'Product'
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
@@ -82,6 +98,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
+    images = ProductImagesSerializer(many=True)
     rating_avg = serializers.FloatField(default=0)
 
     class Meta:
@@ -168,3 +185,10 @@ class DetailCustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ('id', 'email', 'phone_number', 'birthday', 'first_name', 'last_name', 'cart', 'wish')
+
+
+class CustomerChangeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Customer
+        fields = '__all__'

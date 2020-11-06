@@ -22,6 +22,8 @@ from django.conf import settings
 
 from basepage.views import AuthCheck
 
+from basepage.views import *
+
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('api-auth/', include('rest_framework.urls')),
@@ -32,6 +34,8 @@ urlpatterns = [
 
                   path('api/v1/auth/check/', AuthCheck.as_view()),
 
-
                   path('api/v1/', include('basepage.urls')),
+
+                  path('', index, name='index'),
+                  path('<str:room_name>/', room, name='room'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

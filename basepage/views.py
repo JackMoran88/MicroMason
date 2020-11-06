@@ -8,6 +8,22 @@ from .models import *
 
 from django.db.models import Sum, F, FloatField, Avg
 
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.utils.safestring import mark_safe
+import json
+
+
+def index(request):
+    return render(request, 'basepage/index.html', {})
+
+
+def room(request, room_name):
+    print(room_name)
+    return render(request, 'basepage/test.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
+
 
 class AuthCheck(APIView):
     # Проверка токена
@@ -19,9 +35,12 @@ class AuthCheck(APIView):
 
 class DetailCustomerView(APIView):
     def post(self, request):
-        customer = Customer.objects.get(auth_token__key=request.data.get('token'))
-        serializer = DetailCustomerSerializer(customer)
-        return Response(serializer.data)
+        if (request.data.get('token')):
+            customer = Customer.objects.get(auth_token__key=request.data.get('token'))
+            serializer = DetailCustomerSerializer(customer)
+            return Response(serializer.data)
+        else:
+            return Response(status=400)
 
 
 class CategoriesListView(APIView):
@@ -46,10 +65,16 @@ class CategoryDetailView(APIView):
 
 class ProductDetailView(APIView):
     # Просмотр товара
-    def post(self, request, slug):
-        product = Product.objects.annotate(
-            rating_avg=Avg("ratings__star")
-        ).get(slug=slug)
+    def post(self, request):
+        if request.data.get('id'):
+            product = Product.objects.annotate(
+                rating_avg=Avg("ratings__star")
+            ).get(id=request.data.get('id'))
+        else:
+            product = Product.objects.annotate(
+                rating_avg=Avg("ratings__star")
+            ).get(slug=request.data.get('slug'))
+
         serializer = ProductDetailSerializer(product)
         return Response(serializer.data)
 
@@ -140,17 +165,55 @@ class DetailWishView(APIView):
         serializer = ProductDetailSerializer(products, many=True)
         return Response(serializer.data)
 
-# class DetailWishView(APIView):
-#     def post(self, request):
-#         products = Product.objects.all().filter(product__customer=request.data.get('customer')).annotate(
-#             rating_avg=Avg("ratings__star"),
-#         )
-#         serializer = DetailWishSerializer(products, many=True)
-#         return Response(serializer.data)
+
+class SetCustomerFullName(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        token = request.headers['Authorization'].replace('Token ', '')
+        customer = Customer.objects.get(auth_token__key=token)
+        if(request.data.get('first_name') and request.data.get('last_name')):
+            customer.first_name = request.data.get('first_name')
+            customer.last_name = request.data.get('last_name')
+            customer.save()
+            return Response(status=200)
+        return Response(status=400)
 
 
-# class DetailCurrentProductsView(APIView):
-#     def post(self, request):
-#         products = Product.objects.all().filter(id__in=[1])
-#         serializer = ProductDetailSerializer(products, many=True)
-#         return Response(serializer.data)
+
+
+
+
+
+
+
+from channels.layers import get_channel_layer
+
+
+async def update_product(product):
+    print('\t update_product update_product update_product update_product update_product ')
+    group_name = ProductDetailSerializer(product).get_group_name()
+    channel_layer = get_channel_layer()
+
+    content = {
+        "type": "UPDATE_PRODUCT",
+        "payload": product.id,
+    }
+    await channel_layer.group_send(group_name, {
+        "type": "notify",
+        "content": content,
+    })
+
+
+async def update_categories(category):
+    print('\t update_categories update_categories update_categories update_categories ')
+    group_name = CategoryListSerializer().get_group_name()
+    channel_layer = get_channel_layer()
+
+    content = {
+        "type": "UPDATE_PRODUCT",
+        "payload": category.id,
+    }
+    await channel_layer.group_send(group_name, {
+        "type": "notify",
+        "content": content,
+    })
