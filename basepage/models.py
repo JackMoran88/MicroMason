@@ -22,19 +22,6 @@ from django.utils.html import mark_safe
 
 
 
-class Option(Model):
-    name = CharField(max_length=120, null=False)
-
-    def __str__(self):
-        return f"{self:id}: {self.name}"
-
-class OptionParameter(Model):
-    name = CharField(max_length=120, null=False)
-    option = ForeignKey(Option, on_delete=CASCADE)
-
-    def __str__(self):
-        return f"{self.id}: {self.name}"
-
 class Category(Model):
     parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
     name = CharField(max_length=120, null=False, blank=True)
@@ -62,6 +49,7 @@ class Category(Model):
     def __str__(self):
         return f"{self.parent} => {self.id}: {self.name}"
 
+
 class Product(Model):
     name = CharField(max_length=120, null=False)
     code = PositiveIntegerField(null=False)
@@ -74,13 +62,13 @@ class Product(Model):
 
     category = ManyToManyField(Category, related_name='category')
     # images = ForeignKey(ProductImage, blank=True, related_name='images', on_delete=CASCADE)
-    options = ManyToManyField(OptionParameter,
-                              through='OptionProduct',
-                              through_fields=(
-                                  "product",
-                                  "option_parameter"
-                              ),
-                              blank=True)
+    # options = ManyToManyField(OptionParameter,
+    #                           through='OptionProduct',
+    #                           through_fields=(
+    #                               "product",
+    #                               "option_parameter"
+    #                           ),
+    #                           blank=True)
     tracker = FieldTracker(fields=('name', 'code', 'quantity', 'price', 'description', 'main_image',), )
 
     def save(self, *args, **kwargs):
@@ -98,6 +86,32 @@ class Product(Model):
     def __str__(self):
         return f"{self.id}: {self.name}"
 
+
+class Option(Model):
+    name = CharField(max_length=120, null=False)
+
+    class Meta:
+        verbose_name = "Характеристика"
+        verbose_name_plural = "Характеристики"
+
+    def __str__(self):
+        return f"{self.id}: {self.name}"
+
+
+class OptionParameter(Model):
+    name = CharField(max_length=120, null=False)
+    option = ForeignKey(Option, on_delete=CASCADE)
+    product = ForeignKey(Product, on_delete=CASCADE)
+
+    class Meta:
+        verbose_name = "Характеристика товара"
+        verbose_name_plural = "Характеристики товаров"
+
+    def __str__(self):
+        return f"{self.id}: {self.name}"
+
+
+
 class ProductImage(Model):
     product_id = ForeignKey('Product', on_delete=CASCADE, related_name='images')
     image = ImageField(upload_to='ProductImages/', unique=True)
@@ -111,6 +125,7 @@ class ProductImage(Model):
 
     image_tag.short_description = 'Image'
 
+
 class OptionProduct(Model):
     product = ForeignKey(Product, on_delete=CASCADE)
     option_parameter = ForeignKey(OptionParameter, on_delete=CASCADE)
@@ -118,6 +133,7 @@ class OptionProduct(Model):
 
     def __str__(self):
         return f"{self.option_parameter} in {self.product} = {self.quantity}"
+
 
 class CustomerManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password=None):
@@ -147,20 +163,9 @@ class CustomerManager(BaseUserManager):
         return user
 
 
-class Cart(Model):
-
-    class Meta:
-        verbose_name = "Корзина"
-        verbose_name_plural = "Корзины"
-
-    def __str__(self):
-        return f'Корзина #{self.id}'
-
-    from django.db.models.signals import pre_delete
-    from django.dispatch import receiver
-
 class CustomerGender(Model):
-    gender = CharField(max_length=20, verbose_name='Пол')
+    gender = CharField(max_length=20, verbose_name='Пол', null=True, blank=True)
+
 
 class Customer(AbstractBaseUser, PermissionsMixin):
     # username_validator = UnicodeUsernameValidator()
@@ -174,12 +179,9 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     first_name = CharField(max_length=50, default='', blank=False, null=False)
     last_name = CharField(max_length=50, blank=False, null=False)
     middle_name = CharField(max_length=50, default='', blank=True)
-    gender = ForeignKey(CustomerGender, on_delete=CASCADE, null=True)
-
-
+    gender = ForeignKey(CustomerGender, on_delete=CASCADE, null=True, blank=True)
 
     # cart = ForeignKey(Cart, on_delete=SET_NULL, null=True)
-
 
     is_active = BooleanField(default=True)
     is_admin = BooleanField(default=False)
@@ -197,7 +199,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         # Не трогать, задействуется при отображнии автора коментария!
-        full_name = "{} {}".format(self.first_name, self.last_name)
+        full_name = "{}: {} {}".format(self.id, self.first_name, self.last_name)
         return full_name.strip()
 
     def get_full_name(self):
@@ -214,15 +216,49 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         return True
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        try:
-            print(self.cart)
-            if self.cart.pk == 'null':
-                self.cart = Cart()
-                self.cart.save()
-        except:
-            self.cart = Cart()
-            self.cart.save()
+        # try:
+        #     print(self.cart)
+        #     if self.cart.pk == 'null':
+        #         self.cart = Cart()
+        #         self.cart.save()
+        # except:
+        #     self.cart = Cart()
+        #     self.cart.save()
         super(Customer, self).save(force_insert, force_update, using, update_fields)
+
+
+class AnonymousCustomer(Model):
+    # token = CharField(max_length=25)
+    last_update = DateField(auto_now_add=True, )
+
+    class Meta:
+        verbose_name = "Аноним"
+        verbose_name_plural = "Анонимые пользователи"
+
+
+class Cart(Model):
+    customer = ForeignKey(Customer, on_delete=CASCADE, null=True, blank=True)
+    anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Корзина"
+        verbose_name_plural = "Корзины"
+
+    def __str__(self):
+        return f'Корзина #{self.id}'
+
+
+class CartProduct(Model):
+    cart = ForeignKey(Cart, on_delete=CASCADE)
+    product = ForeignKey(Product, on_delete=CASCADE)
+    quantity = PositiveIntegerField('Количество', default=1)
+
+    class Meta:
+        verbose_name = "Товар корзины"
+        verbose_name_plural = "Товары корзины"
+
+    def __str__(self):
+        return f"Корзина #{self.cart.id} - {self.product}"
 
 
 class Review(Model):
@@ -272,43 +308,9 @@ class Rating(Model):
         verbose_name_plural = "Рейтинги"
 
 
-class CartProduct(Model):
-    cart = ForeignKey(Cart, on_delete=CASCADE, blank=False)
-    product = ForeignKey(Product, on_delete=CASCADE, blank=False)
-    quantity = PositiveIntegerField(verbose_name='Количество', default=1)
-
-    class Meta:
-        verbose_name = "Товар корзины"
-        verbose_name_plural = "Товары корзины"
-
-    def __str__(self):
-        return f"Корзина #{self.cart.id} - {self.product}"
-
-
-class AnonymousCustomer(Model):
-    cart = ForeignKey(Cart, on_delete=CASCADE, blank=True)
-    last_update = DateField(auto_now_add=True, )
-
-    class Meta:
-        verbose_name = "Аноним"
-        verbose_name_plural = "Анонимые пользователи"
-
-    def __str__(self):
-        return f"{self.cart}: {self.last_update}"
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        try:
-            self.cart.pk
-        except:
-            self.cart = Cart()
-            self.cart.save()
-        super(AnonymousCustomer, self).save(force_insert, force_update, using, update_fields)
-
-
 class Wish(Model):
     customer = ForeignKey(Customer, on_delete=CASCADE, related_name='wish')
     product = ForeignKey(Product, on_delete=CASCADE, related_name='product', )
 
     def __str__(self):
         return f"User: {self.customer} ,product #{self.product}"
-

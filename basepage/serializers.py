@@ -84,7 +84,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'price', 'description', 'main_image',
             'slug', 'category', 'images',
             'reviews', 'options',
-            'rating_avg',
+            'rating_avg'
 
         )
     def get_group_name(self):
@@ -144,7 +144,8 @@ class CartAddSerializer(serializers.ModelSerializer):
 class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnonymousCustomer
-        fields = ('__all__')
+        # fields = ('__all__')
+        exclude = ['last_update',]
 
     def create(self, validated_data):
         anonymous = AnonymousCustomer.objects.create()
@@ -153,13 +154,13 @@ class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
 
 
 class CartDetailSerializer(serializers.ModelSerializer):
-    #
     totals = serializers.FloatField(default=0)
+    qty = serializers.IntegerField(default=0)
 
     class Meta:
-        model = CartProduct
-        # fields = ('id', 'quantity', 'totals')
-        exclude = ('id',)
+        model = Product
+        fields = ('__all__')
+        # exclude = ('id',)
 
 
 class AddWishSerializer(serializers.ModelSerializer):
@@ -184,7 +185,7 @@ class DetailCustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ('id', 'email', 'phone_number', 'birthday', 'first_name', 'last_name', 'cart', 'wish')
+        fields = ('id', 'email', 'phone_number', 'birthday', 'first_name', 'last_name', 'wish')
 
 
 class CustomerChangeSerializer(serializers.ModelSerializer):

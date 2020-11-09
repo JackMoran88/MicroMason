@@ -1,10 +1,8 @@
 from django import forms
 from django.core.validators import validate_image_file_extension
 from django.utils.translation import gettext as _
-
-
 from .models import *
-
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
 class MultipluProductImage(forms.ModelForm):
@@ -12,6 +10,9 @@ class MultipluProductImage(forms.ModelForm):
         model = Product
         fields = ('__all__')
 
+    # Для ckeditor
+    description = forms.CharField(widget=CKEditorUploadingWidget())
+    # МультиЗагрузка фото
     images = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}),
         label=_("Изображения"),
@@ -28,3 +29,4 @@ class MultipluProductImage(forms.ModelForm):
         for upload in self.files.getlist("images"):
             image = ProductImage(product_id=product, image=upload)
             image.save()
+

@@ -39,18 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
-
     'basepage',
-
     'corsheaders',
-
     'djoser',
     'rest_framework.authtoken',
 
     'channels',
-
+    'ckeditor',
+    'ckeditor_uploader',
 
     # 'django_celery_results',
     # 'django_celery_beat',
@@ -200,6 +197,8 @@ STATICFILES_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     STATICFILES_DIR
 ]
+#Для ckeditor
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -224,26 +223,5 @@ CHANNEL_LAYERS = {
     },
 }
 
-# CELERY_BEAT_SCHEDULE = {
-#     'task-real': {
-#         'task': 'realtime_task',
-#         'schedule': 1
-#     },
-#     'test': {
-#         'task': 'basepage.tasks.kek',
-#         'schedule': 1
-#     },
-# }
 
-
-# REDIS_HOST = '0.0.0.0'
-# REDIS_HOST = 'redis'
-# REDIS_PORT = '6379'
-# CELERY_BROCKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
-# CELERY_BROCKER_TRANSPORT_OPTIONS = {'visibility_timeout': 500}
-# CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
-# CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-
-
+CKEDITOR_UPLOAD_PATH = "uploads/"

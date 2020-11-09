@@ -3,16 +3,22 @@ from .models import *
 from .forms import *
 
 
+
+
+
+# Для отображения фото в товаре
 fields = ['image_tag']
 readonly_fields = ['image_tag']
+
 
 class ProductImages(admin.TabularInline):
     model = ProductImage
     # fields = ['image_tag']
     readonly_fields = ['image_tag']
 
+
 @admin.register(Product)
-class PostAdmin(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
     form = MultipluProductImage
     inlines = [ProductImages]
 
@@ -21,19 +27,17 @@ class PostAdmin(admin.ModelAdmin):
         form.save_photos(form.instance)
 
 
-
 @admin.register(ProductImage)
-class PostAdmin(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
     fields = ['image_tag']
     readonly_fields = ['image_tag']
 
 
 
-# admin.site.register(Product)
 
 
+# Импорты
 admin.site.register(Category)
-# admin.site.register(ProductImage)
 admin.site.register(Option)
 admin.site.register(OptionParameter)
 admin.site.register(OptionProduct)
