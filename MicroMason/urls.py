@@ -36,8 +36,5 @@ urlpatterns = [
 
                   path('api/v1/', include('basepage.urls')),
 
-                  path('', index, name='index'),
-                  path('<str:room_name>/', room, name='room'),
-
                   path('ckeditor/', include('ckeditor_uploader.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

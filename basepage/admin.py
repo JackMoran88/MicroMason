@@ -2,44 +2,59 @@ from django.contrib import admin
 from .models import *
 from .forms import *
 
-
-
-
-
 # Для отображения фото в товаре
 fields = ['image_tag']
 readonly_fields = ['image_tag']
 
 
-class ProductImages(admin.TabularInline):
+# @admin.register(Product)
+# class ProductAdmin(admin.ModelAdmin):
+#     form = MultipluProductImage
+#     inlines = [ProductImages]
+#
+#
+#     def save_related(self, request, form, formsets, change):
+#         super().save_related(request, form, formsets, change)
+#         form.save_photos(form.instance)
+
+
+class ProductImagesInline(admin.TabularInline):
     model = ProductImage
-    # fields = ['image_tag']
-    readonly_fields = ['image_tag']
+    fieldsets = (
+        ('Фото', {
+            'classes': ('collapse',),
+            'fields': ('image_tag',),
+        }),
+    )
+    readonly_fields = readonly_fields
+    extra = 0
+
+
+class ProductOptionsInline(admin.TabularInline):
+    model = OptionProduct
+    # fields = ('parameter','name')
+    extra = 0
+
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    form = MultipluProductImage
-    inlines = [ProductImages]
+    list_display = ['id', 'name', 'image_tag']
+    list_display_links = ['name']
+    search_fields = ['name']
+    inlines = [ProductOptionsInline, ProductImagesInline, ]
+    save_on_top = True
 
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request, form, formsets, change)
-        form.save_photos(form.instance)
-
-
-@admin.register(ProductImage)
-class ProductAdmin(admin.ModelAdmin):
-    fields = ['image_tag']
-    readonly_fields = ['image_tag']
-
-
-
+    # form = ProductAdminForm
+    #
+    # def save_related(self, request, form, formsets, change):
+    #     super().save_related(request, form, formsets, change)
+    #     form.save_photos(form.instance)
 
 
 # Импорты
 admin.site.register(Category)
 admin.site.register(Option)
-admin.site.register(OptionParameter)
 admin.site.register(OptionProduct)
 admin.site.register(Customer)
 admin.site.register(Review)

@@ -11,7 +11,11 @@ urlpatterns = [
     path('products/', ProductsDetailView.as_view()),
 
     path('review/', ReviewCreateView.as_view()),
-    path('rating/', AddRatingView.as_view()),
+    # path('rating/', AddRatingView.as_view()),
+    path('rating/add/', AddRatingView.as_view()),
+    path('rating/delete/', DeleteRatingView.as_view()),
+
+    path('product/rating/', DetailProductReviews.as_view()),
 
     path('cart/add/', AddCartView.as_view()),
     path('cart/delete/', DeleteCartView.as_view()),

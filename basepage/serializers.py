@@ -5,7 +5,6 @@ from .models import *
 from asgiref.sync import sync_to_async, async_to_sync
 
 
-
 class RecursiveSerializer(serializers.Serializer):
     # Рекурсивные детки
     def to_representation(self, value):
@@ -26,8 +25,8 @@ class CategoryListSerializer(serializers.ModelSerializer):
 
     children = RecursiveSerializer(many=True, required=False)
     print('\t AFTER CHILDREN')
-    # children = sync_to_async(RecursiveSerializer)(many=True)
 
+    # children = sync_to_async(RecursiveSerializer)(many=True)
 
     class Meta:
         model = Category
@@ -39,6 +38,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
     # def test(self):
     #     print(f'\t children {self.children}')
 
+
 class ReviewCreateSerializer(serializers.ModelSerializer):
     # Создание отзыва
     class Meta:
@@ -49,13 +49,18 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 class ReviewDetailSerializer(serializers.ModelSerializer):
     # Отобразить отзывы
     children = RecursiveSerializer(many=True)
-    author = serializers.StringRelatedField()
-
+    author = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         list_serializer_class = FilterReviewDetailSerializer
         model = Review
         fields = ('id', 'author', 'text', 'product', 'children')
+
+
+class OptionDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Option
+        fields = ('__all__')
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
@@ -76,6 +81,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImagesSerializer(many=True)
     reviews = ReviewDetailSerializer(many=True)
     rating_avg = serializers.FloatField(default=0)
+    options = OptionDetailSerializer(many=True)
 
     class Meta:
         model = Product
@@ -87,6 +93,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'rating_avg'
 
         )
+
     def get_group_name(self):
         return 'Product'
 
@@ -114,6 +121,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 class RatingCreateSerializer(serializers.ModelSerializer):
     # Добавление рейтинга пользователем
+
     class Meta:
         model = Rating
         fields = ('__all__')
@@ -122,9 +130,25 @@ class RatingCreateSerializer(serializers.ModelSerializer):
         rating, _ = Rating.objects.update_or_create(
             author=validated_data.get('author'),
             product=validated_data.get('product'),
-            defaults={'star': validated_data.get("star")}
+            defaults={
+                'star': validated_data.get("star"),
+                'text': validated_data.get("text"),
+                'advantages': validated_data.get("advantages"),
+                'disadvantages': validated_data.get("disadvantages"),
+            }
         )
         return rating
+
+
+class RatingDetailSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField(read_only=True)
+    customer = serializers.IntegerField()
+    star = serializers.IntegerField(source='star.value')
+
+
+    class Meta:
+        model = Rating
+        fields = ('__all__')
 
 
 class CartAddSerializer(serializers.ModelSerializer):
@@ -145,7 +169,7 @@ class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnonymousCustomer
         # fields = ('__all__')
-        exclude = ['last_update',]
+        exclude = ['last_update', ]
 
     def create(self, validated_data):
         anonymous = AnonymousCustomer.objects.create()
@@ -189,7 +213,6 @@ class DetailCustomerSerializer(serializers.ModelSerializer):
 
 
 class CustomerChangeSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Customer
         fields = '__all__'

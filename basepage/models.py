@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from django.core.validators import RegexValidator
 
 from django.db.models import Model, CASCADE
-from django.db.models import CharField, FloatField, TextField, PositiveIntegerField, EmailField
+from django.db.models import CharField, FloatField, TextField, PositiveIntegerField, EmailField, DateTimeField
 from django.db.models import DateField, BooleanField
 from django.db.models import ManyToManyField, ForeignKey
 
@@ -19,7 +19,6 @@ from django.db.models import SET_NULL, SmallIntegerField, Avg
 from model_utils import FieldTracker
 from asgiref.sync import async_to_sync, sync_to_async
 from django.utils.html import mark_safe
-
 
 
 class Category(Model):
@@ -50,6 +49,25 @@ class Category(Model):
         return f"{self.parent} => {self.id}: {self.name}"
 
 
+class Option(Model):
+    name = CharField(max_length=225)
+
+    def __str__(self):
+        return f" {self.id}: {self.name}"
+
+
+class OptionProduct(Model):
+    name = CharField(max_length=225)
+    product = ForeignKey('Product',
+                         on_delete=CASCADE,
+                         null=True,
+                         blank=True, related_name='options')
+    parameter = ForeignKey(Option, on_delete=CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f" {self.id}: {self.parameter} - {self.name}"
+
+
 class Product(Model):
     name = CharField(max_length=120, null=False)
     code = PositiveIntegerField(null=False)
@@ -58,18 +76,23 @@ class Product(Model):
     description = TextField(blank=True)
     main_image = ImageField("Изображение", upload_to="Products/", blank=True, default='images/default/product/404.png')
 
+    # options = ManyToManyField(OptionProduct,
+    #                           null=True,
+    #                           blank=True,
+    #                           related_name='Характеристики', )
+
     slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
     category = ManyToManyField(Category, related_name='category')
-    # images = ForeignKey(ProductImage, blank=True, related_name='images', on_delete=CASCADE)
-    # options = ManyToManyField(OptionParameter,
-    #                           through='OptionProduct',
-    #                           through_fields=(
-    #                               "product",
-    #                               "option_parameter"
-    #                           ),
-    #                           blank=True)
+
     tracker = FieldTracker(fields=('name', 'code', 'quantity', 'price', 'description', 'main_image',), )
+
+    def image_tag(self):
+        return mark_safe(
+            '<img src="/media/%s" width="75" height="75" />' % (self.main_image)
+        )
+
+    image_tag.short_description = 'Image'
 
     def save(self, *args, **kwargs):
         ret = super().save(*args, **kwargs)
@@ -87,31 +110,6 @@ class Product(Model):
         return f"{self.id}: {self.name}"
 
 
-class Option(Model):
-    name = CharField(max_length=120, null=False)
-
-    class Meta:
-        verbose_name = "Характеристика"
-        verbose_name_plural = "Характеристики"
-
-    def __str__(self):
-        return f"{self.id}: {self.name}"
-
-
-class OptionParameter(Model):
-    name = CharField(max_length=120, null=False)
-    option = ForeignKey(Option, on_delete=CASCADE)
-    product = ForeignKey(Product, on_delete=CASCADE)
-
-    class Meta:
-        verbose_name = "Характеристика товара"
-        verbose_name_plural = "Характеристики товаров"
-
-    def __str__(self):
-        return f"{self.id}: {self.name}"
-
-
-
 class ProductImage(Model):
     product_id = ForeignKey('Product', on_delete=CASCADE, related_name='images')
     image = ImageField(upload_to='ProductImages/', unique=True)
@@ -124,15 +122,6 @@ class ProductImage(Model):
         return mark_safe('<img src="/media/%s" width="150" height="150" />' % (self.image))
 
     image_tag.short_description = 'Image'
-
-
-class OptionProduct(Model):
-    product = ForeignKey(Product, on_delete=CASCADE)
-    option_parameter = ForeignKey(OptionParameter, on_delete=CASCADE)
-    quantity = PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.option_parameter} in {self.product} = {self.quantity}"
 
 
 class CustomerManager(BaseUserManager):
@@ -198,8 +187,8 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Пользователи"
 
     def __str__(self):
-        # Не трогать, задействуется при отображнии автора коментария!
-        full_name = "{}: {} {}".format(self.id, self.first_name, self.last_name)
+        # НЕ ТРОГАТь, задействуется при отображнии автора коментария!(Уже не трогал: 1)
+        full_name = "{} {}".format(self.first_name, self.last_name)
         return full_name.strip()
 
     def get_full_name(self):
@@ -262,8 +251,8 @@ class CartProduct(Model):
 
 
 class Review(Model):
-    author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
-    text = TextField("Сообщение", max_length=5000, blank=False)
+    author = ForeignKey(Customer, on_delete=CASCADE, blank=False, null=False)
+    text = TextField("Сообщение", max_length=5000, blank=True, null=True)
     parent = ForeignKey(
         'self', verbose_name="Родитель", on_delete=SET_NULL, blank=True, null=True, related_name='children'
     )
@@ -292,6 +281,14 @@ class RatingStar(Model):
 class Rating(Model):
     author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
     star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда", )
+
+    text = TextField("Коментарий", max_length=5000, blank=True, null=True)
+    advantages = TextField("Достоинства", max_length=2500, blank=True, null=True)
+    disadvantages = TextField("Недостатки", max_length=2500, blank=True, null=True)
+    parent = ForeignKey(
+        'self', verbose_name="Родитель", on_delete=SET_NULL, blank=True, null=True, related_name='children'
+    )
+
     product = ForeignKey(
         Product,
         on_delete=CASCADE,
@@ -299,6 +296,8 @@ class Rating(Model):
         related_name="ratings",
         blank=False,
     )
+
+    created_at = DateField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.star} - {self.product}"

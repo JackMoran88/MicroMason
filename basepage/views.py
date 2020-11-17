@@ -6,23 +6,12 @@ from rest_framework import permissions
 from .serializers import *
 from .models import *
 
-from django.db.models import Sum, F, FloatField, Avg
+from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value
 
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 import json
-
-
-def index(request):
-    return render(request, 'basepage/index.html', {})
-
-
-def room(request, room_name):
-    print(room_name)
-    return render(request, 'basepage/test.html', {
-        'room_name_json': mark_safe(json.dumps(room_name))
-    })
 
 
 class AuthCheck(APIView):
@@ -121,15 +110,43 @@ class ReviewCreateView(APIView):
 
 
 class AddRatingView(APIView):
-    # Добавление рейтинга фильму
 
     def post(self, request):
-        rating = RatingCreateSerializer(data=request.data)
-        if rating.is_valid():
+        author = Customer.objects.get(id=request.data.get('author'))
+        star = RatingStar.objects.get(value=request.data.get('star'))
+        data = {
+            'star': star.id,
+            'product': request.data.get('product'),
+            'author': author.id,
+            'text': request.data.get('text'),
+            'advantages': request.data.get('advantages'),
+            'disadvantages': request.data.get('disadvantages'),
+        }
+        rating = RatingCreateSerializer(data=data)
+        if rating.is_valid(raise_exception=True):
             rating.save()
             return Response(status=201)
-        else:
-            return Response(status=400)
+
+
+class DeleteRatingView(APIView):
+    def post(self, request):
+        # Только авторизированный
+        comment_id = request.data.get('comment')
+        author_id = request.data.get('author')
+        Rating.objects.all().filter(id=comment_id, author_id=author_id).delete()
+        return Response(status=200)
+
+
+class DetailProductReviews(APIView):
+
+    def post(self, request):
+        if (request.data.get('id')):
+            reviews = Rating.objects.all().filter(
+                product=request.data.get('id')
+            ).annotate(customer=Sum(F("author_id"), output_field=IntegerField()))
+            serializer = RatingDetailSerializer(reviews, many=True)
+            return Response(serializer.data)
+        return Response(status=400)
 
 
 class AddWishView(APIView):

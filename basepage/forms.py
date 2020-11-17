@@ -5,13 +5,13 @@ from .models import *
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
-class MultipluProductImage(forms.ModelForm):
+class ProductAdminForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ('__all__')
 
     # Для ckeditor
-    description = forms.CharField(widget=CKEditorUploadingWidget())
+    # description = forms.CharField(widget=CKEditorUploadingWidget())
     # МультиЗагрузка фото
     images = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}),

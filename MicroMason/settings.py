@@ -27,7 +27,6 @@ SECRET_KEY = '!4tla#+raaqipje&y1+ju3@p-8++v*3_m8pzon+^ch2ldyosr8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -85,20 +84,17 @@ TEMPLATES = [
 
 AUTH_USER_MODEL = 'basepage.Customer'
 
-
-
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':  'MicroMason',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'MicroMason_2',
+        'USER': 'root',
+        'PASSWORD': '',
         'HOST': 'localhost',
-        'PORT': '5432',
+        'PORT': '3306',
 
     }
 }
@@ -197,7 +193,7 @@ STATICFILES_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     STATICFILES_DIR
 ]
-#Для ckeditor
+# Для ckeditor
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -210,6 +206,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://127.0.0.1:8080",
     "http://192.168.1.243:8080",
     "http://192.168.1.243:8000",
+
 ]
 # WSGI_APPLICATION = 'MicroMason.wsgi.application'
 ASGI_APPLICATION = "MicroMason.routing.application"
@@ -222,6 +219,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
