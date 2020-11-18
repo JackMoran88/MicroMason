@@ -90,7 +90,7 @@ AUTH_USER_MODEL = 'basepage.Customer'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_2',
+        'NAME': 'MicroMason_4',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

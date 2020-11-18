@@ -4,35 +4,30 @@ from . import views
 from basepage.views import *
 
 urlpatterns = [
-    path('categories/', views.CategoriesListView.as_view()),
-    path('category/<slug>/', CategoryDetailView.as_view()),
-
-    path('product/', ProductDetailView.as_view()),
-    path('products/', ProductsDetailView.as_view()),
-
-    path('review/', ReviewCreateView.as_view()),
-    # path('rating/', AddRatingView.as_view()),
-    path('rating/add/', AddRatingView.as_view()),
-    path('rating/delete/', DeleteRatingView.as_view()),
-
-    path('product/rating/', DetailProductReviews.as_view()),
-
-    path('cart/add/', AddCartView.as_view()),
-    path('cart/delete/', DeleteCartView.as_view()),
-    path('cart/detail/', CartProductsDetailView.as_view()),
-
-    path('anonymous/', AnonymousCustomerCreateView.as_view()),
-
-    path('wish/add/', AddWishView.as_view()),
-    path('wish/detail/', DetailWishView.as_view()),
-    path('wish/delete/', DeleteWishView.as_view()),
-
-    path('customer/detail/', DetailCustomerView.as_view()),
-    path('customer/set_username/', SetCustomerFullName.as_view()),
-
-
-
-
-
+    #
+    path('categories/', CategoryViewSet.as_view({'post': 'list'})),
+    path('category/<slug>/', CategoryViewSet.as_view({'post': 'retrieve'})),
+    #
+    path('cart/add/', CartViewSet.as_view({'post': 'create'})),
+    path('cart/delete/', CartViewSet.as_view({'post': 'delete'})),
+    path('cart/detail/', CartViewSet.as_view({'post': 'list'})),
+    #
+    path('wish/add/', WishViewSet.as_view({'post': 'create'})),
+    path('wish/delete/', WishViewSet.as_view({'post': 'delete'})),
+    path('wish/detail/', WishViewSet.as_view({'post': 'list'})),
+    #
+    path('review/add/', ReviewViewSet.as_view({'post': 'create'})),
+    path('review/delete/', ReviewViewSet.as_view({'post': 'delete'})),
+    path('review/detail/', ReviewViewSet.as_view({'post': 'list'})),
+    path('review/answer/', ReviewViewSet.as_view({'post': 'answer'})),
+    #
+    path('products/', ProductViewSet.as_view({'post': 'list'})),
+    path('product/', ProductViewSet.as_view({'post': 'retrieve'})),
+    #
+    path('auth/check/', CustomerViewSet.as_view({'post': 'check'})),
+    path('customer/set_username/', CustomerViewSet.as_view({'post': 'setFullName'})),
+    path('customer/detail/', CustomerViewSet.as_view({'post': 'retrieve'})),
+    path('anonymous/', CustomerViewSet.as_view({'post': 'anonymousCreate'})),
+    #
 
 ]

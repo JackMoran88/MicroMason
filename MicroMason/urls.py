@@ -20,21 +20,21 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
-from basepage.views import AuthCheck
+# from basepage.views import AuthCheck
 
 from basepage.views import *
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('api-auth/', include('rest_framework.urls')),
-
-                  path('api/v1/auth/', include('djoser.urls')),
-                  path('api/v1/auth/', include('djoser.urls.authtoken')),
-                  path('api/v1/auth/', include('djoser.urls.jwt')),
-
-                  path('api/v1/auth/check/', AuthCheck.as_view()),
-
-                  path('api/v1/', include('basepage.urls')),
-
+                  #
                   path('ckeditor/', include('ckeditor_uploader.urls')),
+                  #
+                  path('api/v2/auth/', include('djoser.urls')),
+                  path('api/v2/auth/', include('djoser.urls.authtoken')),
+                  path('api/v2/auth/', include('djoser.urls.jwt')),
+                  #
+                  path('api/v2/', include('basepage.urls')),
+                  #
+
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

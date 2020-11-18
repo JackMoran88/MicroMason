@@ -51,9 +51,11 @@ class Category(Model):
 
 class Option(Model):
     name = CharField(max_length=225)
+    #Возможно стоит убрать null, black
+    category = ForeignKey(Category, on_delete=CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f" {self.id}: {self.name}"
+        return f"{self.category} - {self.name}"
 
 
 class OptionProduct(Model):
@@ -68,12 +70,20 @@ class OptionProduct(Model):
         return f" {self.id}: {self.parameter} - {self.name}"
 
 
+class Brand(Model):
+    name = CharField(max_length=40)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class Product(Model):
     name = CharField(max_length=120, null=False)
+    brand = ForeignKey(Brand, on_delete=CASCADE, null=True, blank=True)
     code = PositiveIntegerField(null=False)
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
-    description = TextField(blank=True)
+    description = TextField(blank=True, null=True)
     main_image = ImageField("Изображение", upload_to="Products/", blank=True, default='images/default/product/404.png')
 
     # options = ManyToManyField(OptionProduct,
@@ -83,7 +93,7 @@ class Product(Model):
 
     slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
-    category = ManyToManyField(Category, related_name='category')
+    category = ForeignKey(Category, on_delete=CASCADE, related_name='category')
 
     tracker = FieldTracker(fields=('name', 'code', 'quantity', 'price', 'description', 'main_image',), )
 
@@ -113,10 +123,10 @@ class Product(Model):
 class ProductImage(Model):
     product_id = ForeignKey('Product', on_delete=CASCADE, related_name='images')
     image = ImageField(upload_to='ProductImages/', unique=True)
-
-    class Meta:
-        verbose_name_plural = 'Фото товаров'
-        verbose_name = 'Фото товара'
+    #
+    # class Meta:
+    #     verbose_name_plural = 'Фото товаров'
+    #     verbose_name = 'Фото товара'
 
     def image_tag(self):
         return mark_safe('<img src="/media/%s" width="150" height="150" />' % (self.image))
@@ -250,22 +260,6 @@ class CartProduct(Model):
         return f"Корзина #{self.cart.id} - {self.product}"
 
 
-class Review(Model):
-    author = ForeignKey(Customer, on_delete=CASCADE, blank=False, null=False)
-    text = TextField("Сообщение", max_length=5000, blank=True, null=True)
-    parent = ForeignKey(
-        'self', verbose_name="Родитель", on_delete=SET_NULL, blank=True, null=True, related_name='children'
-    )
-    product = ForeignKey(Product, verbose_name="product", on_delete=CASCADE, related_name="reviews", blank=False)
-
-    def __str__(self):
-        return f"{self.author} - {self.product}"
-
-    class Meta:
-        verbose_name = "Отзыв"
-        verbose_name_plural = "Отзывы"
-
-
 class RatingStar(Model):
     value = SmallIntegerField("Значение", default=0)
 
@@ -278,9 +272,9 @@ class RatingStar(Model):
         ordering = ["-value"]
 
 
-class Rating(Model):
+class Review(Model):
     author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
-    star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда", )
+    star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда", null=True, blank=True)
 
     text = TextField("Коментарий", max_length=5000, blank=True, null=True)
     advantages = TextField("Достоинства", max_length=2500, blank=True, null=True)
@@ -293,7 +287,7 @@ class Rating(Model):
         Product,
         on_delete=CASCADE,
         verbose_name="Товар",
-        related_name="ratings",
+        related_name="reviews",
         blank=False,
     )
 

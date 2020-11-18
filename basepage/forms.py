@@ -10,14 +10,15 @@ class ProductAdminForm(forms.ModelForm):
         model = Product
         fields = ('__all__')
 
-    # Для ckeditor
-    # description = forms.CharField(widget=CKEditorUploadingWidget())
-    # МультиЗагрузка фото
+    # ckeditor
+    description = forms.CharField(widget=CKEditorUploadingWidget())
+    # multi choice files
     images = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}),
         label=_("Изображения"),
         required=False,
     )
+
 
     def clean_photos(self):
         """Make sure only images can be uploaded."""
@@ -29,4 +30,3 @@ class ProductAdminForm(forms.ModelForm):
         for upload in self.files.getlist("images"):
             image = ProductImage(product_id=product, image=upload)
             image.save()
-
