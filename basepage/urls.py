@@ -27,7 +27,8 @@ urlpatterns = [
     path('auth/check/', CustomerViewSet.as_view({'post': 'check'})),
     path('customer/set_username/', CustomerViewSet.as_view({'post': 'setFullName'})),
     path('customer/detail/', CustomerViewSet.as_view({'post': 'retrieve'})),
-    path('anonymous/', CustomerViewSet.as_view({'post': 'anonymousCreate'})),
+    #
+    path('anonymous/', AnonymousViewSer.as_view({'post': 'create'})),
     #
 
 ]

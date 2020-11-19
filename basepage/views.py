@@ -229,14 +229,6 @@ class CustomerViewSet(viewsets.ViewSet):
     def check(self, request):
         return Response()
 
-    def anonymousCreate(self, request):
-        anonymous = AnonymousCustomerCreateSerializer(data=request.data)
-        if anonymous.is_valid():
-            anonymous.save()
-            return Response(anonymous.data)
-        else:
-            return Response(status=400)
-
     def retrieve(self, request):
         if (request.headers.get('Authorization')):
             token = request.headers['Authorization'].replace('Token ', '')
@@ -269,6 +261,16 @@ class CustomerViewSet(viewsets.ViewSet):
             customer.save()
             return Response(status=200)
         return Response(status=400)
+
+
+class AnonymousViewSer(viewsets.ViewSet):
+    def create(self, request):
+        anonymous = AnonymousCustomerCreateSerializer(data=request.data)
+        if anonymous.is_valid():
+            anonymous.save()
+            return Response(anonymous.data)
+        else:
+            return Response(status=400)
 
 
 

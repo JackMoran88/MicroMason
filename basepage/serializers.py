@@ -41,9 +41,17 @@ class CategoryListSerializer(serializers.ModelSerializer):
 
 
 class OptionDetailSerializer(serializers.ModelSerializer):
+    parameter = serializers.CharField(source='parameter.name')
     class Meta:
-        model = Option
+        model = OptionProduct
         fields = ('__all__')
+
+
+# class OptionDetailSerializer(serializers.ModelSerializer):
+#     parameter = serializers.StringRelatedField(source='product')
+#     class Meta:
+#         model = Option
+#         fields = ('__all__')
 
 
 class ProductImagesDetailSerializer(serializers.ModelSerializer):

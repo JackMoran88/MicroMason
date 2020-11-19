@@ -52,8 +52,6 @@ class ProductAdmin(admin.ModelAdmin):
                     q = Option.objects.all().filter(Q(category=current_category) | Q(category=None)).order_by('order')
                     self.inlines[0].extra = len(q)
                     self.inlines[0].max_num = len(q)
-                    print(len(inline_admin_formset.forms) )
-                    print(len(q) )
                     if(len(q) > len(inline_admin_formset.forms)):
                         for i in range(len(inline_admin_formset.forms), len(q)):
                             new = inline_admin_formset.forms[0]
@@ -96,4 +94,7 @@ admin.site.register(CartProduct)
 admin.site.register(AnonymousCustomer)
 
 admin.site.register(Wish)
+
+admin.site.register(Settings)
+admin.site.register(Footer)
 
