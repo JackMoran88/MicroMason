@@ -3,6 +3,7 @@ from .models import *
 from .forms import *
 from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q
 from django.contrib.admin import helpers
+import copy
 
 # Для отображения фото в товаре
 fields = ['image_tag']
@@ -21,12 +22,9 @@ class ProductImagesInline(admin.TabularInline):
     classes = ['collapse']
 
 
-
 class ProductOptionsInline(admin.TabularInline):
     model = OptionProduct
-    extra = 1
-    classes = ['collapse']
-
+    # classes = ['collapse']
 
 
 @admin.register(Product)
@@ -48,21 +46,30 @@ class ProductAdmin(admin.ModelAdmin):
                 model_admin=self,
             )
             if isinstance(inline, ProductOptionsInline):
-                pass
-                current_item_id = request.resolver_match.kwargs.get('object_id', None)
-                if(current_item_id != None):
-                    current_product = Product.objects.get(id=current_item_id)
+                if (obj.id != None):
+                    current_product = Product.objects.get(id=obj.id)
                     current_category = current_product.category
-                    q = Option.objects.all().filter(Q(category=current_category) | Q(category=None))
+                    q = Option.objects.all().filter(Q(category=current_category) | Q(category=None)).order_by('order')
                     self.inlines[0].extra = len(q)
-                    print(f'Текущий размер будет: {len(q)}')
-                    # print(len(inline_admin_formset.forms))
                     self.inlines[0].max_num = len(q)
-                    # for i in range(len(inline_admin_formset.forms), len(q)):
-                    #     inline_admin_formset.forms.append(inline_admin_formset.forms[i - 1])
-                    for form in inline_admin_formset.forms:
-                        form.fields['parameter'].queryset = q
+                    print(len(inline_admin_formset.forms) )
+                    print(len(q) )
+                    if(len(q) > len(inline_admin_formset.forms)):
+                        for i in range(len(inline_admin_formset.forms), len(q)):
+                            new = inline_admin_formset.forms[0]
+                            inline_admin_formset.forms.append(copy.deepcopy(new))
+                    else:
+                        for i in range(len(q), len(inline_admin_formset.forms)):
+                            inline_admin_formset.forms.pop()
 
+                    for i, form in enumerate(inline_admin_formset.forms):
+                        form.fields['parameter'].queryset = q
+                        form.initial['parameter'] = q[i]
+                        string = OptionProduct.objects.all().filter(product=obj.id, parameter=q[i]).first()
+                        if(string):
+                            form.initial['name'] = string.name
+                        else:
+                            form.initial['name'] = ''
 
             inline_admin_formsets.append(inline_admin_formset)
         return inline_admin_formsets
@@ -89,3 +96,4 @@ admin.site.register(CartProduct)
 admin.site.register(AnonymousCustomer)
 
 admin.site.register(Wish)
+

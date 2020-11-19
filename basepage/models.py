@@ -53,6 +53,7 @@ class Option(Model):
     name = CharField(max_length=225)
     #Возможно стоит убрать null, black
     category = ForeignKey(Category, on_delete=CASCADE, null=True, blank=True)
+    order = PositiveIntegerField(max_length=25555, blank=True, null=True)
 
     def __str__(self):
         return f"{self.category} - {self.name}"
