@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import *
+from shop_settings.models import *
 from .forms import *
 from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q
 from django.contrib.admin import helpers
@@ -24,7 +25,7 @@ class ProductImagesInline(admin.TabularInline):
 
 class ProductOptionsInline(admin.TabularInline):
     model = OptionProduct
-    # classes = ['collapse']
+    classes = ['collapse']
 
 
 @admin.register(Product)
@@ -72,8 +73,6 @@ class ProductAdmin(admin.ModelAdmin):
             inline_admin_formsets.append(inline_admin_formset)
         return inline_admin_formsets
 
-    # list_filter = ('category',)
-
     form = ProductAdminForm
 
     def save_related(self, request, form, formsets, change):
@@ -95,6 +94,9 @@ admin.site.register(AnonymousCustomer)
 
 admin.site.register(Wish)
 
-admin.site.register(Settings)
-admin.site.register(Footer)
+admin.site.register(Setting)
 
+
+@admin.register(Footer)
+class FooterAdmin(admin.ModelAdmin):
+    form = ProductAdminForm

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'basepage',
+    'shop_settings',
     'corsheaders',
     'djoser',
     'rest_framework.authtoken',
@@ -90,7 +91,7 @@ AUTH_USER_MODEL = 'basepage.Customer'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_4',
+        'NAME': 'MicroMason_5',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

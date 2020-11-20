@@ -36,5 +36,7 @@ urlpatterns = [
                   #
                   path('api/v2/', include('basepage.urls')),
                   #
+                  path('api/v2/', include('shop_settings.urls')),
+                  #
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

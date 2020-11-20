@@ -21,31 +21,6 @@ from asgiref.sync import async_to_sync, sync_to_async
 from django.utils.html import mark_safe
 
 
-class Footer(Model):
-    name = CharField(max_length=255)
-    description = CharField(max_length=5000, null=True, blank=True)
-
-
-class Settings(Model):
-    STATUS = (
-        ('True', 'True'),
-        ('False', 'False'),
-    )
-
-    title = CharField(max_length=150)
-    description = CharField(max_length=150, null=True, blank=True)
-    phone = CharField(max_length=15)
-    email = CharField(max_length=50, null=True, blank=True)
-
-    footer = ForeignKey(Footer, on_delete=CASCADE)
-
-    instagram = CharField(max_length=100, null=True, blank=True)
-    telegram = CharField(max_length=100, null=True, blank=True)
-    youtube = CharField(max_length=100, null=True, blank=True)
-    status = CharField(max_length=10, choices=STATUS)
-    create_at = DateTimeField(auto_now_add=True)
-    update_at = DateTimeField(auto_now=True)
-
 
 class Category(Model):
     parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
@@ -56,6 +31,8 @@ class Category(Model):
     slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
     priority = BooleanField(default=False)
+
+    row = SmallIntegerField(max_length=15, null=True, blank=True)
 
     tracker = FieldTracker(fields=('name',), )
 

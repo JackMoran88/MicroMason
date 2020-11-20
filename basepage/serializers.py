@@ -47,13 +47,6 @@ class OptionDetailSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 
-# class OptionDetailSerializer(serializers.ModelSerializer):
-#     parameter = serializers.StringRelatedField(source='product')
-#     class Meta:
-#         model = Option
-#         fields = ('__all__')
-
-
 class ProductImagesDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
