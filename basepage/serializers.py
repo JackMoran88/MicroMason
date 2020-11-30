@@ -28,20 +28,9 @@ class ReviewDetailFilterSerializer(serializers.ListSerializer):
 ######################################################################
 
 
-class CategoryListSerializer(serializers.ModelSerializer):
-
-    children = RecursiveSerializer(many=True, required=False)
-
-    class Meta:
-        model = Category
-        fields = ('__all__')
-
-    def get_group_name(self):
-        return 'Categories'
-
-
 class OptionDetailSerializer(serializers.ModelSerializer):
     parameter = serializers.CharField(source='parameter.name')
+
     class Meta:
         model = OptionProduct
         fields = ('__all__')
@@ -66,42 +55,32 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-
     category = serializers.CharField(source='category.name')
     images = ProductImagesDetailSerializer(many=True)
     count_reviews = serializers.IntegerField()
+    parent_category = serializers.CharField(required=False)
+    category_slug = serializers.CharField(source='category.slug', required=False)
     rating_avg = serializers.FloatField(default=0)
     options = OptionDetailSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = (
-            'id', 'name', 'code',
-            'price', 'description', 'main_image',
-            'slug', 'category', 'images',
-            'count_reviews', 'options',
-            'rating_avg'
-
-        )
+        fields = ('__all__')
 
     def get_group_name(self):
         return 'Product'
 
 
-class CategoryDetailSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source='category.name')
-    images = ProductImagesDetailSerializer(many=True)
-    rating_avg = serializers.FloatField(default=0)
-    count_reviews = serializers.IntegerField()
-
+class ProductSearchListSerializer(serializers.ModelSerializer):
+    category_slug = serializers.CharField(source='category.slug')
     class Meta:
         model = Product
-        fields = ('id', 'name', 'code',
-                  'price', 'description', 'main_image',
-                  'slug', 'category', 'images',
-                  'count_reviews', 'options',
-                  'rating_avg',
-                  )
+        fields = ('__all__')
+
+class CategorySearchListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('__all__')
 
 
 class ReviewCreateSerializer(serializers.ModelSerializer):
@@ -199,4 +178,37 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 class CustomerChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
+        fields = '__all__'
+
+
+class CategoriesListSerializer(serializers.ModelSerializer):
+    children = RecursiveSerializer(many=True, required=False)
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+    def get_group_name(self):
+        return 'Categories'
+
+
+class CategoriesDetailSerializer(serializers.ModelSerializer):
+    children = RecursiveSerializer(many=True, required=False)
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+    def get_group_name(self):
+        return 'Categories'
+
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='category.name')
+    images = ProductImagesDetailSerializer(many=True)
+    rating_avg = serializers.FloatField(default=0)
+    count_reviews = serializers.IntegerField()
+
+    class Meta:
+        model = Category
         fields = '__all__'

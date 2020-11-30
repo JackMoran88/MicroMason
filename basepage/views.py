@@ -1,28 +1,71 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions, generics, viewsets
+from rest_framework import permissions, generics, viewsets, mixins
 
 from .serializers import *
 from .models import *
+from shop_settings.models import *
 
-from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q
+from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q, Case, CharField
 
+from django.shortcuts import get_object_or_404
 from channels.layers import get_channel_layer
+from mptt.templatetags.mptt_tags import cache_tree_children
+
+from .service import *
 
 
-class CategoryViewSet(viewsets.ViewSet):
+class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ProductDetailSerializer
+    pagination_class = PaginationProducts
+
+    def get_queryset(self):
+        if (self.request.data.get('slug')):
+            parent_category = Category.objects.get(slug=self.request.data.get('slug'))
+            category = parent_category.get_descendants(include_self=True)
+
+            queryset = Product.objects.filter(category__in=category)
+            queryset = queryset.annotate(parent_category=Value(parent_category, output_field=CharField()))
+            queryset = get_product_annotate(queryset).order_by(sort_by_choice(self.request))
+            return queryset
+
+
+
+class CategoryViewSet(viewsets.GenericViewSet):
+    pagination_class = PaginationProducts
+
     def list(self, request):
-        queryset = Category.objects.all().filter(parent__isnull=True)
-        serializer = CategoryListSerializer(queryset, many=True)
+        queryset = cache_tree_children(Category.objects.all())
+        serializer = CategoriesListSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, slug=None):
-        products = Product.objects.filter(category__slug=slug).annotate(
-            rating_avg=Avg("reviews__star", filter=Q(reviews__star__in=[1, 2, 3, 4, 5])),
-            count_reviews=Count("reviews", output_field=IntegerField())
-        )
-        serializer = CategoryDetailSerializer(products, many=True)
-        return Response(serializer.data)
+    def details(self, request):
+        if (request.data.get('slug')):
+            parent_category = Category.objects.get(slug=request.data.get('slug'))
+            category = parent_category.get_descendants(include_self=True)
+
+            queryset = Product.objects.filter(category__in=category)
+            queryset = queryset.annotate(parent_category=Value(parent_category, output_field=CharField()))
+            queryset = get_product_annotate(queryset).order_by(sort_by_choice(request))
+
+            page = self.paginate_queryset(queryset)
+            serializer = ProductDetailSerializer(page, many=True)
+            # return Response(serializer.data)
+            return self.get_paginated_response(serializer.data)
+        else:
+            return Response(status=400)
+
+    def search_list(self, request):
+        if (request.data.get('query')):
+            query = request.data.get('query')
+
+            queryset = Category.objects.filter(name__icontains=query)
+            queryset = queryset[:5]
+
+            serializer = CategorySearchListSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=400)
 
 
 class CartViewSet(viewsets.ViewSet):
@@ -31,20 +74,19 @@ class CartViewSet(viewsets.ViewSet):
         if (request.headers.get('Authorization')):
             token = request.headers['Authorization'].replace('Token ', '')
             customer = Customer.objects.get(auth_token__key=token)
-            products = Product.objects.all().filter(cartproduct__cart__customer_id=customer.id).annotate(
-                totals=Sum(F('price') * F('cartproduct__quantity'), output_field=FloatField()),
-                qty=Sum(F('cartproduct__quantity')))
-            print(products)
+
+            products = Product.objects.all().filter(cartproduct__cart__customer_id=customer.id)
+            products = get_cart_annotate(products)
+
             serializer = CartDetailSerializer(products, many=True)
             return Response(serializer.data)
         elif (request.data.get('anonymous')):
             # Если пользователь - Аноним
-            print('anonymous anonymous anonymous anonymous ')
             anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))
-            products = Product.objects.all().filter(cartproduct__cart__anonymous_customer=anonymous.id).annotate(
-                totals=Sum(F('price') * F('cartproduct__quantity'), output_field=FloatField()),
-                qty=Sum(F('cartproduct__quantity')))
-            print(products)
+
+            products = Product.objects.all().filter(cartproduct__cart__anonymous_customer=anonymous.id)
+            products = get_cart_annotate(products)
+
             serializer = CartDetailSerializer(products, many=True)
             return Response(serializer.data)
         else:
@@ -119,11 +161,11 @@ class WishViewSet(viewsets.ViewSet):
 
     def list(self, request):
         customer = Customer.objects.get(auth_token__key=request.data.get('token'))
-        products = Product.objects.all().filter(product__customer=customer).annotate(
-            rating_avg=Avg("reviews__star", filter=Q(reviews__star__in=[1, 2, 3, 4, 5])),
-            count_reviews=Count("reviews", output_field=IntegerField())
-        )
-        serializer = ProductDetailSerializer(products, many=True)
+
+        queryset = Product.objects.all().filter(product__customer=customer)
+        queryset = get_product_annotate(queryset)
+
+        serializer = ProductDetailSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -193,18 +235,18 @@ class ReviewViewSet(viewsets.ViewSet):
         return Response(status=400)
 
 
-class ProductViewSet(viewsets.ViewSet):
+class ProductViewSet(viewsets.GenericViewSet):
+    pagination_class = PaginationProducts
+
     def retrieve(self, request):
         if request.data.get('id'):
-            product = Product.objects.annotate(
-                rating_avg=Avg("reviews__star", filter=Q(reviews__star__in=[1, 2, 3, 4, 5])),
-                count_reviews=Count("reviews", output_field=IntegerField())
-            ).get(id=request.data.get('id'))
+            product = Product.objects.all()
+            product = get_product_annotate(product)
+            product = product.get(id=request.data.get('id'))
         else:
-            product = Product.objects.annotate(
-                rating_avgrating_avg=Avg("reviews__star", filter=Q(reviews__star__in=[1, 2, 3, 4, 5])),
-                count_reviews=Count("reviews", output_field=IntegerField())
-            ).get(slug=request.data.get('slug'))
+            product = Product.objects.all()
+            product = get_product_annotate(product)
+            product = product.get(slug=request.data.get('slug'))
 
         serializer = ProductDetailSerializer(product)
         return Response(serializer.data)
@@ -214,13 +256,41 @@ class ProductViewSet(viewsets.ViewSet):
             ids = request.data.get('ids')
             products = Product.objects.filter(id__in=ids)
         else:
-            products = Product.objects.annotate(
-                rating_avg=Avg("reviews__star", filter=Q(reviews__star__in=[1, 2, 3, 4, 5])),
-                count_reviews=Count("reviews", output_field=IntegerField())
-            ).filter(slug__in=request.data.get('slugs'))
+            products = Product.objects.filter(slug__in=request.data.get('slugs'))
+            products = get_product_annotate(products)
 
         serializer = ProductDetailSerializer(products, many=True)
         return Response(serializer.data)
+
+    def search_detail(self, request):
+
+        if (request.data.get('query')):
+            query = request.data.get('query')
+
+            queryset = Product.objects.filter(name__icontains=query)
+            queryset = get_product_annotate(queryset)
+            queryset = queryset.order_by(sort_by_choice(request))
+
+            page = self.paginate_queryset(queryset)
+            serializer = ProductDetailSerializer(page, many=True)
+
+            return self.get_paginated_response(serializer.data)
+            # return Response(serializer.data)
+        else:
+            return Response(status=400)
+
+    def search_list(self, request):
+
+        if (request.data.get('query')):
+            query = request.data.get('query')
+
+            products = Product.objects.filter(name__icontains=query)
+            products = products[:5]
+
+            serializer = ProductSearchListSerializer(products, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=400)
 
 
 class CustomerViewSet(viewsets.ViewSet):
@@ -252,15 +322,22 @@ class CustomerViewSet(viewsets.ViewSet):
         else:
             return Response(status=400)
 
-    def setFullName(self, request):
+    def change(self, request):
         token = request.headers['Authorization'].replace('Token ', '')
         customer = Customer.objects.get(auth_token__key=token)
-        if (request.data.get('first_name') and request.data.get('last_name')):
-            customer.first_name = request.data.get('first_name')
-            customer.last_name = request.data.get('last_name')
+        if (customer):
+            if (request.data.get('first_name')):
+                customer.first_name = request.data.get('first_name')
+            if (request.data.get('last_name')):
+                customer.last_name = request.data.get('last_name')
+            if (request.data.get('email')):
+                customer.email = request.data.get('email')
+            if (request.data.get('phone')):
+                customer.phone_number = request.data.get('phone')
             customer.save()
             return Response(status=200)
-        return Response(status=400)
+        else:
+            return Response(status=400)
 
 
 class AnonymousViewSer(viewsets.ViewSet):
@@ -271,7 +348,6 @@ class AnonymousViewSer(viewsets.ViewSet):
             return Response(anonymous.data)
         else:
             return Response(status=400)
-
 
 
 #
@@ -298,7 +374,7 @@ async def update_product(product):
 
 
 async def update_categories(category):
-    group_name = CategoryListSerializer().get_group_name()
+    group_name = CategoriesListSerializer().get_group_name()
     channel_layer = get_channel_layer()
 
     content = {

@@ -6,6 +6,8 @@ from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count
 from django.contrib.admin import helpers
 import copy
 
+from mptt.admin import MPTTModelAdmin
+
 # Для отображения фото в товаре
 fields = ['image_tag']
 readonly_fields = ['image_tag']
@@ -47,7 +49,7 @@ class ProductAdmin(admin.ModelAdmin):
                 model_admin=self,
             )
             if isinstance(inline, ProductOptionsInline):
-                if (obj.id != None):
+                if (obj and obj.id != None):
                     current_product = Product.objects.get(id=obj.id)
                     current_category = current_product.category
                     q = Option.objects.all().filter(Q(category=current_category) | Q(category=None)).order_by('order')
@@ -81,7 +83,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 # Импорты
-admin.site.register(Category)
+admin.site.register(Category,MPTTModelAdmin)
 admin.site.register(Brand)
 admin.site.register(Option)
 admin.site.register(OptionProduct)
@@ -93,10 +95,3 @@ admin.site.register(CartProduct)
 admin.site.register(AnonymousCustomer)
 
 admin.site.register(Wish)
-
-admin.site.register(Setting)
-
-
-@admin.register(Footer)
-class FooterAdmin(admin.ModelAdmin):
-    form = ProductAdminForm

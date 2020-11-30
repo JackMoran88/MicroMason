@@ -7,5 +7,9 @@ urlpatterns = [
     #
     path('settings/', SettingsViewSet.as_view({'post': 'list'})),
     #
+    path('parameters/', ParametersViewSet.as_view({'post': 'sortType'})),
+    #
+    path('breadcrumbs/', BreadCrumbsViewSet.as_view({'post': 'list'})),
+    #
 
 ]

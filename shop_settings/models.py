@@ -15,6 +15,7 @@ class Footer(Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class Setting(Model):
     STATUS = (
         ('True', 'True'),
@@ -41,3 +42,16 @@ class Setting(Model):
 
     def __str__(self):
         return f'{self.title}'
+
+
+class ProductSortType(Model):
+    name = CharField(max_length=50)
+    field = CharField(max_length=50)
+    order = PositiveIntegerField(max_length=50, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Сортировка товаров'
+        verbose_name_plural = 'Сортировки товаров'
+
+    def __str__(self):
+        return f'{self.name}'

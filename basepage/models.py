@@ -20,10 +20,13 @@ from model_utils import FieldTracker
 from asgiref.sync import async_to_sync, sync_to_async
 from django.utils.html import mark_safe
 
+import mptt
+from mptt.models import MPTTModel, TreeForeignKey
 
 
-class Category(Model):
-    parent = ForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
+
+class Category(MPTTModel):
+    parent = TreeForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
     name = CharField(max_length=120, null=False, blank=True)
     description = TextField(blank=True)
     main_image = ImageField("Изображение", upload_to="Categories/", blank=True)
@@ -44,12 +47,19 @@ class Category(Model):
             async_to_sync(update_categories)(self)
             return ret
 
-    class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
+    # class Meta:
+    #     verbose_name = "Категория"
+    #     verbose_name_plural = "Категории"
 
     def __str__(self):
-        return f"{self.parent} => {self.id}: {self.name}"
+        # return f"{self.parent} => {self.id}: {self.name}"
+        return f"{self.name}"
+
+    class MPTTMeta:
+        # level_attr = 'mptt_level'
+        order_insertion_by = ['name']
+
+mptt.register(Category, order_insertion_by=['name'])
 
 
 class Option(Model):
@@ -96,16 +106,10 @@ class Product(Model):
 
     slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
-    category = ForeignKey(Category, on_delete=CASCADE, related_name='category')
+    # category = ForeignKey(Category, on_delete=CASCADE, related_name='category')
+    category = TreeForeignKey(Category, on_delete=CASCADE, related_name='category')
 
-    tracker = FieldTracker(fields=('name', 'code', 'quantity', 'price', 'description', 'main_image',), )
-
-    def image_tag(self):
-        return mark_safe(
-            '<img src="/media/%s" width="75" height="75" />' % (self.main_image)
-        )
-
-    image_tag.short_description = 'Image'
+    tracker = FieldTracker(fields=('name', 'brand', 'code', 'quantity', 'price', 'description', 'main_image',), )
 
     def save(self, *args, **kwargs):
         ret = super().save(*args, **kwargs)
@@ -114,6 +118,15 @@ class Product(Model):
             from .views import update_product
             async_to_sync(update_product)(self)
             return ret
+
+
+
+    def image_tag(self):
+        return mark_safe(
+            '<img src="/media/%s" width="75" height="75" />' % (self.main_image)
+        )
+
+    image_tag.short_description = 'Image'
 
     class Meta:
         verbose_name = "Товар"
@@ -136,7 +149,6 @@ class ProductImage(Model):
         return mark_safe('<img src="/media/%s" width="150" height="150" />' % (self.image))
 
     image_tag.short_description = 'Image'
-
 
 class CustomerManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password=None):
@@ -296,6 +308,17 @@ class Review(Model):
     )
 
     created_at = DateField(auto_now_add=True)
+
+    tracker = FieldTracker(fields=('author', 'star', 'text', 'advantages', 'disadvantages',), )
+
+    def save(self, *args, **kwargs):
+        ret = super().save(*args, **kwargs)
+        has_changed = self.tracker.changed()
+        if has_changed:
+            print('CHANGED')
+            from .views import update_product
+            async_to_sync(update_product)(self.product)
+            return ret
 
     def __str__(self):
         return f"{self.star} - {self.product}"

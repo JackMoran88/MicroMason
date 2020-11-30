@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
     'rest_framework.authtoken',
+    'mptt',
 
     'channels',
     'ckeditor',
@@ -91,7 +92,7 @@ AUTH_USER_MODEL = 'basepage.Customer'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_5',
+        'NAME': 'MicroMason_6',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -139,6 +140,8 @@ REST_FRAMEWORK = {
     # 'DEFAULT_FILTER_BACKENDS': (
     #     'django_filters.rest_framework.DjangoFilterBackend',
     # ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 3,
 }
 
 # SMTP(mail)
@@ -208,6 +211,10 @@ CORS_ORIGIN_WHITELIST = [
     "http://192.168.1.243:8080",
     "http://192.168.1.243:8000",
 
+
+#     Для лаб, удаляй
+    'http://localhost:63342'
+
 ]
 # WSGI_APPLICATION = 'MicroMason.wsgi.application'
 ASGI_APPLICATION = "MicroMason.routing.application"
@@ -222,3 +229,5 @@ CHANNEL_LAYERS = {
 }
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
+
+MPTT_ADMIN_LEVEL_INDENT = 20

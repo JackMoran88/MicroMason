@@ -27,7 +27,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
         groups_name = []
         if 'Categories' in kwargs['data']:
             print('\t GET SERIALIZER CATEGORIES')
-            groups_name.append(CategoryListSerializer().get_group_name())
+            groups_name.append(CategoriesListSerializer().get_group_name())
 
         if 'Product' in kwargs['data']:
             print('\t GET SERIALIZER PRODUCT')
