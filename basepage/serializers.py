@@ -2,9 +2,12 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from .models import *
 
+from versatileimagefield.serializers import VersatileImageFieldSerializer
+
 from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q
 from asgiref.sync import sync_to_async, async_to_sync
 
+from .service import *
 
 ######################################################################
 
@@ -37,6 +40,7 @@ class OptionDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductImagesDetailSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ProductImage
         fields = ('__all__')
@@ -56,6 +60,7 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='category.name')
+    main_image = VersatileImageFieldSerializer(sizes='product_img')
     images = ProductImagesDetailSerializer(many=True)
     count_reviews = serializers.IntegerField()
     parent_category = serializers.CharField(required=False)
@@ -73,9 +78,11 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 class ProductSearchListSerializer(serializers.ModelSerializer):
     category_slug = serializers.CharField(source='category.slug')
+    main_image = VersatileImageFieldSerializer(sizes='product_img')
     class Meta:
         model = Product
         fields = ('__all__')
+
 
 class CategorySearchListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -145,9 +152,10 @@ class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
 
 
 class CartDetailSerializer(serializers.ModelSerializer):
+    category_slug = serializers.CharField(source='category.slug')
     totals = serializers.FloatField(default=0)
     qty = serializers.IntegerField(default=0)
-
+    main_image = VersatileImageFieldSerializer(sizes='product_img')
     class Meta:
         model = Product
         fields = ('__all__')
@@ -183,6 +191,7 @@ class CustomerChangeSerializer(serializers.ModelSerializer):
 
 class CategoriesListSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True, required=False)
+    main_image = VersatileImageFieldSerializer(sizes='category_img')
 
     class Meta:
         model = Category
@@ -194,7 +203,7 @@ class CategoriesListSerializer(serializers.ModelSerializer):
 
 class CategoriesDetailSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True, required=False)
-
+    main_image = VersatileImageFieldSerializer(sizes='category_img')
     class Meta:
         model = Category
         fields = '__all__'
@@ -203,12 +212,3 @@ class CategoriesDetailSerializer(serializers.ModelSerializer):
         return 'Categories'
 
 
-class CategoryDetailSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source='category.name')
-    images = ProductImagesDetailSerializer(many=True)
-    rating_avg = serializers.FloatField(default=0)
-    count_reviews = serializers.IntegerField()
-
-    class Meta:
-        model = Category
-        fields = '__all__'

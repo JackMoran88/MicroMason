@@ -23,19 +23,35 @@ from django.utils.html import mark_safe
 import mptt
 from mptt.models import MPTTModel, TreeForeignKey
 
+from versatileimagefield.fields import VersatileImageField, PPOIField
+from versatileimagefield.placeholder import OnStoragePlaceholderImage
 
 
 class Category(MPTTModel):
     parent = TreeForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
     name = CharField(max_length=120, null=False, blank=True)
     description = TextField(blank=True)
-    main_image = ImageField("Изображение", upload_to="Categories/", blank=True)
+
+    main_image = VersatileImageField(
+        "Изображение",
+        upload_to="Categories/",
+        blank=True,
+        ppoi_field='main_image_ppoi',
+        placeholder_image=OnStoragePlaceholderImage(
+            path='images/default/product/404.png'
+        )
+    )
+
+    main_image_ppoi = PPOIField()
 
     slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
     priority = BooleanField(default=False)
 
     row = SmallIntegerField(max_length=15, null=True, blank=True)
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     tracker = FieldTracker(fields=('name',), )
 
@@ -59,6 +75,7 @@ class Category(MPTTModel):
         # level_attr = 'mptt_level'
         order_insertion_by = ['name']
 
+
 mptt.register(Category, order_insertion_by=['name'])
 
 
@@ -66,6 +83,9 @@ class Option(Model):
     name = CharField(max_length=225)
     category = ForeignKey(Category, on_delete=CASCADE, null=True, blank=True)
     order = PositiveIntegerField(max_length=25555, blank=True, null=True)
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.category} - {self.name}"
@@ -79,12 +99,18 @@ class OptionProduct(Model):
                          blank=True, related_name='options')
     parameter = ForeignKey(Option, on_delete=CASCADE, null=True, blank=True)
 
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
     def __str__(self):
         return f" {self.id}: {self.parameter} - {self.name}"
 
 
 class Brand(Model):
     name = CharField(max_length=40)
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -97,17 +123,23 @@ class Product(Model):
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
     description = TextField(blank=True, null=True)
-    main_image = ImageField("Изображение", upload_to="Products/", blank=True, default='images/default/product/404.png')
-
-    # options = ManyToManyField(OptionProduct,
-    #                           null=True,
-    #                           blank=True,
-    #                           related_name='Характеристики', )
+    main_image = VersatileImageField(
+        "Изображение",
+        upload_to="Products/",
+        blank=True,
+        ppoi_field='main_image_ppoi',
+        placeholder_image=OnStoragePlaceholderImage(
+            path='images/default/product/404.png'
+        )
+    )
+    main_image_ppoi = PPOIField()
 
     slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
 
-    # category = ForeignKey(Category, on_delete=CASCADE, related_name='category')
     category = TreeForeignKey(Category, on_delete=CASCADE, related_name='category')
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     tracker = FieldTracker(fields=('name', 'brand', 'code', 'quantity', 'price', 'description', 'main_image',), )
 
@@ -118,8 +150,6 @@ class Product(Model):
             from .views import update_product
             async_to_sync(update_product)(self)
             return ret
-
-
 
     def image_tag(self):
         return mark_safe(
@@ -140,6 +170,9 @@ class ProductImage(Model):
     product_id = ForeignKey('Product', on_delete=CASCADE, related_name='images')
     image = ImageField(upload_to='ProductImages/', unique=True)
 
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
     #
     # class Meta:
     #     verbose_name_plural = 'Фото товаров'
@@ -149,6 +182,7 @@ class ProductImage(Model):
         return mark_safe('<img src="/media/%s" width="150" height="150" />' % (self.image))
 
     image_tag.short_description = 'Image'
+
 
 class CustomerManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password=None):
@@ -198,6 +232,9 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     # cart = ForeignKey(Cart, on_delete=SET_NULL, null=True)
 
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
     is_active = BooleanField(default=True)
     is_admin = BooleanField(default=False)
     is_superuser = BooleanField(default=False)
@@ -246,6 +283,9 @@ class AnonymousCustomer(Model):
     # token = CharField(max_length=25)
     last_update = DateField(auto_now_add=True, )
 
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
     class Meta:
         verbose_name = "Аноним"
         verbose_name_plural = "Анонимые пользователи"
@@ -254,6 +294,9 @@ class AnonymousCustomer(Model):
 class Cart(Model):
     customer = ForeignKey(Customer, on_delete=CASCADE, null=True, blank=True)
     anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Корзина"
@@ -268,6 +311,9 @@ class CartProduct(Model):
     product = ForeignKey(Product, on_delete=CASCADE)
     quantity = PositiveIntegerField('Количество', default=1)
 
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
     class Meta:
         verbose_name = "Товар корзины"
         verbose_name_plural = "Товары корзины"
@@ -278,6 +324,9 @@ class CartProduct(Model):
 
 class RatingStar(Model):
     value = SmallIntegerField("Значение", default=0)
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     def __str__(self):
         return f'{self.value}'
@@ -307,7 +356,8 @@ class Review(Model):
         blank=False,
     )
 
-    created_at = DateField(auto_now_add=True)
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     tracker = FieldTracker(fields=('author', 'star', 'text', 'advantages', 'disadvantages',), )
 
@@ -331,6 +381,9 @@ class Review(Model):
 class Wish(Model):
     customer = ForeignKey(Customer, on_delete=CASCADE, related_name='wish')
     product = ForeignKey(Product, on_delete=CASCADE, related_name='product', )
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"User: {self.customer} ,product #{self.product}"

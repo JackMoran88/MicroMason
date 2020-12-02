@@ -15,6 +15,7 @@ from rest_framework.pagination import PageNumberPagination
 import math
 
 
+
 class PaginationProducts(PageNumberPagination):
     page_size = 2
     max_page_size = 1000
@@ -44,9 +45,8 @@ def sort_by_choice(request):
 
 
 def get_product_annotate(object):
-    print(f'\t {object}')
     object = object.annotate(
-        rating_avg=Avg("reviews__star__value", output_field=FloatField()),
+        rating_avg=Avg("reviews__star__value", filter=Q(reviews__star__value__in=[1, 2, 3, 4, 5]), output_field=FloatField()),
         count_reviews=Count("reviews", output_field=IntegerField()),
     )
     return object
@@ -58,3 +58,8 @@ def get_cart_annotate(object):
         qty=Sum(F('cartproduct__quantity'))
     )
     return object
+
+
+def get_image_crop(object):
+    print(object)
+    return 0

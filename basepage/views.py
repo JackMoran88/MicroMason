@@ -30,12 +30,11 @@ class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
             return queryset
 
 
-
 class CategoryViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
 
     def list(self, request):
-        queryset = cache_tree_children(Category.objects.all())
+        queryset = cache_tree_children(Category.objects.all().order_by('id'))
         serializer = CategoriesListSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -49,6 +48,7 @@ class CategoryViewSet(viewsets.GenericViewSet):
             queryset = get_product_annotate(queryset).order_by(sort_by_choice(request))
 
             page = self.paginate_queryset(queryset)
+
             serializer = ProductDetailSerializer(page, many=True)
             # return Response(serializer.data)
             return self.get_paginated_response(serializer.data)
@@ -255,6 +255,7 @@ class ProductViewSet(viewsets.GenericViewSet):
         if request.data.get('ids'):
             ids = request.data.get('ids')
             products = Product.objects.filter(id__in=ids)
+            products = get_product_annotate(products)
         else:
             products = Product.objects.filter(slug__in=request.data.get('slugs'))
             products = get_product_annotate(products)
