@@ -39,8 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+
     'basepage',
     'shop_settings',
+    'order',
+
     'corsheaders',
     'djoser',
     'rest_framework.authtoken',
@@ -50,8 +53,6 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'versatileimagefield',
-    # 'django_celery_results',
-    # 'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -92,7 +93,7 @@ AUTH_USER_MODEL = 'basepage.Customer'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_7',
+        'NAME': 'MicroMason_8',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -212,7 +213,10 @@ CORS_ORIGIN_WHITELIST = [
     "http://192.168.1.243:8000",
 
     #     Для лаб, удаляй
-    'http://localhost:63342'
+    'http://localhost:63342',
+    #
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
 
 ]
 # WSGI_APPLICATION = 'MicroMason.wsgi.application'
@@ -234,6 +238,7 @@ MPTT_ADMIN_LEVEL_INDENT = 20
 VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
     'product_img': [
         ('full', 'url'),
+        ('gallery', 'thumbnail__720x720'),
         ('card', 'thumbnail__200x200'),
         ('cart', 'thumbnail__100x100'),
     ],
@@ -241,6 +246,10 @@ VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
         ('full', 'url'),
         ('card', 'thumbnail__200x200'),
     ],
+    'slider_img': [
+        ('full', 'url'),
+        ('standard', 'thumbnail__1200x400'),
+    ]
 }
 
 VERSATILEIMAGEFIELD_SETTINGS = {

@@ -11,6 +11,11 @@ from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count
 from channels.layers import get_channel_layer
 from django.shortcuts import get_object_or_404
 
+class TestConnection(viewsets.ViewSet):
+    def post(self, request):
+        return Response(status=200)
+
+
 class SettingsViewSet(viewsets.ViewSet):
 
     def list(self, request):
@@ -42,6 +47,14 @@ class BreadCrumbsViewSet(viewsets.ViewSet):
             return Response(serializer.data)
 
         else:
-            return Response(status=400)
+            return Response()
+
+
+class SliderViewSet(viewsets.ViewSet):
+
+    def list(self, request):
+        queryset = Slider.objects.all()
+        serializer = SliderDetailSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 

@@ -9,6 +9,8 @@ from asgiref.sync import sync_to_async, async_to_sync
 
 from .service import *
 
+from order.serializers import *
+
 ######################################################################
 
 # class ModelNameFunctionSerializer
@@ -40,6 +42,7 @@ class OptionDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductImagesDetailSerializer(serializers.ModelSerializer):
+    image = VersatileImageFieldSerializer(sizes='product_img')
 
     class Meta:
         model = ProductImage
@@ -176,11 +179,12 @@ class WishAddSerializer(serializers.ModelSerializer):
 
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
+    address = AddressDetailSerializer(many=True)
     wish = serializers.SlugRelatedField(slug_field='product_id', many=True, read_only=True, )
 
     class Meta:
         model = Customer
-        fields = ('id', 'email', 'phone_number', 'birthday', 'first_name', 'last_name', 'wish')
+        fields = ('id', 'email', 'phone_number', 'birthday', 'first_name', 'last_name', 'wish', 'address')
 
 
 class CustomerChangeSerializer(serializers.ModelSerializer):

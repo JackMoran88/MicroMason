@@ -36,6 +36,9 @@ class Setting(Model):
     youtube = CharField(max_length=100, null=True, blank=True)
     status = CharField(max_length=10, choices=STATUS)
 
+    meta_description = CharField(max_length=5000, null=True, blank=True)
+    meta_keywords = CharField(max_length=5000, null=True, blank=True)
+
     create_at = DateTimeField(auto_now_add=True)
     update_at = DateTimeField(auto_now=True)
 
@@ -50,7 +53,7 @@ class Setting(Model):
 class ProductSortType(Model):
     name = CharField(max_length=50)
     field = CharField(max_length=50)
-    order = PositiveIntegerField(max_length=50, null=True, blank=True)
+    order = PositiveIntegerField(null=True, blank=True)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -76,7 +79,7 @@ class ProductSortType(Model):
 
 class Slide(Model):
     title = CharField(max_length=255, null=True, blank=True)
-    slide = VersatileImageField("Слайд", upload_to="Slides/", blank=True, ppoi_field='slide_ppoi')
+    image = VersatileImageField("Слайд", upload_to="Slides/", blank=True, ppoi_field='slide_ppoi')
     slide_ppoi = PPOIField()
 
     url = CharField(max_length=1000, blank=True, null=True)
@@ -84,15 +87,26 @@ class Slide(Model):
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'Слайд'
+        verbose_name_plural = 'Слайды'
 
+    def __str__(self):
+        return f'{self.title}'
 
 class Slider(Model):
     name = CharField(max_length=255)
-    slides = ForeignKey(Slide, on_delete=CASCADE)
-    width = PositiveIntegerField(max_length=255)
-    height = PositiveIntegerField(max_length=255)
+    slides = ManyToManyField(Slide)
+    place = CharField(max_length=255)
+    width = PositiveIntegerField()
+    height = PositiveIntegerField()
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'Слайдер'
+        verbose_name_plural = 'Слайдеры'
 
+    def __str__(self):
+        return f'{self.name} -  {self.place}'

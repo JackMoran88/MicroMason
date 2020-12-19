@@ -15,7 +15,6 @@ from rest_framework.pagination import PageNumberPagination
 import math
 
 
-
 class PaginationProducts(PageNumberPagination):
     page_size = 2
     max_page_size = 1000
@@ -46,7 +45,8 @@ def sort_by_choice(request):
 
 def get_product_annotate(object):
     object = object.annotate(
-        rating_avg=Avg("reviews__star__value", filter=Q(reviews__star__value__in=[1, 2, 3, 4, 5]), output_field=FloatField()),
+        rating_avg=Avg("reviews__star__value", filter=Q(reviews__star__value__in=[1, 2, 3, 4, 5]),
+                       output_field=FloatField()),
         count_reviews=Count("reviews", output_field=IntegerField()),
     )
     return object
@@ -60,6 +60,25 @@ def get_cart_annotate(object):
     return object
 
 
+def check_404(object):
+    if (object):
+        return object
+    else:
+        return Response(status=404)
+
+
 def get_image_crop(object):
     print(object)
     return 0
+
+
+def get_user(request):
+    if (request.headers.get('Authorization')):
+        token = request.headers['Authorization'].replace('Token ', '')
+        customer = Customer.objects.get(auth_token__key=token)
+        return {'customer': customer}
+    elif (request.data.get('anonymous')):
+        anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))
+        return {'anonymous': anonymous}
+    else:
+        return {}

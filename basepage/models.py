@@ -48,7 +48,7 @@ class Category(MPTTModel):
 
     priority = BooleanField(default=False)
 
-    row = SmallIntegerField(max_length=15, null=True, blank=True)
+    row = SmallIntegerField(null=True, blank=True)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -63,12 +63,11 @@ class Category(MPTTModel):
             async_to_sync(update_categories)(self)
             return ret
 
-    # class Meta:
-    #     verbose_name = "Категория"
-    #     verbose_name_plural = "Категории"
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
 
     def __str__(self):
-        # return f"{self.parent} => {self.id}: {self.name}"
         return f"{self.name}"
 
     class MPTTMeta:
@@ -82,10 +81,14 @@ mptt.register(Category, order_insertion_by=['name'])
 class Option(Model):
     name = CharField(max_length=225)
     category = ForeignKey(Category, on_delete=CASCADE, null=True, blank=True)
-    order = PositiveIntegerField(max_length=25555, blank=True, null=True)
+    order = PositiveIntegerField(blank=True, null=True)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Опция'
+        verbose_name_plural = 'Опции'
 
     def __str__(self):
         return f"{self.category} - {self.name}"
@@ -102,6 +105,10 @@ class OptionProduct(Model):
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'Опции товара'
+        verbose_name_plural = 'Опции товаров'
+
     def __str__(self):
         return f" {self.id}: {self.parameter} - {self.name}"
 
@@ -112,11 +119,22 @@ class Brand(Model):
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = 'Производитель'
+        verbose_name_plural = 'Производители'
+
     def __str__(self):
         return f"{self.name}"
 
 
 class Product(Model):
+    STATUSES = (
+        ('0', 'Нет в наличии'),
+        ('1', 'В наличии'),
+        ('2', 'Ожидается'),
+        ('3', 'Предзаказ'),
+    )
+
     name = CharField(max_length=120, null=False)
     brand = ForeignKey(Brand, on_delete=CASCADE, null=True, blank=True)
     code = PositiveIntegerField(null=False)
@@ -138,10 +156,13 @@ class Product(Model):
 
     category = TreeForeignKey(Category, on_delete=CASCADE, related_name='category')
 
+    status = CharField(max_length=255, choices=STATUSES)
+
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
-    tracker = FieldTracker(fields=('name', 'brand', 'code', 'quantity', 'price', 'description', 'main_image',), )
+    tracker = FieldTracker(
+        fields=('name', 'brand', 'code', 'quantity', 'price', 'description', 'main_image', 'status',), )
 
     def save(self, *args, **kwargs):
         ret = super().save(*args, **kwargs)
@@ -168,15 +189,15 @@ class Product(Model):
 
 class ProductImage(Model):
     product_id = ForeignKey('Product', on_delete=CASCADE, related_name='images')
-    image = ImageField(upload_to='ProductImages/', unique=True)
+    image = VersatileImageField(upload_to='ProductImages/', unique=True, ppoi_field='image_ppoi', )
+    image_ppoi = PPOIField()
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
-    #
-    # class Meta:
-    #     verbose_name_plural = 'Фото товаров'
-    #     verbose_name = 'Фото товара'
+    class Meta:
+        verbose_name_plural = 'Фото товаров'
+        verbose_name = 'Фото товара'
 
     def image_tag(self):
         return mark_safe('<img src="/media/%s" width="150" height="150" />' % (self.image))
@@ -214,6 +235,13 @@ class CustomerManager(BaseUserManager):
 
 class CustomerGender(Model):
     gender = CharField(max_length=20, verbose_name='Пол', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Пол пользователя'
+        verbose_name_plural = 'Пола пользователя'
+
+    def __str__(self):
+        return f'{self.gender}'
 
 
 class Customer(AbstractBaseUser, PermissionsMixin):
@@ -290,6 +318,9 @@ class AnonymousCustomer(Model):
         verbose_name = "Аноним"
         verbose_name_plural = "Анонимые пользователи"
 
+    def __str__(self):
+        return f'{self.last_update}'
+
 
 class Cart(Model):
     customer = ForeignKey(Customer, on_delete=CASCADE, null=True, blank=True)
@@ -303,7 +334,7 @@ class Cart(Model):
         verbose_name_plural = "Корзины"
 
     def __str__(self):
-        return f'Корзина #{self.id}'
+        return f'Корзина #{self.id} - {self.customer.first_name} {self.customer.last_name}'
 
 
 class CartProduct(Model):
@@ -384,6 +415,10 @@ class Wish(Model):
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Список желаемого'
+        verbose_name_plural = 'Списки желаемого'
 
     def __str__(self):
         return f"User: {self.customer} ,product #{self.product}"

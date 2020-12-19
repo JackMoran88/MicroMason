@@ -32,7 +32,7 @@ urlpatterns = [
     path('customer/change/', CustomerViewSet.as_view({'post': 'change'})),
     path('customer/detail/', CustomerViewSet.as_view({'post': 'retrieve'})),
     #
-    path('anonymous/', AnonymousViewSer.as_view({'post': 'create'})),
+    path('anonymous/', AnonymousViewSet.as_view({'post': 'create'})),
     #
     path('test/', ProductPaginationGeneric.as_view({'post': 'list'})),
     #

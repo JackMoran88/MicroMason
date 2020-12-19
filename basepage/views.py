@@ -40,7 +40,7 @@ class CategoryViewSet(viewsets.GenericViewSet):
 
     def details(self, request):
         if (request.data.get('slug')):
-            parent_category = Category.objects.get(slug=request.data.get('slug'))
+            parent_category = get_object_or_404(Category, slug=request.data.get('slug'))
             category = parent_category.get_descendants(include_self=True)
 
             queryset = Product.objects.filter(category__in=category)
@@ -242,11 +242,13 @@ class ProductViewSet(viewsets.GenericViewSet):
         if request.data.get('id'):
             product = Product.objects.all()
             product = get_product_annotate(product)
-            product = product.get(id=request.data.get('id'))
+            # product = product.get(id=request.data.get('id'))
+            product = get_object_or_404(product, id=request.data.get('id'))
         else:
             product = Product.objects.all()
             product = get_product_annotate(product)
-            product = product.get(slug=request.data.get('slug'))
+            # product = product.get(slug=request.data.get('slug'))
+            product = get_object_or_404(product, slug=request.data.get('slug'))
 
         serializer = ProductDetailSerializer(product)
         return Response(serializer.data)
@@ -341,7 +343,7 @@ class CustomerViewSet(viewsets.ViewSet):
             return Response(status=400)
 
 
-class AnonymousViewSer(viewsets.ViewSet):
+class AnonymousViewSet(viewsets.ViewSet):
     def create(self, request):
         anonymous = AnonymousCustomerCreateSerializer(data=request.data)
         if anonymous.is_valid():
@@ -349,6 +351,8 @@ class AnonymousViewSer(viewsets.ViewSet):
             return Response(anonymous.data)
         else:
             return Response(status=400)
+
+    
 
 
 #
