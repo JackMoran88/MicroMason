@@ -27,6 +27,9 @@ from versatileimagefield.fields import VersatileImageField, PPOIField
 from versatileimagefield.placeholder import OnStoragePlaceholderImage
 
 
+# import product.models
+
+
 class Category(MPTTModel):
     parent = TreeForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
     name = CharField(max_length=120, null=False, blank=True)
@@ -59,7 +62,7 @@ class Category(MPTTModel):
         ret = super().save(*args, **kwargs)
         has_changed = self.tracker.has_changed('name')
         if has_changed:
-            from .views import update_categories
+            from basepage.ws_service import update_categories
             async_to_sync(update_categories)(self)
             return ret
 
@@ -76,133 +79,6 @@ class Category(MPTTModel):
 
 
 mptt.register(Category, order_insertion_by=['name'])
-
-
-class Option(Model):
-    name = CharField(max_length=225)
-    category = ForeignKey(Category, on_delete=CASCADE, null=True, blank=True)
-    order = PositiveIntegerField(blank=True, null=True)
-
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = 'Опция'
-        verbose_name_plural = 'Опции'
-
-    def __str__(self):
-        return f"{self.category} - {self.name}"
-
-
-class OptionProduct(Model):
-    name = CharField(max_length=225, null=True, blank=True)
-    product = ForeignKey('Product',
-                         on_delete=CASCADE,
-                         null=True,
-                         blank=True, related_name='options')
-    parameter = ForeignKey(Option, on_delete=CASCADE, null=True, blank=True)
-
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = 'Опции товара'
-        verbose_name_plural = 'Опции товаров'
-
-    def __str__(self):
-        return f" {self.id}: {self.parameter} - {self.name}"
-
-
-class Brand(Model):
-    name = CharField(max_length=40)
-
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = 'Производитель'
-        verbose_name_plural = 'Производители'
-
-    def __str__(self):
-        return f"{self.name}"
-
-
-class Product(Model):
-    STATUSES = (
-        ('0', 'Нет в наличии'),
-        ('1', 'В наличии'),
-        ('2', 'Ожидается'),
-        ('3', 'Предзаказ'),
-    )
-
-    name = CharField(max_length=120, null=False)
-    brand = ForeignKey(Brand, on_delete=CASCADE, null=True, blank=True)
-    code = PositiveIntegerField(null=False)
-    quantity = PositiveIntegerField(editable=True, default=0)
-    price = FloatField(null=False)
-    description = TextField(blank=True, null=True)
-    main_image = VersatileImageField(
-        "Изображение",
-        upload_to="Products/",
-        blank=True,
-        ppoi_field='main_image_ppoi',
-        placeholder_image=OnStoragePlaceholderImage(
-            path='images/default/product/404.png'
-        )
-    )
-    main_image_ppoi = PPOIField()
-
-    slug = AutoSlugField(populate_from='name', always_update=True, unique=True)
-
-    category = TreeForeignKey(Category, on_delete=CASCADE, related_name='category')
-
-    status = CharField(max_length=255, choices=STATUSES)
-
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-
-    tracker = FieldTracker(
-        fields=('name', 'brand', 'code', 'quantity', 'price', 'description', 'main_image', 'status',), )
-
-    def save(self, *args, **kwargs):
-        ret = super().save(*args, **kwargs)
-        has_changed = self.tracker.changed()
-        if has_changed:
-            from .views import update_product
-            async_to_sync(update_product)(self)
-            return ret
-
-    def image_tag(self):
-        return mark_safe(
-            '<img src="/media/%s" width="75" height="75" />' % (self.main_image)
-        )
-
-    image_tag.short_description = 'Image'
-
-    class Meta:
-        verbose_name = "Товар"
-        verbose_name_plural = "Товары"
-
-    def __str__(self):
-        return f"{self.id}: {self.name}"
-
-
-class ProductImage(Model):
-    product_id = ForeignKey('Product', on_delete=CASCADE, related_name='images')
-    image = VersatileImageField(upload_to='ProductImages/', unique=True, ppoi_field='image_ppoi', )
-    image_ppoi = PPOIField()
-
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name_plural = 'Фото товаров'
-        verbose_name = 'Фото товара'
-
-    def image_tag(self):
-        return mark_safe('<img src="/media/%s" width="150" height="150" />' % (self.image))
-
-    image_tag.short_description = 'Image'
 
 
 class CustomerManager(BaseUserManager):
@@ -322,37 +198,6 @@ class AnonymousCustomer(Model):
         return f'{self.last_update}'
 
 
-class Cart(Model):
-    customer = ForeignKey(Customer, on_delete=CASCADE, null=True, blank=True)
-    anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
-
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Корзина"
-        verbose_name_plural = "Корзины"
-
-    def __str__(self):
-        return f'Корзина #{self.id} - {self.customer.first_name} {self.customer.last_name}'
-
-
-class CartProduct(Model):
-    cart = ForeignKey(Cart, on_delete=CASCADE)
-    product = ForeignKey(Product, on_delete=CASCADE)
-    quantity = PositiveIntegerField('Количество', default=1)
-
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Товар корзины"
-        verbose_name_plural = "Товары корзины"
-
-    def __str__(self):
-        return f"Корзина #{self.cart.id} - {self.product}"
-
-
 class RatingStar(Model):
     value = SmallIntegerField("Значение", default=0)
 
@@ -368,19 +213,25 @@ class RatingStar(Model):
         ordering = ["-value"]
 
 
-class Review(Model):
+class Review(MPTTModel):
     author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
     star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда", null=True, blank=True)
 
     text = TextField("Коментарий", max_length=5000, blank=True, null=True)
     advantages = TextField("Достоинства", max_length=2500, blank=True, null=True)
     disadvantages = TextField("Недостатки", max_length=2500, blank=True, null=True)
-    parent = ForeignKey(
-        'self', verbose_name="Родитель", on_delete=SET_NULL, blank=True, null=True, related_name='children'
+
+    parent = TreeForeignKey(
+        "self",
+        on_delete=CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Родитель",
+        related_name='children',
     )
 
     product = ForeignKey(
-        Product,
+        'product.Product',
         on_delete=CASCADE,
         verbose_name="Товар",
         related_name="reviews",
@@ -390,14 +241,15 @@ class Review(Model):
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
-    tracker = FieldTracker(fields=('author', 'star', 'text', 'advantages', 'disadvantages',), )
+    # Не добовлять автора, будет рекурсивный запрос
+    tracker = FieldTracker(fields=('star', 'text', 'advantages', 'disadvantages',), )
 
     def save(self, *args, **kwargs):
         ret = super().save(*args, **kwargs)
         has_changed = self.tracker.changed()
+        print(has_changed)
         if has_changed:
-            print('CHANGED')
-            from .views import update_product
+            from basepage.ws_service import update_product
             async_to_sync(update_product)(self.product)
             return ret
 
@@ -411,7 +263,7 @@ class Review(Model):
 
 class Wish(Model):
     customer = ForeignKey(Customer, on_delete=CASCADE, related_name='wish')
-    product = ForeignKey(Product, on_delete=CASCADE, related_name='product', )
+    product = ForeignKey('product.Product', on_delete=CASCADE, related_name='product', )
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)

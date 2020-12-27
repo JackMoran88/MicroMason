@@ -35,10 +35,11 @@ urlpatterns = [
                   path('api/v2/auth/', include('djoser.urls.jwt')),
                   #
                   path('api/v2/', include('basepage.urls')),
-                  #
                   path('api/v2/', include('shop_settings.urls')),
-                  #
+                  path('api/v2/', include('product.urls')),
+                  path('api/v2/', include('cart.urls')),
                   path('api/v2/', include('order.urls')),
+                  # path('api/v2/', include('user.urls')),
                   #
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

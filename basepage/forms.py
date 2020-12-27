@@ -2,6 +2,7 @@ from django import forms
 from django.core.validators import validate_image_file_extension
 from django.utils.translation import gettext as _
 from .models import *
+from product.models import *
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
@@ -11,7 +12,7 @@ class ProductAdminForm(forms.ModelForm):
         fields = ('__all__')
 
     # ckeditor
-    description = forms.CharField(widget=CKEditorUploadingWidget())
+    description = forms.CharField(widget=CKEditorUploadingWidget(), required=False)
     # multi choice files
     images = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}),

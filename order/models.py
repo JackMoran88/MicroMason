@@ -41,7 +41,7 @@ class Address(Model):
     email = EmailField()
     phone_number = CharField(validators=[phone_regex], max_length=17, blank=True)
     address = CharField(max_length=250)
-    postal_code = CharField(max_length=20)
+    postal_code = CharField(max_length=20, null=True, blank=True)
     city = CharField(max_length=100)
 
     created_at = DateTimeField(auto_now_add=True)
@@ -58,6 +58,9 @@ class Shipping(Model):
     name = CharField(max_length=225)
     description = CharField(max_length=5000)
 
+    price = PositiveIntegerField()
+
+
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
@@ -65,17 +68,39 @@ class Shipping(Model):
         verbose_name = 'Метод доставки'
         verbose_name_plural = 'Методы доставки'
 
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Payment(Model):
-    pass
+    name = CharField(max_length=255)
+    order_by = PositiveIntegerField(blank=True, null=True)
 
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Способ оплаты'
+        verbose_name_plural = 'Способы оплаты'
+
+    def __str__(self):
+        return f'{self.name}'
+
+class OrderStatus(Model):
+    name = CharField(max_length=255)
+    order_by = PositiveIntegerField(blank=True, null=True)
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Статус заказа'
+        verbose_name_plural = 'Статусы заказа'
+
+    def __str__(self):
+        return f'{self.name}'
 
 class Order(Model):
-    PAYMENT_METHODS = (
-        ('0', 'Наложеный платеж'),
-        ('1', 'Оплата картой'),
-    )
     PAID_STAUTUSES = (
         ('0', 'Не оплачено'),
         ('1', 'Ожидается оплата'),
@@ -85,11 +110,13 @@ class Order(Model):
     anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
 
 
-    shipping = ForeignKey(Shipping, on_delete=CASCADE, null=True, blank=True)
-    address = ForeignKey(Address, on_delete=CASCADE, null=True, blank=True)
+    shipping = ForeignKey(Shipping, on_delete=CASCADE, null=True, blank=True, verbose_name='Способ доставки')
+    address = ForeignKey(Address, on_delete=CASCADE, null=True, blank=True, verbose_name='Адресс доставки')
 
-    payment_method = CharField(max_length=255, choices=PAYMENT_METHODS, default=0)
-    paid = CharField(max_length=255, choices=PAID_STAUTUSES, default=0)
+    payment_method = ForeignKey(Payment, on_delete=CASCADE, verbose_name='Способ оплаты')
+    paid = CharField(max_length=255, choices=PAID_STAUTUSES, default=0, verbose_name='Статус оплаты')
+    status = ForeignKey(OrderStatus, on_delete=CASCADE, verbose_name='Статус заказа',
+                        null=True, default=1)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -99,13 +126,12 @@ class Order(Model):
         verbose_name_plural = 'Заказы'
 
     def __str__(self):
-        return f'#{self.id} - {self.get_payment_method_display()}'
-
+        return f'#{self.id}'
 
 
 class OrderProduct(Model):
     order = ForeignKey(Order, on_delete=CASCADE, related_name='order_products')
-    product = ForeignKey(Product, on_delete=CASCADE)
+    product = ForeignKey('product.Product', on_delete=CASCADE)
     quantity = PositiveIntegerField('Количество', default=1)
 
     created_at = DateTimeField(auto_now_add=True)

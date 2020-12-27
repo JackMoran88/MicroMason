@@ -10,6 +10,7 @@ from asgiref.sync import sync_to_async, async_to_sync
 from basepage.service import *
 from basepage.serializers import *
 
+import product.models
 
 ######################################################################
 
@@ -39,9 +40,16 @@ class ShippingDetailSerializer(serializers.ModelSerializer):
         model = Shipping
         fields = ('__all__')
 
+
 class AddressDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
+        fields = ('__all__')
+
+
+class PaymentDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
         fields = ('__all__')
 
 
@@ -53,7 +61,7 @@ class OrderProductDetailHelper(serializers.ModelSerializer):
     rating_avg = serializers.FloatField(default=0)
 
     class Meta:
-        model = Product
+        model = product.models.Product
         # fields = ('__all__')
         exclude = ['description', ]
 
@@ -69,13 +77,20 @@ class OrderProductDetailSerializer(serializers.ModelSerializer):
         model = OrderProduct
         fields = ('id', 'product', 'quantity', 'total')
 
+class OrderStatusDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderStatus
+        fields = '__all__'
+
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     order_products = OrderProductDetailSerializer(many=True, required=True)
     paid = ChoiceField(choices=Order.PAID_STAUTUSES)
-    payment_method = ChoiceField(choices=Order.PAYMENT_METHODS)
+    # payment_method = ChoiceField(choices=Order.PAYMENT_METHODS)
+    payment_method = PaymentDetailSerializer()
     total = serializers.FloatField(default=0)
     qty = serializers.IntegerField(default=0)
+    status = OrderStatusDetailSerializer()
     shipping = ShippingDetailSerializer()
     address = AddressDetailSerializer()
 
@@ -96,5 +111,4 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             payment_method=validated_data.get('payment_method'),
         )
         return order
-
 

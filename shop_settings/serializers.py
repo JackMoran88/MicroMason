@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import *
 from basepage.models import *
 from versatileimagefield.serializers import VersatileImageFieldSerializer
-
+import product.models
 
 class FooterDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +32,7 @@ class BreadCrumbCategorySerializer(serializers.ModelSerializer):
 
 class BreadCrumbProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
+        model = product.models.Product
         fields = ('id', 'name')
 
 

@@ -33,21 +33,6 @@ class ReviewDetailFilterSerializer(serializers.ListSerializer):
 ######################################################################
 
 
-class OptionDetailSerializer(serializers.ModelSerializer):
-    parameter = serializers.CharField(source='parameter.name')
-
-    class Meta:
-        model = OptionProduct
-        fields = ('__all__')
-
-
-class ProductImagesDetailSerializer(serializers.ModelSerializer):
-    image = VersatileImageFieldSerializer(sizes='product_img')
-
-    class Meta:
-        model = ProductImage
-        fields = ('__all__')
-
 
 class ReviewDetailSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
@@ -61,30 +46,7 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 
-class ProductDetailSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source='category.name')
-    main_image = VersatileImageFieldSerializer(sizes='product_img')
-    images = ProductImagesDetailSerializer(many=True)
-    count_reviews = serializers.IntegerField()
-    parent_category = serializers.CharField(required=False)
-    category_slug = serializers.CharField(source='category.slug', required=False)
-    rating_avg = serializers.FloatField(default=0)
-    options = OptionDetailSerializer(many=True)
 
-    class Meta:
-        model = Product
-        fields = ('__all__')
-
-    def get_group_name(self):
-        return 'Product'
-
-
-class ProductSearchListSerializer(serializers.ModelSerializer):
-    category_slug = serializers.CharField(source='category.slug')
-    main_image = VersatileImageFieldSerializer(sizes='product_img')
-    class Meta:
-        model = Product
-        fields = ('__all__')
 
 
 class CategorySearchListSerializer(serializers.ModelSerializer):
@@ -129,18 +91,7 @@ class ReviewAnswerCreateSerializer(serializers.ModelSerializer):
         return Review
 
 
-class CartAddSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CartProduct
-        fields = ('__all__')
 
-    def create(self, validated_data):
-        cart_product, _ = CartProduct.objects.update_or_create(
-            cart=validated_data.get('cart'),
-            product=validated_data.get('product'),
-            defaults={'quantity': validated_data.get("quantity")}
-        )
-        return cart_product
 
 
 class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
@@ -154,14 +105,7 @@ class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
         return anonymous
 
 
-class CartDetailSerializer(serializers.ModelSerializer):
-    category_slug = serializers.CharField(source='category.slug')
-    totals = serializers.FloatField(default=0)
-    qty = serializers.IntegerField(default=0)
-    main_image = VersatileImageFieldSerializer(sizes='product_img')
-    class Meta:
-        model = Product
-        fields = ('__all__')
+
 
 
 class WishAddSerializer(serializers.ModelSerializer):

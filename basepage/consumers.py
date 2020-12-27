@@ -1,5 +1,7 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .serializers import *
+from product.serializers import *
+
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
@@ -12,7 +14,8 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def receive_json(self, content, **kwargs):
-        # print(content['data'])
+        print('Принял подписку')
+        print(content)
         groups = self.get_groups(data=content['data'])
         if not groups:
             return

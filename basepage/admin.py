@@ -55,7 +55,7 @@ class ProductAdmin(admin.ModelAdmin):
                     q = Option.objects.all().filter(Q(category=current_category) | Q(category=None)).order_by('order')
                     self.inlines[0].extra = len(q)
                     self.inlines[0].max_num = len(q)
-                    if(len(q) > len(inline_admin_formset.forms)):
+                    if (len(q) > len(inline_admin_formset.forms)):
                         for i in range(len(inline_admin_formset.forms), len(q)):
                             new = inline_admin_formset.forms[0]
                             inline_admin_formset.forms.append(copy.deepcopy(new))
@@ -67,7 +67,7 @@ class ProductAdmin(admin.ModelAdmin):
                         form.fields['parameter'].queryset = q
                         form.initial['parameter'] = q[i]
                         string = OptionProduct.objects.all().filter(product=obj.id, parameter=q[i]).first()
-                        if(string):
+                        if (string):
                             form.initial['name'] = string.name
                         else:
                             form.initial['name'] = ''
@@ -83,15 +83,13 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 # Импорты
-admin.site.register(Category,MPTTModelAdmin)
+admin.site.register(Category, MPTTModelAdmin)
 admin.site.register(Brand)
 admin.site.register(Option)
 admin.site.register(OptionProduct)
 admin.site.register(Customer)
 admin.site.register(RatingStar)
 admin.site.register(Review)
-admin.site.register(Cart)
-admin.site.register(CartProduct)
 admin.site.register(AnonymousCustomer)
 
 admin.site.register(Wish)

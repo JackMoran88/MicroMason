@@ -5,6 +5,8 @@ from rest_framework import permissions, generics, viewsets
 from .serializers import *
 from .models import *
 from basepage.models import *
+from product.models import *
+
 
 from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q
 

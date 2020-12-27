@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'basepage',
     'shop_settings',
     'order',
+    'user',
+    'product',
+    'cart',
 
     'corsheaders',
     'djoser',
@@ -53,6 +56,9 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'versatileimagefield',
+    #доп функционал, reset_db
+    'django_extensions',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +99,7 @@ AUTH_USER_MODEL = 'basepage.Customer'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_8',
+        'NAME': 'MicroMason_13',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -212,9 +218,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://192.168.1.243:8080",
     "http://192.168.1.243:8000",
 
-    #     Для лаб, удаляй
-    'http://localhost:63342',
-    #
+
     'http://localhost:5000',
     'http://127.0.0.1:5000',
 
@@ -294,3 +298,4 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     # here: https://optimus.io/support/progressive-jpeg/
     'progressive_jpeg': False
 }
+
