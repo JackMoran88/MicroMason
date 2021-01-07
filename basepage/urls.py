@@ -6,8 +6,9 @@ from basepage.views import *
 urlpatterns = [
     #
     path('categories/', CategoryViewSet.as_view({'post': 'list'})),
-    path('category/detail/', CategoryViewSet.as_view({'post': 'details'})),
-    path('category/detail/sort/', CategoryViewSet.as_view({'post': 'details'})),
+    path('category/products/', CategoryViewSet.as_view({'post': 'detail_products'})),
+    path('category/detail/', CategoryViewSet.as_view({'post': 'retrieve'})),
+    # path('category/detail/sort/', CategoryViewSet.as_view({'post': 'detail_products'})),
     path('category/search/list/', CategoryViewSet.as_view({'post': 'search_list'})),
     #
     path('wish/add/', WishViewSet.as_view({'post': 'create'})),
@@ -24,5 +25,6 @@ urlpatterns = [
     path('customer/detail/', CustomerViewSet.as_view({'post': 'retrieve'})),
     #
     path('anonymous/', AnonymousViewSet.as_view({'post': 'create'})),
-
+    #
 ]
+

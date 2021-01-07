@@ -6,7 +6,8 @@ from .serializers import *
 from .models import *
 from shop_settings.models import *
 
-from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q, Case, CharField
+from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q, Case, CharField, Subquery, \
+    OuterRef, JSONField, QuerySet, FilteredRelation
 
 from django.shortcuts import get_object_or_404
 from channels.layers import get_channel_layer
@@ -17,16 +18,64 @@ from .service import *
 from product.models import *
 from product.serializers import *
 
+from category.models import *
+
+from django_filters import rest_framework as filters
+from product.filters import *
+
+from django.http import JsonResponse
+from django.core import serializers as CoreSerializer
+
+from django.db.models import Q
+
 
 class CategoryViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
 
     def list(self, request):
         queryset = cache_tree_children(Category.objects.all().order_by('id'))
         serializer = CategoriesListSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def details(self, request):
+    def retrieve(self, request):
+        response = {
+            'filters': {}
+        }
+
+        if (request.data.get('slug')):
+            categories = Category.objects.all().filter(slug=request.data.get('slug')).get_descendants(
+                include_self=True).values_list('slug', flat=True)
+
+            products = Product.objects.filter(category__slug__in=categories)
+            cur_category = Category.objects.all().filter(slug=request.data.get('slug')).values()
+
+            prices = products.values_list('price', flat=True)
+            # brands = Brand.objects.filter(product__in=products).values()
+
+            f = Filter.objects.all().values().filter(category__slug=request.data.get('slug'))
+
+
+            for item in f:
+                filter = eval(item['model']).objects.filter(
+                    Q(**{item['query']: eval(item['parameter'])})).values()
+
+                if filter:
+                    response['filters'][item['request_name']] = list(filter)
+
+
+
+            if cur_category:
+                response['category'] = list(cur_category)
+            if prices:
+                response['filters']['prices'] = list((min(prices), max(prices)))
+            # if brands:
+            #     response['filters']['brands'] = list(brands)
+
+            return JsonResponse(response)
+
+    def detail_products(self, request):
         if (request.data.get('slug')):
             parent_category = get_object_or_404(Category, slug=request.data.get('slug'))
             category = parent_category.get_descendants(include_self=True)
@@ -35,9 +84,11 @@ class CategoryViewSet(viewsets.GenericViewSet):
             queryset = queryset.annotate(parent_category=Value(parent_category, output_field=CharField()))
             queryset = get_product_annotate(queryset).order_by(sort_by_choice(request))
 
+            queryset = self.filter_queryset(queryset)
             page = self.paginate_queryset(queryset)
 
             serializer = ProductDetailSerializer(page, many=True)
+
             # return Response(serializer.data)
             return self.get_paginated_response(serializer.data)
         else:
@@ -189,8 +240,3 @@ class AnonymousViewSet(viewsets.ViewSet):
             return Response(anonymous.data)
         else:
             return Response(status=400)
-
-
-
-
-

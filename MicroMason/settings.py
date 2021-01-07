@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'user',
     'product',
     'cart',
+    'category',
 
     'corsheaders',
     'djoser',
@@ -56,7 +57,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'versatileimagefield',
-    #доп функционал, reset_db
+    # доп функционал, reset_db
     'django_extensions',
     'django_filters',
 ]
@@ -144,9 +145,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    # 'DEFAULT_FILTER_BACKENDS': (
-    #     'django_filters.rest_framework.DjangoFilterBackend',
-    # ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        #     'django_filters.rest_framework.DjangoFilterBackend',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 3,
 }
@@ -217,7 +219,6 @@ CORS_ORIGIN_WHITELIST = [
     "http://127.0.0.1:8080",
     "http://192.168.1.243:8080",
     "http://192.168.1.243:8000",
-
 
     'http://localhost:5000',
     'http://127.0.0.1:5000',
@@ -298,4 +299,3 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     # here: https://optimus.io/support/progressive-jpeg/
     'progressive_jpeg': False
 }
-

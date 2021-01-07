@@ -1,14 +1,16 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
+from django.core import serializers as CoreSerializer
 from .models import *
 
 from versatileimagefield.serializers import VersatileImageFieldSerializer
 
-from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q
+from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q, Max, Min
 from asgiref.sync import sync_to_async, async_to_sync
 
 from order.serializers import *
 import product.models
+
 
 ######################################################################
 
@@ -54,9 +56,26 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 class ProductSearchListSerializer(serializers.ModelSerializer):
     category_slug = serializers.CharField(source='category.slug')
     main_image = VersatileImageFieldSerializer(sizes='product_img')
+
     class Meta:
         model = Product
         fields = ('__all__')
 
 
+class BrandDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = '__all__'
 
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    # price_min = serializers.IntegerField()
+    # price_max = serializers.IntegerField()
+    # test = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ('__all__')
+
+    # def get_test(self, context):
+    #     return CoreSerializer.serialize('json', Brand.objects.all())

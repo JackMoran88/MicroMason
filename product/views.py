@@ -15,6 +15,7 @@ from mptt.templatetags.mptt_tags import cache_tree_children
 
 
 
+
 class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProductDetailSerializer
     pagination_class = PaginationProducts
@@ -26,9 +27,8 @@ class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
 
             queryset = Product.objects.filter(category__in=category)
             queryset = queryset.annotate(parent_category=Value(parent_category, output_field=CharField()))
-            queryset = get_product_annotate(queryset).order_by(sort_by_choice(self.request))
+            queryset = get_product_annotate(queryset)
             return queryset
-
 
 
 class ProductViewSet(viewsets.GenericViewSet):
@@ -57,7 +57,6 @@ class ProductViewSet(viewsets.GenericViewSet):
         else:
             products = Product.objects.filter(slug__in=request.data.get('slugs'))
             products = get_product_annotate(products)
-
         serializer = ProductDetailSerializer(products, many=True)
         return Response(serializer.data)
 
@@ -68,7 +67,6 @@ class ProductViewSet(viewsets.GenericViewSet):
 
             queryset = Product.objects.filter(name__icontains=query)
             queryset = get_product_annotate(queryset)
-            queryset = queryset.order_by(sort_by_choice(request))
 
             page = self.paginate_queryset(queryset)
             serializer = ProductDetailSerializer(page, many=True)

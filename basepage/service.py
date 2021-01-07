@@ -6,7 +6,8 @@ from .serializers import *
 from .models import *
 from shop_settings.models import *
 
-from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q, Case, CharField, QuerySet, Subquery
+from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count, Q, Case, CharField, QuerySet, \
+    Subquery, Min, Max
 
 from channels.layers import get_channel_layer
 from mptt.templatetags.mptt_tags import cache_tree_children
@@ -28,11 +29,24 @@ class PaginationProducts(PageNumberPagination):
                 },
                 'count': self.page.paginator.count,
                 'count_page': math.ceil(self.page.paginator.count / self.page_size),
-                'current_page': self.page.number
-
+                'current_page': self.page.number,
             },
             'results': data,
+            # 'filters': {
+            #     'price_spread': search_min_max_price(data),
+            # },
         })
+
+
+# def search_min_max_price(data):
+#     prices = []
+#     for item in data:
+#         prices.append(item['price'])
+#     result = [
+#         int(min(prices)),
+#         int(max(prices))
+#     ]
+#     return result
 
 
 def sort_by_choice(request):
@@ -44,6 +58,9 @@ def sort_by_choice(request):
 
 
 def get_product_annotate(object):
+    price_min = min(object.values_list('price', flat=True))
+    price_max = max(object.values_list('price', flat=True))
+
     object = object.annotate(
         rating_avg=Avg("reviews__star__value", filter=Q(reviews__star__value__in=[1, 2, 3, 4, 5]),
                        output_field=FloatField()),
