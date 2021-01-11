@@ -30,7 +30,8 @@ import basepage.models
 
 class Option(Model):
     name = CharField(max_length=225)
-    category = ForeignKey(basepage.models.Category, on_delete=CASCADE, null=True, blank=True)
+    request_name = CharField(max_length=225, null=True, blank=True)
+    category = ManyToManyField(basepage.models.Category)
     order = PositiveIntegerField(blank=True, null=True)
 
     created_at = DateTimeField(auto_now_add=True)
@@ -41,7 +42,7 @@ class Option(Model):
         verbose_name_plural = 'Опции'
 
     def __str__(self):
-        return f"{self.category} - {self.name}"
+        return f"{self.id} - {self.name}"
 
 
 class OptionProduct(Model):

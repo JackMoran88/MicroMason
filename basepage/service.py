@@ -20,6 +20,39 @@ class PaginationProducts(PageNumberPagination):
     page_size = 2
     max_page_size = 1000
 
+    def paginate_queryset(self, queryset, request, view=None):
+        """
+        Переписанный клас, для обработки ошибки, которая появляется при фильтрации - страница не найдена
+        """
+        page_size = self.get_page_size(request)
+        if not page_size:
+            return None
+
+        paginator = self.django_paginator_class(queryset, page_size)
+        page_number = request.query_params.get(self.page_query_param, 1)
+        if page_number in self.last_page_strings:
+            page_number = paginator.num_pages
+
+        try:
+            self.page = paginator.page(page_number)
+        except Exception as exc:
+            try:
+                self.page = paginator.page(1)
+            except:
+                msg = {
+                    "code": 400,
+                    "error": "Page out of range",
+                }
+                from rest_framework.exceptions import NotFound
+                raise NotFound(msg)
+
+        if paginator.num_pages > 1 and self.template is not None:
+            # The browsable API should display pagination controls.
+            self.display_page_controls = True
+
+        self.request = request
+        return list(self.page)
+
     def get_paginated_response(self, data):
         return Response({
             'paginate': {
@@ -32,10 +65,8 @@ class PaginationProducts(PageNumberPagination):
                 'current_page': self.page.number,
             },
             'results': data,
-            # 'filters': {
-            #     'price_spread': search_min_max_price(data),
-            # },
         })
+
 
 
 # def search_min_max_price(data):
@@ -99,3 +130,4 @@ def get_user(request):
         return {'anonymous': anonymous}
     else:
         return {}
+

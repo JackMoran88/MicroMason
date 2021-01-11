@@ -26,7 +26,10 @@ from mptt.models import MPTTModel, TreeForeignKey
 from versatileimagefield.fields import VersatileImageField, PPOIField
 from versatileimagefield.placeholder import OnStoragePlaceholderImage
 
+from multiselectfield import MultiSelectField
+
 import basepage.models
+import product.models
 
 
 class Filter(Model):
@@ -36,16 +39,24 @@ class Filter(Model):
         ('2', 'Type 2'),
         ('3', 'Type 3'),
     )
-
     name = CharField(max_length=64)
     description = CharField(max_length=255, null=True, blank=True)
 
 
     type = CharField(max_length=32, null=True, blank=True, choices=TYPES)
+
+
     request_name = CharField(max_length=32, blank=True)
-    model = CharField(max_length=32, blank=True)
-    query = CharField(max_length=32, null=True, blank=True)
-    parameter = CharField(max_length=128, null=True)
+    model = CharField(max_length=255, null=True, blank=True)
+    model_parameter = ForeignKey(product.models.Option, null=True, blank=True, on_delete=CASCADE)
+    filter = CharField(max_length=255, null=True, blank=True)
+    output = CharField(max_length=255, null=True, blank=True)
+    sub_model = CharField(max_length=255, null=True, blank=True)
+    sub_filter = CharField(max_length=255, null=True, blank=True)
+    sub_output = CharField(max_length=255, null=True, blank=True)
+
+
+    state = BooleanField("Состояние", default=False)
 
 
     category = ManyToManyField(basepage.models.Category)

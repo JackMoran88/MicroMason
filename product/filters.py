@@ -1,10 +1,11 @@
 from django_filters import rest_framework as filters, OrderingFilter
 from product.models import *
-
+from django.db.models import Q
 
 
 class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
     pass
+
 
 
 class ProductFilter(filters.FilterSet):
@@ -12,7 +13,7 @@ class ProductFilter(filters.FilterSet):
 
     min_price = filters.NumberFilter(field_name="price", lookup_expr='gte')
     max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
-    context.append(['min_price', 'max_price'])
+    brand = CharFilterInFilter(field_name='brand__id', lookup_expr='in')
 
 
     sort_by = OrderingFilter(
@@ -23,10 +24,15 @@ class ProductFilter(filters.FilterSet):
         ),
     )
 
-    brand = CharFilterInFilter(field_name='brand__name', lookup_expr='in')
+    count_cores = filters.CharFilter(method='get_filter_queryset')
+    count_sims = filters.CharFilter(method='get_filter_queryset')
 
+
+    def get_filter_queryset(self, queryset, name, value):
+        return queryset.filter(options__parameter__request_name=name, options__id__in=value.split(','))
 
 
     class Meta:
         model = Product
         fields = ['price', 'sort_by', 'brand', 'min_price', 'max_price']
+

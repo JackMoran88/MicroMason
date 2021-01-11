@@ -26,8 +26,6 @@ from product.filters import *
 from django.http import JsonResponse
 from django.core import serializers as CoreSerializer
 
-from django.db.models import Q
-
 
 class CategoryViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
@@ -51,28 +49,69 @@ class CategoryViewSet(viewsets.GenericViewSet):
             products = Product.objects.filter(category__slug__in=categories)
             cur_category = Category.objects.all().filter(slug=request.data.get('slug')).values()
 
-            prices = products.values_list('price', flat=True)
-            # brands = Brand.objects.filter(product__in=products).values()
+            filters_of_category = Filter.objects.all().values().filter(category__slug=request.data.get('slug'), state=1)
 
-            f = Filter.objects.all().values().filter(category__slug=request.data.get('slug'))
+            def rename_key(arr):
+                for dict in arr:
+                    if 'options__name' in dict:
+                        dict['name'] = dict['options__name']
+                        del dict['options__name']
+                    if 'options__id' in dict:
+                        dict['id'] = dict['options__id']
+                        del dict['options__id']
 
+            def get_prices():
+                prices = products.values_list('price', flat=True)
+                min_max = [min(prices), max(prices)]
+                response['filters']['prices'] = min_max
 
-            for item in f:
-                filter = eval(item['model']).objects.filter(
-                    Q(**{item['query']: eval(item['parameter'])})).values()
+            def remove_dublicates(arr):
+                return [dict(t) for t in {tuple(d.items()) for d in arr}]
 
-                if filter:
-                    response['filters'][item['request_name']] = list(filter)
+            for filter_of_category in filters_of_category:
+                if filter_of_category['request_name'] == 'prices':
+                    get_prices()
 
+                if filter_of_category['model']:
+                    filter = eval(filter_of_category['model']).objects.all()
+                    if filter_of_category['model_parameter_id']:
+                        filter = Option.objects.filter(id=filter_of_category['model_parameter_id'])
+                    elif filter_of_category['filter']:
+                        filter = filter.filter(**eval(filter_of_category['filter']))
 
+                    if filter_of_category['output']:
+                        filter = filter.values(f'{filter_of_category["output"]}')
+                    else:
+                        filter = filter.values()
+
+                    filter = list(filter)
+
+                    if filter_of_category['sub_model']:
+                        choices = eval(filter_of_category['sub_model']).objects.all()
+
+                        if filter_of_category['model_parameter_id']:
+                            choices = choices.filter(options__parameter_id=filter_of_category['model_parameter_id'])
+                        elif filter_of_category['sub_filter']:
+                            choices = choices.filter(
+                                **eval(filter_of_category['sub_filter']))
+
+                        if filter_of_category['sub_output']:
+                            choices = choices.values(eval(filter_of_category['sub_output']))
+                        else:
+                            try:
+                                choices = choices.values('options__id', 'options__name')
+                            except:
+                                choices = choices.values()
+                        choices = list(choices)
+                        rename_key(choices)
+                        choices = remove_dublicates(choices)
+                        filter.append({'choices': choices})
+
+                    if filter:
+                        response['filters'][filter_of_category['request_name']] = list(filter)
 
             if cur_category:
                 response['category'] = list(cur_category)
-            if prices:
-                response['filters']['prices'] = list((min(prices), max(prices)))
-            # if brands:
-            #     response['filters']['brands'] = list(brands)
-
             return JsonResponse(response)
 
     def detail_products(self, request):

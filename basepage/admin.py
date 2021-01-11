@@ -6,6 +6,10 @@ from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count
 from django.contrib.admin import helpers
 import copy
 
+from django.db import models
+from django.forms import CheckboxSelectMultiple
+
+
 from mptt.admin import MPTTModelAdmin
 
 # Для отображения фото в товаре
@@ -82,10 +86,20 @@ class ProductAdmin(admin.ModelAdmin):
         form.save_photos(form.instance)
 
 
+
+
+class OptiontAdmin(admin.ModelAdmin):
+    """Отображение id в опциях и чекбоксы"""
+    readonly_fields = ('id',)
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': CheckboxSelectMultiple},
+    }
+
+
 # Импорты
 admin.site.register(Category, MPTTModelAdmin)
 admin.site.register(Brand)
-admin.site.register(Option)
+admin.site.register(Option, OptiontAdmin)
 admin.site.register(OptionProduct)
 admin.site.register(Customer)
 admin.site.register(RatingStar)
