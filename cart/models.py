@@ -40,7 +40,7 @@ class Cart(Model):
         verbose_name_plural = "Корзины"
 
     def __str__(self):
-        return f'Корзина #{self.id} - {self.customer.first_name} {self.customer.last_name}'
+        return f'Корзина #{self.id}'
 
 
 class CartProduct(Model):

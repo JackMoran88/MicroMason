@@ -155,7 +155,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         # НЕ ТРОГАТь, задействуется при отображнии автора коментария!(Уже не трогал: 1)
-        full_name = "{} {}".format(self.first_name, self.last_name)
+        full_name = f"{self.id} - {self.first_name} {self.last_name}"
         return full_name.strip()
 
     def get_full_name(self):
@@ -195,7 +195,7 @@ class AnonymousCustomer(Model):
         verbose_name_plural = "Анонимые пользователи"
 
     def __str__(self):
-        return f'{self.last_update}'
+        return f'{self.id} - {self.last_update}'
 
 
 class RatingStar(Model):
@@ -262,7 +262,9 @@ class Review(MPTTModel):
 
 
 class Wish(Model):
-    customer = ForeignKey(Customer, on_delete=CASCADE, related_name='wish')
+    customer = ForeignKey(Customer, on_delete=CASCADE, related_name='wish', null=True, blank=True)
+    anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
+
     product = ForeignKey('product.Product', on_delete=CASCADE, related_name='product', )
 
     created_at = DateTimeField(auto_now_add=True)
@@ -271,6 +273,23 @@ class Wish(Model):
     class Meta:
         verbose_name = 'Список желаемого'
         verbose_name_plural = 'Списки желаемого'
+
+    def __str__(self):
+        return f"User: {self.customer} ,product #{self.product}"
+
+class Compare(Model):
+    customer = ForeignKey(Customer, on_delete=CASCADE, null=True, blank=True)
+    anonymous_customer = ForeignKey('AnonymousCustomer', on_delete=SET_NULL, null=True, blank=True)
+
+    product = ForeignKey('product.Product', on_delete=CASCADE)
+    category = ForeignKey(Category, on_delete=CASCADE)
+
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Список сравнениея'
+        verbose_name_plural = 'Списки сравнений'
 
     def __str__(self):
         return f"User: {self.customer} ,product #{self.product}"

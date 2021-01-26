@@ -19,11 +19,12 @@ from product.models import *
 from product.serializers import *
 
 from category.models import *
+from cart.models import *
 
 from django_filters import rest_framework as filters
 from product.filters import *
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.core import serializers as CoreSerializer
 
 
@@ -88,7 +89,6 @@ class CategoryViewSet(viewsets.GenericViewSet):
 
                     if filter_of_category['sub_model']:
                         choices = eval(filter_of_category['sub_model']).objects.all()
-
                         if filter_of_category['model_parameter_id']:
                             choices = choices.filter(options__parameter_id=filter_of_category['model_parameter_id'])
                         elif filter_of_category['sub_filter']:
@@ -149,70 +149,175 @@ class CategoryViewSet(viewsets.GenericViewSet):
 class WishViewSet(viewsets.ViewSet):
 
     def list(self, request):
-        customer = Customer.objects.get(auth_token__key=request.data.get('token'))
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            queryset = Product.objects.all().filter(product__customer=user)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            queryset = Product.objects.all().filter(product__anonymous_customer=user)
 
-        queryset = Product.objects.all().filter(product__customer=customer)
         queryset = get_product_annotate(queryset)
-
         serializer = ProductDetailSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request):
-        wishProduct = WishAddSerializer(data=request.data)
-        if wishProduct.is_valid():
-            wishProduct.save()
-            return Response(status=201)
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            data = {
+                'customer': get_object_or_404(Customer, id=user.id),
+                'product': get_object_or_404(Product, id=request.data.get('product')),
+            }
+            data['defaults'] = {
+                'product': data.get("product"),
+                'customer': data.get('customer'),
+            }
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data = {
+                'anonymous_customer': get_object_or_404(AnonymousCustomer, id=user.id),
+                'product': get_object_or_404(Product, id=request.data.get('product')),
+            }
+            data['defaults'] = {
+                'product': data.get("product"),
+                'anonymous_customer': data.get('anonymous_customer'),
+            }
         else:
             return Response(status=400)
 
+        Wish.objects.update_or_create(**data)
+        return Response(status=201)
+
     def delete(self, request):
-        Wish.objects.get(
-            customer=request.data.get('customer'),
-            product=request.data.get('product'),
-        ).delete()
+        user = get_user(request)
+        data = {
+            'product': request.data.get('product'),
+        }
+        if 'customer' in user.keys():
+            user = user['customer']
+            data['customer'] = user
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data['anonymous_customer'] = user
+        else:
+            return Response(status=400)
+        Wish.objects.get(**data).delete()
+        return Response(status=204)
+
+
+class CompareViewSet(viewsets.ViewSet):
+
+    def list(self, request):
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            queryset = Compare.objects.all().filter(customer=user)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            queryset = Compare.objects.all().filter(anonymous_customer=user)
+
+        serializer = CompareDetailSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            data = {
+                'customer': get_object_or_404(Customer, id=user.id),
+                'product': get_object_or_404(Product, id=request.data.get('product')),
+                'category': get_object_or_404(Product, id=request.data.get('product')).category,
+            }
+            data['defaults'] = {
+                'product': data.get("product"),
+                'customer': data.get('customer'),
+                'category': data.get('category'),
+            }
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data = {
+                'anonymous_customer': get_object_or_404(AnonymousCustomer, id=user.id),
+                'product': get_object_or_404(Product, id=request.data.get('product')),
+                'category': get_object_or_404(Product, id=request.data.get('product')).category,
+            }
+            data['defaults'] = {
+                'product': data.get("product"),
+                'anonymous_customer': data.get('anonymous_customer'),
+                'category': data.get('category'),
+            }
+        else:
+            return Response(status=400)
+
+        Compare.objects.update_or_create(**data)
+        return Response(status=201)
+
+    def delete(self, request):
+        user = get_user(request)
+        data = {
+            'product': request.data.get('product'),
+        }
+        if 'customer' in user.keys():
+            user = user['customer']
+            data['customer'] = user
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data['anonymous_customer'] = user
+        else:
+            return Response(status=400)
+        Compare.objects.get(**data).delete()
         return Response(status=204)
 
 
 class ReviewViewSet(viewsets.ViewSet):
-
     def create(self, request):
-        author = Customer.objects.get(id=request.data.get('author'))
-        star = RatingStar.objects.get(value=request.data.get('star'))
-        data = {
-            'star': star.id,
-            'product': request.data.get('product'),
-            'author': author.id,
-            'text': request.data.get('text'),
-            'advantages': request.data.get('advantages'),
-            'disadvantages': request.data.get('disadvantages'),
-        }
-        review = ReviewCreateSerializer(data=data)
-        if review.is_valid(raise_exception=True):
-            review.save()
-            return Response(status=201)
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            star = RatingStar.objects.get(value=request.data.get('star'))
+            data = {
+                'star': star.id,
+                'product': request.data.get('product'),
+                'author': user.id,
+                'text': request.data.get('text'),
+                'advantages': request.data.get('advantages'),
+                'disadvantages': request.data.get('disadvantages'),
+            }
+            review = ReviewCreateSerializer(data=data)
+            if review.is_valid(raise_exception=True):
+                review.save()
+                return Response(status=201)
+        else:
+            return Response(status=400)
 
     def answer(self, request):
-        author = Customer.objects.get(id=request.data.get('author'))
-        parent = Review.objects.get(id=request.data.get('parent'))
-        star = RatingStar.objects.get(value=0)
-        data = {
-            'product': request.data.get('product'),
-            'author': author.id,
-            'text': request.data.get('text'),
-            'parent': parent.id,
-            'star': star.id,
-        }
-        review = ReviewAnswerCreateSerializer(data=data)
-        if review.is_valid(raise_exception=True):
-            review.save()
-            return Response(status=201)
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            parent = Review.objects.get(id=request.data.get('parent'))
+            star = RatingStar.objects.get(value=0)
+            data = {
+                'product': request.data.get('product'),
+                'author': user.id,
+                'text': request.data.get('text'),
+                'parent': parent.id,
+                'star': star.id,
+            }
+            review = ReviewAnswerCreateSerializer(data=data)
+            if review.is_valid(raise_exception=True):
+                review.save()
+                return Response(status=201)
 
     def delete(self, request):
-        # Только авторизированный
-        comment_id = request.data.get('comment')
-        author_id = request.data.get('author')
-        Review.objects.filter(id=comment_id, author_id=author_id).delete()
-        return Response(status=200)
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            data = {
+                'id': request.data.get('comment'),
+                'author_id': user.id
+            }
+            Review.objects.filter(**data).delete()
+            return Response(status=200)
 
     def list(self, request):
         if (request.data.get('id')):
@@ -223,6 +328,19 @@ class ReviewViewSet(viewsets.ViewSet):
             return Response(serializer.data)
         return Response(status=400)
 
+    def user_list(self, request):
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            reviews = Review.objects.all().filter(author=user)
+            serializer = ReviewDetailSerializer(reviews, many=True)
+            return Response(serializer.data)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            return Response(status=204)
+        return Response(status=400)
+
+
 
 class CustomerViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -232,40 +350,50 @@ class CustomerViewSet(viewsets.ViewSet):
 
     def retrieve(self, request):
         if (request.headers.get('Authorization')):
-            token = request.headers['Authorization'].replace('Token ', '')
+            token = clear_token(request)
             customer = Customer.objects.get(auth_token__key=token)
             if (request.data.get('anonymous')):
                 anonymous_token = request.data.get('anonymous')
-                try:
-                    cart = basepage.models.Cart.objects.get(anonymous_customer=anonymous_token)
-                    if not (basepage.models.Cart.objects.filter(customer=customer.id)):
-                        cart.customer = customer
-                        cart.anonymous_customer = None
-                        cart.save()
-                        customer.save()  # ДА ДА ДА. ОТета ебота.
-                    else:
-                        cart.delete()
-                    AnonymousCustomer.objects.filter(id=anonymous_token).delete()
-                except:
-                    pass
+                cart = Cart.objects.filter(anonymous_customer=anonymous_token)
+                compare = Compare.objects.filter(anonymous_customer=anonymous_token)
+                # wish = Wish.objects.filter(anonymous_customer=anonymous_token)
+                if not (Cart.objects.filter(customer=customer.id)):
+                    cart.update(customer=customer)
+                    cart.update(anonymous_customer=None)
+                else:
+                    cart.delete()
+
+                if not (Compare.objects.filter(customer=customer.id)):
+                    compare.update(customer=customer)
+                    compare.update(anonymous_customer=None)
+                else:
+                    compare.delete()
+
+                # if not (Wish.objects.filter(customer=customer.id)):
+                #     wish.update(customer=customer)
+                #     wish.update(anonymous_customer=None)
+                # else:
+                #     wish.delete()
+
+                AnonymousCustomer.objects.filter(id=anonymous_token).delete()
             serializer = CustomerDetailSerializer(customer)
             return Response(serializer.data)
         else:
             return Response(status=400)
 
     def change(self, request):
-        token = request.headers['Authorization'].replace('Token ', '')
-        customer = Customer.objects.get(auth_token__key=token)
-        if (customer):
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
             if (request.data.get('first_name')):
-                customer.first_name = request.data.get('first_name')
+                user.first_name = request.data.get('first_name')
             if (request.data.get('last_name')):
-                customer.last_name = request.data.get('last_name')
+                user.last_name = request.data.get('last_name')
             if (request.data.get('email')):
-                customer.email = request.data.get('email')
+                user.email = request.data.get('email')
             if (request.data.get('phone')):
-                customer.phone_number = request.data.get('phone')
-            customer.save()
+                user.phone_number = request.data.get('phone')
+            user.save()
             return Response(status=200)
         else:
             return Response(status=400)
@@ -279,3 +407,9 @@ class AnonymousViewSet(viewsets.ViewSet):
             return Response(anonymous.data)
         else:
             return Response(status=400)
+
+
+class RedirectToFront(viewsets.ViewSet):
+
+    def pass_reset_confirm(self, request, uid, token):
+        return HttpResponseRedirect(f'{settings.FRONT_END_HOST}user/password/reset/confirm/{uid}/{token}')

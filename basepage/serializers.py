@@ -10,6 +10,8 @@ from asgiref.sync import sync_to_async, async_to_sync
 from .service import *
 
 from order.serializers import *
+from product.serializers import *
+
 
 ######################################################################
 
@@ -33,7 +35,6 @@ class ReviewDetailFilterSerializer(serializers.ListSerializer):
 ######################################################################
 
 
-
 class ReviewDetailSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(read_only=True)
     star = serializers.IntegerField(source='star.value')
@@ -44,9 +45,6 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
         list_serializer_class = ReviewDetailFilterSerializer
         model = Review
         fields = ('__all__')
-
-
-
 
 
 class CategorySearchListSerializer(serializers.ModelSerializer):
@@ -91,9 +89,6 @@ class ReviewAnswerCreateSerializer(serializers.ModelSerializer):
         return Review
 
 
-
-
-
 class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnonymousCustomer
@@ -103,24 +98,6 @@ class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
         anonymous = AnonymousCustomer.objects.create()
         anonymous.save()
         return anonymous
-
-
-
-
-
-class WishAddSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Wish
-        fields = ('__all__')
-
-    def create(self, validated_data):
-        product = Wish.objects.update_or_create(
-            customer=validated_data.get('customer'),
-            product=validated_data.get('product'),
-            defaults={'product': validated_data.get("product"), 'customer': validated_data.get('customer')}
-        )
-        return product
-
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
     address = AddressDetailSerializer(many=True)
@@ -152,11 +129,34 @@ class CategoriesListSerializer(serializers.ModelSerializer):
 class CategoriesDetailSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True, required=False)
     main_image = VersatileImageFieldSerializer(sizes='category_img')
+
     class Meta:
         model = Category
         fields = '__all__'
 
     def get_group_name(self):
         return 'Categories'
+
+
+class CompareProductDetailSerializer(serializers.ModelSerializer):
+    category_id = serializers.IntegerField(source='category.id')
+    category = serializers.CharField(source='category.name')
+    main_image = VersatileImageFieldSerializer(sizes='product_img')
+    parent_category = serializers.CharField(required=False)
+    category_slug = serializers.CharField(source='category.slug', required=False)
+    rating_avg = serializers.FloatField(default=0)
+    options = OptionDetailSerializer(many=True)
+
+    class Meta:
+        model = Product
+        exclude = ('description',)
+
+
+class CompareDetailSerializer(serializers.ModelSerializer):
+    product = CompareProductDetailSerializer()
+    category_name = serializers.CharField(source='product.category.name')
+    class Meta:
+        model = Compare
+        fields = ('__all__')
 
 

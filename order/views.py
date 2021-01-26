@@ -13,115 +13,139 @@ class OrderViewSet(viewsets.ViewSet):
         user = get_user(request)
         if 'customer' in user.keys():
             user = user['customer']
-            orders = Order.objects.all().annotate(
+            queryset = Order.objects.all().annotate(
                 total=Sum(F('order_products__product__price') * F('order_products__quantity'),
                           output_field=FloatField()),
                 qty=Sum(F('order_products__quantity'))
             ).filter(customer_id=user.id).order_by('-created_at')
-            serializer = OrderDetailSerializer(orders, many=True)
-            return Response(serializer.data)
-
         elif 'anonymous' in user.keys():
             user = user['anonymous']
-            order = Order.objects.annotate(
+            queryset = Order.objects.annotate(
                 total=Sum(F('order_products__product__price') * F('order_products__quantity'),
                           output_field=FloatField()),
                 qty=Sum(F('order_products__quantity'))
             )
-            order = get_object_or_404(order, anonymous_customer_id=user.id)
-
-            serializer = OrderDetailSerializer(order, many=True)
-            return Response(serializer.data)
-
+            queryset = get_object_or_404(queryset, anonymous_customer_id=user.id)
         else:
             return Response(status=400)
+
+        serializer = OrderDetailSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         user = get_user(request)
+        payment_method = get_object_or_404(Payment, id=request.data.get('payment'))
+        shipping_method = get_object_or_404(Shipping, id=request.data.get('shipping'))
+        address = get_object_or_404(Address, id=request.data.get('address'))
+        data = {
+            'payment_method': payment_method,
+            'shipping': shipping_method,
+            'address': address,
+        }
         if 'customer' in user.keys():
             user = user['customer']
+            data['customer'] = user
 
-            payment_method = Payment.objects.get(id=request.data.get('payment'))
-            shipping_method = Shipping.objects.get(id=request.data.get('shipping'))
-            address = Address.objects.get(id=request.data.get('address'))
-            data = {
-                'customer': user,
-                'payment_method': payment_method,
-                'shipping': shipping_method,
-                'address': address,
-            }
-            order = Order.objects.create(
-                customer=data.get('customer'),
-                payment_method=data.get('payment_method'),
-                shipping=data.get('shipping'),
-                address=data.get('address'),
-            )
+            order = Order.objects.create(**data)
             order.save()
 
-            cart_products = CartProduct.objects.filter(cart__customer_id=user.id)
+            cart_products = CartProduct.objects.filter(cart__customer=user)
 
-            OrderProduct.objects.filter(order__customer_id=user.id, order_id=order.id).delete()
+            OrderProduct.objects.filter(order__customer=user, order=order).delete()
 
-            for product in cart_products:
+            for item in cart_products:
                 order_product, _ = OrderProduct.objects.update_or_create(
                     order=order,
-                    product=product.product,
-                    quantity=product.quantity
+                    product=item.product,
+                    quantity=item.quantity
                 )
                 order_product.save()
 
-            Cart.objects.filter(customer_id=user.id).delete()
+            Cart.objects.filter(customer=user).delete()
 
-            queryset = Order.objects.get(id=order.id)
-            serializer = OrderDetailSerializer(queryset)
-            return Response(serializer.data, status=201)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data['anonymous_customer'] = user
+            order = Order.objects.create(**data)
+            order.save()
 
+            cart_products = CartProduct.objects.filter(cart__anonymous_customer=user)
+
+            OrderProduct.objects.filter(order__customer_id=user.id, order_id=order.id).delete()
+
+            for item in cart_products:
+                order_product, _ = OrderProduct.objects.update_or_create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity
+                )
+                order_product.save()
+
+            Cart.objects.filter(anonymous_customer=user).delete()
         else:
             return Response(status=400)
+
+        queryset = Order.objects.get(id=order.id)
+        serializer = OrderDetailSerializer(queryset)
+        return Response(serializer.data, status=201)
 
 
 class AddressViewSet(viewsets.ViewSet):
     def list(self, request):
         user = get_user(request)
-        user = user['customer']
-
-        queryset = Address.objects.filter(customer=user)
+        if 'customer' in user.keys():
+            user = user['customer']
+            queryset = Address.objects.filter(customer=user)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            queryset = Address.objects.filter(anonymous_customer=user)
+        else:
+            return Response(status=400)
 
         serializer = AddressDetailSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request):
         user = get_user(request)
+        data = {
+            'id': request.data.get('id'),
+            'defaults': {
+                'first_name': request.data.get('first_name'),
+                'last_name': request.data.get('last_name'),
+                'email': request.data.get('email'),
+                'phone_number': request.data.get('phone_number'),
+                'address': request.data.get('address'),
+                'postal_code': request.data.get('postal_code'),
+                'city': request.data.get('city'),
+            }
+        }
         if 'customer' in user.keys():
             user = user['customer']
-
-            Address.objects.update_or_create(
-                id=request.data.get('id'),
-                defaults={
-                    'customer': user,
-                    'first_name': request.data.get('first_name'),
-                    'last_name': request.data.get('last_name'),
-                    'email': request.data.get('email'),
-                    'phone_number': request.data.get('phone_number'),
-                    'address': request.data.get('address'),
-                    'postal_code': request.data.get('postal_code'),
-                    'city': request.data.get('city'),
-                }
-
-            )
-            return Response(status=201)
-
+            data['defaults']['customer'] = user
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data['defaults']['anonymous_customer'] = user
         else:
             return Response(status=400)
+
+        Address.objects.update_or_create(**data)
+        return Response(status=201)
 
     def delete(self, request):
         user = get_user(request)
+        data = {
+            'id': request.data.get('id'),
+        }
         if 'customer' in user.keys():
             user = user['customer']
-            Address.objects.get(customer=user, id=request.data.get('id')).delete()
-            return Response(status=200)
+            data['customer'] = user
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data['anonymous_customer'] = user
         else:
             return Response(status=400)
+        Address.objects.get(**data).delete()
+        return Response(status=200)
 
 
 class ShippingViewSet(viewsets.ViewSet):

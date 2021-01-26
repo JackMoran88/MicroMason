@@ -28,14 +28,15 @@ class ProductImagesDetailSerializer(serializers.ModelSerializer):
 
 
 class OptionDetailSerializer(serializers.ModelSerializer):
-    parameter = serializers.CharField(source='parameter.name')
-
+    parameter_name = serializers.CharField(source='parameter.name')
+    parameter_id = serializers.IntegerField(source='parameter.id')
     class Meta:
         model = product.models.OptionProduct
         fields = ('__all__')
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
+    category_id = serializers.IntegerField(source='category.id')
     category = serializers.CharField(source='category.name')
     main_image = VersatileImageFieldSerializer(sizes='product_img')
     images = ProductImagesDetailSerializer(many=True)

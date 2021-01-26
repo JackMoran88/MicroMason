@@ -12,96 +12,76 @@ from django.shortcuts import get_object_or_404
 from channels.layers import get_channel_layer
 from mptt.templatetags.mptt_tags import cache_tree_children
 
-
 from product.models import *
 from product.serializers import *
 
 
-
 class CartViewSet(viewsets.ViewSet):
-
     def list(self, request):
-        if (request.headers.get('Authorization')):
-            token = request.headers['Authorization'].replace('Token ', '')
-            customer = Customer.objects.get(auth_token__key=token)
-
-            products = Product.objects.all().filter(cartproduct__cart__customer_id=customer.id)
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            products = Product.objects.all().filter(cartproduct__cart__customer_id=user.id)
             products = get_cart_annotate(products)
-
-            serializer = CartDetailSerializer(products, many=True)
-            return Response(serializer.data)
-        elif (request.data.get('anonymous')):
-            # Если пользователь - Аноним
-            anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))
-
-            products = Product.objects.all().filter(cartproduct__cart__anonymous_customer=anonymous.id)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            products = Product.objects.all().filter(cartproduct__cart__anonymous_customer=user.id)
             products = get_cart_annotate(products)
-
-            serializer = CartDetailSerializer(products, many=True)
-            return Response(serializer.data)
         else:
             return Response(status=400)
 
+        serializer = CartDetailSerializer(products, many=True)
+        return Response(serializer.data)
+
     def create(self, request):
-        if (request.headers.get('Authorization')):
-            # Если пользователь авторизирован
-            token = request.headers['Authorization'].replace('Token ', '')
-            customer = Customer.objects.get(auth_token__key=token)
-            if not (Cart.objects.filter(customer=customer.id)):
-                Cart.objects.create(customer=customer)
-            cart = Cart.objects.get(customer=customer.id)
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            if not (Cart.objects.filter(customer=user.id)):
+                Cart.objects.create(customer=user)
+            cart = Cart.objects.get(customer=user.id)
             data = {
                 'cart': cart.id,
                 'product': request.data.get('product'),
                 'quantity': request.data.get('quantity'),
             }
-            product = CartAddSerializer(data=data)
-            if product.is_valid(raise_exception=True):
-                product.save()
-                return Response(status=201)
-            else:
-                return Response(status=400)
-        elif (request.data.get('anonymous')):
-            # Если пользователь - Аноним
-            anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))
-            if not (Cart.objects.filter(anonymous_customer=anonymous.id)):
-                Cart.objects.create(anonymous_customer=anonymous)
-            cart = Cart.objects.get(anonymous_customer=anonymous.id)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            if not (Cart.objects.filter(anonymous_customer=user.id)):
+                Cart.objects.create(anonymous_customer=user)
+            cart = Cart.objects.get(anonymous_customer=user.id)
             data = {
                 'cart': cart.id,
                 'product': request.data.get('product'),
                 'quantity': request.data.get('quantity'),
             }
-            product = CartAddSerializer(data=data)
-            if product.is_valid(raise_exception=True):
-                product.save()
-                return Response(status=201)
-            else:
-                return Response(status=400)
+        else:
+            return Response(status=400)
+
+        item = CartAddSerializer(data=data)
+        if item.is_valid(raise_exception=True):
+            item.save()
+            return Response(status=201)
         else:
             return Response(status=400)
 
     def delete(self, request):
-        if (request.headers.get('Authorization')):
-            # Если пользователь авторизирован
-            token = request.headers['Authorization'].replace('Token ', '')
-            customer = Customer.objects.get(auth_token__key=token)
-            if not (Cart.objects.filter(customer=customer.id)):
-                Cart.objects.create(customer=customer)
-            CartProduct.objects.get(
-                cart__customer_id=customer.id,
-                product_id=request.data.get('product')
-            ).delete()
-            return Response(status=200)
-        elif (request.data.get('anonymous')):
-            # Если пользователь - Аноним
-            anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))
-            if not (Cart.objects.filter(anonymous_customer=anonymous.id)):
-                Cart.objects.create(anonymous_customer=anonymous)
-            CartProduct.objects.get(
-                cart__anonymous_customer_id=anonymous,
-                product_id=request.data.get('product')
-            ).delete()
-            return Response(status=200)
+        user = get_user(request)
+        data = {
+            'product_id': request.data.get('product')
+        }
+        if 'customer' in user.keys():
+            user = user['customer']
+            data['cart__customer_id'] = user.id
+            if not (Cart.objects.filter(customer=user.id)):
+                Cart.objects.create(customer=user)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            data['cart__anonymous_customer_id'] = user.id
+            if not (Cart.objects.filter(anonymous_customer=user.id)):
+                Cart.objects.create(anonymous_customer=user)
         else:
             return Response(status=400)
+
+        get_object_or_404(CartProduct, **data).delete()
+        return Response(status=200)

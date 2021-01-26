@@ -67,17 +67,9 @@ class PaginationProducts(PageNumberPagination):
             'results': data,
         })
 
-
-
-# def search_min_max_price(data):
-#     prices = []
-#     for item in data:
-#         prices.append(item['price'])
-#     result = [
-#         int(min(prices)),
-#         int(max(prices))
-#     ]
-#     return result
+def clear_token(request):
+    token = request.headers['Authorization'].replace('Token ', '')
+    return token
 
 
 def sort_by_choice(request):
@@ -89,9 +81,6 @@ def sort_by_choice(request):
 
 
 def get_product_annotate(object):
-    price_min = min(object.values_list('price', flat=True))
-    price_max = max(object.values_list('price', flat=True))
-
     object = object.annotate(
         rating_avg=Avg("reviews__star__value", filter=Q(reviews__star__value__in=[1, 2, 3, 4, 5]),
                        output_field=FloatField()),
@@ -108,21 +97,9 @@ def get_cart_annotate(object):
     return object
 
 
-def check_404(object):
-    if (object):
-        return object
-    else:
-        return Response(status=404)
-
-
-def get_image_crop(object):
-    print(object)
-    return 0
-
-
 def get_user(request):
     if (request.headers.get('Authorization')):
-        token = request.headers['Authorization'].replace('Token ', '')
+        token = clear_token(request)
         customer = Customer.objects.get(auth_token__key=token)
         return {'customer': customer}
     elif (request.data.get('anonymous')):
@@ -130,4 +107,3 @@ def get_user(request):
         return {'anonymous': anonymous}
     else:
         return {}
-

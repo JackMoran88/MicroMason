@@ -29,6 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+FRONT_END_HOST = 'http://192.168.1.243:8080/'
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -60,6 +63,8 @@ INSTALLED_APPS = [
     # доп функционал, reset_db
     'django_extensions',
     'django_filters',
+
+    "mailer",
 ]
 
 MIDDLEWARE = [
@@ -100,7 +105,7 @@ AUTH_USER_MODEL = 'basepage.Customer'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_13',
+        'NAME': 'MicroMason_14',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -130,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Europe/Kiev'
 
@@ -162,7 +167,7 @@ EMAIL_PORT = 587
 
 # Настройка auth
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'user/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': False,
@@ -215,9 +220,14 @@ MEDIA_URL = '/media/'
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:8000",
     "http://localhost:8080",
+    "http://localhost:8081",
+
     "http://127.0.0.1:8000",
     "http://127.0.0.1:8080",
+    "http://127.0.0.1:8081",
+    
     "http://192.168.1.243:8080",
+    "http://192.168.1.243:8081",
     "http://192.168.1.243:8000",
 
     'http://localhost:5000',

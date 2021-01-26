@@ -107,3 +107,4 @@ admin.site.register(Review)
 admin.site.register(AnonymousCustomer)
 
 admin.site.register(Wish)
+admin.site.register(Compare)
