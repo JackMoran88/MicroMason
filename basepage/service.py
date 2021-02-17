@@ -14,6 +14,7 @@ from mptt.templatetags.mptt_tags import cache_tree_children
 from rest_framework.pagination import PageNumberPagination
 
 import math
+import re
 
 
 class PaginationProducts(PageNumberPagination):
@@ -68,7 +69,7 @@ class PaginationProducts(PageNumberPagination):
         })
 
 def clear_token(request):
-    token = request.headers['Authorization'].replace('Token ', '')
+    token = re.sub('^[\w]+ ','', request.headers['Authorization'])
     return token
 
 
@@ -100,7 +101,9 @@ def get_cart_annotate(object):
 def get_user(request):
     if (request.headers.get('Authorization')):
         token = clear_token(request)
-        customer = Customer.objects.get(auth_token__key=token)
+        customer = Customer.objects.filter(auth_token__key=token).first()
+        if not (customer):
+            customer = Customer.objects.filter(oauth2_provider_accesstoken__token=token).first()
         return {'customer': customer}
     elif (request.data.get('anonymous')):
         anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))

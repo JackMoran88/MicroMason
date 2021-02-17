@@ -7,6 +7,7 @@ urlpatterns = [
     #
     path('order/add/', OrderViewSet.as_view({'post': 'create'})),
     path('order/list/', OrderViewSet.as_view({'post': 'list'})),
+    path('order/pay/', OrderViewSet.as_view({'post': 'pay'})),
     #
     path('address/add/', AddressViewSet.as_view({'post': 'create'})),
     path('address/detail/', AddressViewSet.as_view({'post': 'list'})),

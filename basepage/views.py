@@ -26,6 +26,7 @@ from product.filters import *
 
 from django.http import JsonResponse, HttpResponseRedirect
 from django.core import serializers as CoreSerializer
+from mailer import send_mail
 
 
 class CategoryViewSet(viewsets.GenericViewSet):
@@ -67,7 +68,14 @@ class CategoryViewSet(viewsets.GenericViewSet):
                 response['filters']['prices'] = min_max
 
             def remove_dublicates(arr):
-                return [dict(t) for t in {tuple(d.items()) for d in arr}]
+                # `return [dict(t) for t in {tuple(d.items()) for d in arr}]`
+                done = set()
+                result = []
+                for d in arr:
+                    if d['name'] not in done:
+                        done.add(d['name'])  # note it down for further iterations
+                        result.append(d)
+                return result
 
             for filter_of_category in filters_of_category:
                 if filter_of_category['request_name'] == 'prices':
@@ -90,21 +98,26 @@ class CategoryViewSet(viewsets.GenericViewSet):
                     if filter_of_category['sub_model']:
                         choices = eval(filter_of_category['sub_model']).objects.all()
                         if filter_of_category['model_parameter_id']:
-                            choices = choices.filter(options__parameter_id=filter_of_category['model_parameter_id'])
+                            choices = choices.filter(options__parameter_id=filter_of_category['model_parameter_id'],
+                                                     category_id=cur_category[0]['id'])
                         elif filter_of_category['sub_filter']:
                             choices = choices.filter(
                                 **eval(filter_of_category['sub_filter']))
-
                         if filter_of_category['sub_output']:
                             choices = choices.values(eval(filter_of_category['sub_output']))
                         else:
                             try:
-                                choices = choices.values('options__id', 'options__name')
+                                choices = list(choices.values('options__id', 'options__name'))
                             except:
                                 choices = choices.values()
                         choices = list(choices)
                         rename_key(choices)
                         choices = remove_dublicates(choices)
+
+                        for num, choice in enumerate(choices):
+                            if choice['name'].strip() == "":
+                                choices.pop(num)
+
                         filter.append({'choices': choices})
 
                     if filter:
@@ -341,7 +354,6 @@ class ReviewViewSet(viewsets.ViewSet):
         return Response(status=400)
 
 
-
 class CustomerViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -351,7 +363,10 @@ class CustomerViewSet(viewsets.ViewSet):
     def retrieve(self, request):
         if (request.headers.get('Authorization')):
             token = clear_token(request)
-            customer = Customer.objects.get(auth_token__key=token)
+            customer = Customer.objects.filter(auth_token__key=token).first()
+            if not (customer):
+                customer = Customer.objects.filter(oauth2_provider_accesstoken__token=token).first()
+
             if (request.data.get('anonymous')):
                 anonymous_token = request.data.get('anonymous')
                 cart = Cart.objects.filter(anonymous_customer=anonymous_token)
@@ -394,9 +409,45 @@ class CustomerViewSet(viewsets.ViewSet):
             if (request.data.get('phone')):
                 user.phone_number = request.data.get('phone')
             user.save()
+            print('SEND EMAIL')
+            send_mail('Тест, изменение данных в аккаунте',
+                      'Отныне, вы петух!',
+                      settings.EMAIL_HOST_USER,
+                      ['dmitriy.evseev.99@gmail.com'])
+
             return Response(status=200)
         else:
             return Response(status=400)
+
+
+class CustomerSocial(viewsets.ViewSet):
+
+    def social(self, request):
+        import requests as req
+        url = 'https://oauth2.googleapis.com/token'
+        provider_data = {
+            'client_id': '1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com',
+            'client_secret': 'IWH3HU3Lpvcp25_PHXeuhL6q',
+            'redirect_uri': 'http://localhost:8080',
+            'provider': 'google',
+        }
+        data = {
+            'grant_type': 'authorization_code',
+        }
+        data = dict(list(data.items()) + list(request.data.items()) + list(provider_data.items()))
+        res = req.post(url, json=data)
+        if res.status_code == 200:
+            local_prodvider_data = {
+                'provider': {
+                    'provider': 'google',
+                    'client_id': 'gkYiRUOGWwlBlKMnB2VPtnWgdHOZ9PVQbcPFI2ml',
+                    'client_secret': 'ZOAYHCPMjybPU6FQBkZIG9xfAZoAq49W7GtqzJ0ZFVLpFXeh0tU54UCsDnRqO9gDLm20xnkv4wrwcu9QobbUpQ6yu2a3yNRZmttkZxApNzyJtlY3qI1omTILXjNcSv4A',
+                    'redirect_uri': 'http://localhost:8080',
+                }
+            }
+            result = dict(list(res.json().items()) + list(local_prodvider_data.items()))
+            return JsonResponse(result)
+        return Response(status=400)
 
 
 class AnonymousViewSet(viewsets.ViewSet):

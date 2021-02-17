@@ -31,7 +31,6 @@ ALLOWED_HOSTS = ['*']
 
 FRONT_END_HOST = 'http://192.168.1.243:8080/'
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -65,6 +64,13 @@ INSTALLED_APPS = [
     'django_filters',
 
     "mailer",
+    "django_crontab",
+
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
+
+
 ]
 
 MIDDLEWARE = [
@@ -92,6 +98,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # Авторизация через социалки
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -99,13 +109,15 @@ TEMPLATES = [
 
 AUTH_USER_MODEL = 'basepage.Customer'
 
+SOCIAL_AUTH_USER_MODEL = 'basepage.Customer'
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_14',
+        'NAME': 'MicroMason_16',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -149,6 +161,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+
+        # OAuth
+        # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -164,6 +181,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'dmitriy.evseev.99@gmail.com'
 EMAIL_HOST_PASSWORD = 'pniraopitkyprsbe'
 EMAIL_PORT = 587
+
+# Django_mailer
+EMAIL_BACKEND = "mailer.backend.DbBackend"
 
 # Настройка auth
 DJOSER = {
@@ -217,23 +237,43 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:8000",
-    "http://localhost:8080",
-    "http://localhost:8081",
 
-    "http://127.0.0.1:8000",
-    "http://127.0.0.1:8080",
-    "http://127.0.0.1:8081",
-    
-    "http://192.168.1.243:8080",
-    "http://192.168.1.243:8081",
-    "http://192.168.1.243:8000",
+CORS_ALLOW_ALL_ORIGINS = True
 
-    'http://localhost:5000',
-    'http://127.0.0.1:5000',
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = False
 
+# CORS_ORIGIN_WHITELIST = [
+#     "http://localhost:8000",
+#     "http://localhost:8080",
+#     "http://localhost:8081",
+#
+#     "http://127.0.0.1:8000",
+#     "http://127.0.0.1:8080",
+#     "http://127.0.0.1:8081",
+#
+#     "http://192.168.1.243:8080",
+#     "http://192.168.1.243:8081",
+#     "http://192.168.1.243:8000",
+#
+#     'http://localhost:5000',
+#     'http://127.0.0.1:5000',
+#
+# ]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
+
+
 # WSGI_APPLICATION = 'MicroMason.wsgi.application'
 ASGI_APPLICATION = "MicroMason.routing.application"
 
@@ -312,3 +352,92 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     # here: https://optimus.io/support/progressive-jpeg/
     'progressive_jpeg': False
 }
+
+path_to_python = 'python'
+path_to_manager = 'D:\OpenServer\OSPanel\domains\MicroMason\manage.py'
+CRONJOBS = [
+    ('* * * * *', f'(${path_to_python} ${path_to_manager} send_mail)'),
+    ('0,20,40 * * * *', f'(${path_to_python} ${path_to_manager} retry_deferred)'),
+    ('0 0 * * *', f'(${path_to_python} ${path_to_manager} purge_mail_log)')
+]
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'IWH3HU3Lpvcp25_PHXeuhL6q'
+
+# Определите SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, чтобы получить дополнительные разрешения от Google.
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_PIPELINE = (
+    # Get the information we can about the user and return it in a simple
+    # format to create the user instance later. In some cases the details are
+    # already part of the auth response from the provider, but sometimes this
+    # could hit a provider API.
+    'social_core.pipeline.social_auth.social_details',
+
+    # Get the social uid from whichever service we're authing thru. The uid is
+    # the unique identifier of the given user in the provider.
+    'social_core.pipeline.social_auth.social_uid',
+
+    # Verifies that the current auth process is valid within the current
+    # project, this is where emails and domains whitelists are applied (if
+    # defined).
+    'social_core.pipeline.social_auth.auth_allowed',
+
+    # Checks if the current social-account is already associated in the site.
+    'social_core.pipeline.social_auth.social_user',
+
+    # Make up a username for this person, appends a random string at the end if
+    # there's any collision.
+    'social_core.pipeline.user.get_username',
+
+    # Send a validation email to the user to verify its email address.
+    # Disabled by default.
+    # 'social_core.pipeline.mail.mail_validation',
+
+    # Associates the current social details with another user account with
+    # a similar email address. Disabled by default.
+    # 'social_core.pipeline.social_auth.associate_by_email',
+
+    # Create a user account if we haven't found one yet.
+    'social_core.pipeline.user.create_user',
+
+    # Create the record that associates the social account with the user.
+    'social_core.pipeline.social_auth.associate_user',
+
+    # Populate the extra_data field in the social record with the values
+    # specified by settings (and the default ones like access_token, etc).
+    'social_core.pipeline.social_auth.load_extra_data',
+
+    # Update the user record with any changed info from the auth service.
+    'social_core.pipeline.user.user_details',
+)
+
+GOOGLE_EXTENDED_PERMISSIONS = ['user_birthday']
+SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_GOOGLE_EXTRA_DATA = [ ('location', 'location'),('gender','gender'),('hometown', 'hometown')]
+
+USER_FIELDS = ['email', 'profile.email', 'backend', 'birthday']
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+LOGOUT_URL = 'auth/token/logout/'
+
+
+
+
+#   LiqPay
+
+LIQPAY_PUBLIC_KEY = 'sandbox_i80911148214'
+LIQPAY_PRIVATE_KEY = 'sandbox_WOrksBUssSUPN88B36ppPsDcRn4i5cL2AxPaLFyV'
+LIQPAY_VERSION = '3'
+LIQPAY_CURRENCY = 'UAH'

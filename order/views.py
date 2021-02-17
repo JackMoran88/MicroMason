@@ -6,6 +6,9 @@ from .serializers import *
 from .models import *
 from basepage.models import *
 from cart.models import *
+import base64
+import hashlib
+from django.conf import settings
 
 
 class OrderViewSet(viewsets.ViewSet):
@@ -88,6 +91,48 @@ class OrderViewSet(viewsets.ViewSet):
         queryset = Order.objects.get(id=order.id)
         serializer = OrderDetailSerializer(queryset)
         return Response(serializer.data, status=201)
+
+    def pay(self, request):
+        if not (request.data.get('order_id')):
+            return Response(404)
+
+        order = Order.objects.filter(id=request.data.get('order_id')).first()
+
+        print(order)
+        print(order.id)
+        print(order.get_description())
+        print(order.get_amount())
+        if not (order):
+            return Response(404)
+
+        json_string = {
+            "public_key": settings.LIQPAY_PUBLIC_KEY,
+            "version": settings.LIQPAY_VERSION,
+            "action": "pay",
+            "amount": order.get_amount(),
+            "currency": settings.LIQPAY_CURRENCY,
+            "description": order.get_description(),
+            "order_id": order.id
+        }
+
+
+
+        private_key = settings.LIQPAY_PRIVATE_KEY
+
+        json_string_enc = f'{json_string}'.encode("utf-8")
+
+        data = base64.b64encode(json_string_enc).decode()
+
+        sign_string = f'{private_key}{data}{private_key}'
+
+        signature = base64.b64encode(hashlib.sha1(sign_string.encode()).digest()).decode()
+
+        response = {
+            'data': data,
+            'signature': signature
+        }
+
+        return Response(response)
 
 
 class AddressViewSet(viewsets.ViewSet):

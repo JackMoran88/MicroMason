@@ -54,12 +54,12 @@ class Address(Model):
     def __str__(self):
         return f'{self.first_name} {self.last_name} - {self.city}'
 
+
 class Shipping(Model):
     name = CharField(max_length=225)
     description = CharField(max_length=5000)
 
     price = PositiveIntegerField()
-
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -74,6 +74,7 @@ class Shipping(Model):
 
 class Payment(Model):
     name = CharField(max_length=255)
+    type = CharField(max_length=255, null=True, blank=True)
     order_by = PositiveIntegerField(blank=True, null=True)
 
     created_at = DateTimeField(auto_now_add=True)
@@ -85,6 +86,7 @@ class Payment(Model):
 
     def __str__(self):
         return f'{self.name}'
+
 
 class OrderStatus(Model):
     name = CharField(max_length=255)
@@ -100,6 +102,7 @@ class OrderStatus(Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class Order(Model):
     PAID_STAUTUSES = (
         ('0', 'Не оплачено'),
@@ -108,7 +111,6 @@ class Order(Model):
     )
     customer = ForeignKey(Customer, on_delete=CASCADE, null=True, blank=True)
     anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
-
 
     shipping = ForeignKey(Shipping, on_delete=CASCADE, null=True, blank=True, verbose_name='Способ доставки')
     address = ForeignKey(Address, on_delete=CASCADE, null=True, blank=True, verbose_name='Адресс доставки')
@@ -128,6 +130,25 @@ class Order(Model):
     def __str__(self):
         return f'#{self.id}'
 
+    def get_amount(self):
+        items = self.order_products.all()
+        cart_amount = 0
+        for item in items:
+            item_amount = item.product.price * item.quantity
+            cart_amount += item_amount
+
+        if (self.shipping.price):
+            cart_amount += self.shipping.price
+        return cart_amount
+
+    def get_description(self):
+        items = self.order_products.all()
+        description = ''
+        for item in items:
+            item_description = f'{item.product.name} x {item.quantity} \n'
+            description += item_description
+        return description
+
 
 class OrderProduct(Model):
     order = ForeignKey(Order, on_delete=CASCADE, related_name='order_products')
@@ -143,4 +164,3 @@ class OrderProduct(Model):
 
     def __str__(self):
         return f'x{self.quantity} {self.product.name}'
-

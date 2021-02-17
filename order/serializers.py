@@ -86,6 +86,7 @@ class OrderStatusDetailSerializer(serializers.ModelSerializer):
 class OrderDetailSerializer(serializers.ModelSerializer):
     order_products = OrderProductDetailSerializer(many=True, required=True)
     paid = ChoiceField(choices=Order.PAID_STAUTUSES)
+    paid_status = serializers.CharField(source='paid')
     # payment_method = ChoiceField(choices=Order.PAYMENT_METHODS)
     payment_method = PaymentDetailSerializer()
     total = serializers.FloatField(default=0)

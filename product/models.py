@@ -46,7 +46,7 @@ class Option(Model):
 
 
 class OptionProduct(Model):
-    name = CharField(max_length=225, null=True, blank=True)
+    name = CharField(max_length=225, blank=True)
     product = ForeignKey('Product',
                          on_delete=CASCADE,
                          null=True,

@@ -44,4 +44,5 @@ urlpatterns = [
 
                   path('user/password/reset/confirm/<str:uid>/<str:token>', RedirectToFront.as_view({'get': 'pass_reset_confirm'})),
 
+
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

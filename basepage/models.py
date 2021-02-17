@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from django.core.validators import RegexValidator
 
 from django.db.models import Model, CASCADE
-from django.db.models import CharField, FloatField, TextField, PositiveIntegerField, EmailField, DateTimeField
+from django.db.models import CharField, FloatField, TextField, PositiveIntegerField, EmailField, DateTimeField, JSONField
 from django.db.models import DateField, BooleanField
 from django.db.models import ManyToManyField, ForeignKey
 
@@ -81,8 +81,12 @@ class Category(MPTTModel):
 mptt.register(Category, order_insertion_by=['name'])
 
 
+
+
 class CustomerManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(self, email, first_name='', last_name='', password=None, **kwargs):
+
+
         if not email:
             raise ValueError('Users must have an email address')
 
@@ -91,6 +95,8 @@ class CustomerManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
         )
+        print(user)
+
 
         user.set_password(password)
         user.save(using=self._db)
@@ -127,6 +133,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     email = EmailField('email address',
                        null=False,
                        unique=True)
+
     phone_number = CharField(validators=[phone_regex], max_length=17, blank=True)
     birthday = DateField(blank=True, null=True)
     first_name = CharField(max_length=50, default='', blank=False, null=False)
@@ -134,7 +141,6 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     middle_name = CharField(max_length=50, default='', blank=True)
     gender = ForeignKey(CustomerGender, on_delete=CASCADE, null=True, blank=True)
 
-    # cart = ForeignKey(Cart, on_delete=SET_NULL, null=True)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -172,14 +178,6 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         return True
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        # try:
-        #     print(self.cart)
-        #     if self.cart.pk == 'null':
-        #         self.cart = Cart()
-        #         self.cart.save()
-        # except:
-        #     self.cart = Cart()
-        #     self.cart.save()
         super(Customer, self).save(force_insert, force_update, using, update_fields)
 
 
