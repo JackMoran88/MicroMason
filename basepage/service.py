@@ -18,7 +18,7 @@ import re
 
 
 class PaginationProducts(PageNumberPagination):
-    page_size = 2
+    page_size = 24
     max_page_size = 1000
 
     def paginate_queryset(self, queryset, request, view=None):

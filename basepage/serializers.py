@@ -36,7 +36,7 @@ class ReviewDetailFilterSerializer(serializers.ListSerializer):
 
 
 class ReviewDetailSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(read_only=True)
+    author = serializers.CharField(source='author.get_full_name')
     star = serializers.IntegerField(source='star.value')
     children = RecursiveSerializer(many=True)
     customer = serializers.IntegerField(source='author_id')

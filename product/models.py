@@ -46,7 +46,7 @@ class Option(Model):
 
 
 class OptionProduct(Model):
-    name = CharField(max_length=225, blank=True)
+    name = CharField(max_length=2000, blank=True)
     product = ForeignKey('Product',
                          on_delete=CASCADE,
                          null=True,
@@ -88,7 +88,7 @@ class Product(Model):
 
     name = CharField(max_length=120, null=False)
     brand = ForeignKey(Brand, on_delete=CASCADE, null=True, blank=True)
-    code = PositiveIntegerField(null=False)
+    code = CharField(null=False, max_length=255)
     quantity = PositiveIntegerField(editable=True, default=0)
     price = FloatField(null=False)
     description = TextField(blank=True, null=True)

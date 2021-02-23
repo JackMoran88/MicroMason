@@ -54,6 +54,23 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         return 'Product'
 
 
+class smProductDetailSerializer(serializers.ModelSerializer):
+    category_id = serializers.IntegerField(source='category.id')
+    category = serializers.CharField(source='category.name')
+    main_image = VersatileImageFieldSerializer(sizes='product_img')
+    count_reviews = serializers.IntegerField()
+    parent_category = serializers.CharField(required=False)
+    category_slug = serializers.CharField(source='category.slug', required=False)
+    rating_avg = serializers.FloatField(default=0)
+
+    class Meta:
+        model = Product
+        fields = ('__all__')
+
+    def get_group_name(self):
+        return 'Product'
+
+
 class ProductSearchListSerializer(serializers.ModelSerializer):
     category_slug = serializers.CharField(source='category.slug')
     main_image = VersatileImageFieldSerializer(sizes='product_img')

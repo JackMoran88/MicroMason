@@ -160,8 +160,8 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Пользователи"
 
     def __str__(self):
-        # НЕ ТРОГАТь, задействуется при отображнии автора коментария!(Уже не трогал: 1)
-        full_name = f"{self.id} - {self.first_name} {self.last_name}"
+        # НЕ ТРОГАТь, задействуется при отображнии автора коментария!(Уже не трогал: 3)
+        full_name = f"{self.id} - {self.get_full_name()}"
         return full_name.strip()
 
     def get_full_name(self):

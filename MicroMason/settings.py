@@ -117,7 +117,7 @@ SOCIAL_AUTH_USER_MODEL = 'basepage.Customer'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_16',
+        'NAME': 'MicroMason_17',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -172,7 +172,7 @@ REST_FRAMEWORK = {
         #     'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 3,
+    'PAGE_SIZE': 24,
 }
 
 # SMTP(mail)

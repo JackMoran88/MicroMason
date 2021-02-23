@@ -26,6 +26,11 @@ class ProductFilter(filters.FilterSet):
     count_cores = filters.CharFilter(method='get_filter_queryset')
     count_sims = filters.CharFilter(method='get_filter_queryset')
     brand = filters.CharFilter(method='get_filter_queryset')
+    tip_noutbuka = filters.CharFilter(method='get_filter_queryset')
+
+
+
+
 
     def get_filter_queryset(self, queryset, name, value):
         options = OptionProduct.objects.filter(id__in=value.split(',')).values('name')

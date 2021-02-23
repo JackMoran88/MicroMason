@@ -11,8 +11,6 @@ import bs4
 import csv
 import lxml
 
-debug = 1
-
 SETTINGS = {
     'parse': {
         'category': 0,
@@ -29,6 +27,8 @@ PATH = {
         'option': 'option',
     }
 }
+
+SKIP_CATEGORY = ['Товары для детей', 'Детская одежда', 'Рыбалка', 'Туризм и кемпинг', 'Печать, расходные']
 
 
 def load_path():
@@ -123,6 +123,10 @@ class Parser:
             category_lvl_1__name = category_lvl_1.find('h2', {'class': 'heading-thick'}).text
             category_lvl_1__url = category_lvl_1['href']
 
+            if category_lvl_1__name in SKIP_CATEGORY:
+                logger.info(f'{category_lvl_1__name} - skipped')
+                break
+
             self.result['category'].append({
                 'name': category_lvl_1.find('h2', {'class': 'heading-thick'}).text,
                 'description': '',
@@ -169,7 +173,6 @@ class Parser:
         else:
             text = self.load_page(path)
 
-
         logger.info(f'PAGE: {page}')
 
         body = self.parse_page(text=text)
@@ -181,7 +184,6 @@ class Parser:
                 stuff_block = stuff.find('a', {'class': 'to_product'})
                 if stuff_block:
                     product_urls.append(stuff_block['href'])
-
 
             for url in product_urls:
                 logger.debug(url)
@@ -201,6 +203,13 @@ class Parser:
                     if image.has_attr('data-img-big'):
                         images.append(image['data-img-big'])
                 images = list(set(images))
+
+
+                print(images[0])
+                print(images[1])
+                print(images[2])
+                print(images[3])
+                input('STOP')
                 # !IMG!
 
                 # OPTION
@@ -212,6 +221,11 @@ class Parser:
                     option_lines = None
 
                 options = []
+                options.append({
+                    'name': 'Производитель',
+                    'parameter': product['data-vendor'],
+                })
+
                 if option_lines:
                     for option in option_lines:
                         options.append({

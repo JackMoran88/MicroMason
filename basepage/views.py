@@ -64,7 +64,10 @@ class CategoryViewSet(viewsets.GenericViewSet):
 
             def get_prices():
                 prices = products.values_list('price', flat=True)
-                min_max = [min(prices), max(prices)]
+                if prices:
+                    min_max = [min(prices), max(prices)]
+                else:
+                    min_max = [0,0]
                 response['filters']['prices'] = min_max
 
             def remove_dublicates(arr):
@@ -139,7 +142,7 @@ class CategoryViewSet(viewsets.GenericViewSet):
             queryset = self.filter_queryset(queryset)
             page = self.paginate_queryset(queryset)
 
-            serializer = ProductDetailSerializer(page, many=True)
+            serializer = smProductDetailSerializer(page, many=True)
 
             # return Response(serializer.data)
             return self.get_paginated_response(serializer.data)
@@ -171,7 +174,7 @@ class WishViewSet(viewsets.ViewSet):
             queryset = Product.objects.all().filter(product__anonymous_customer=user)
 
         queryset = get_product_annotate(queryset)
-        serializer = ProductDetailSerializer(queryset, many=True)
+        serializer = smProductDetailSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request):
