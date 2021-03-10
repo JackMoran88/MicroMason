@@ -15,6 +15,11 @@ from rest_framework.pagination import PageNumberPagination
 
 import math
 import re
+from django.core.mail import send_mail
+
+# Mailer
+def send(subject, body, recipients):
+    send_mail(subject, body, settings.EMAIL_HOST_USER, recipients, fail_silently=False)
 
 
 class PaginationProducts(PageNumberPagination):
@@ -68,8 +73,9 @@ class PaginationProducts(PageNumberPagination):
             'results': data,
         })
 
+
 def clear_token(request):
-    token = re.sub('^[\w]+ ','', request.headers['Authorization'])
+    token = re.sub('^[\w]+ ', '', request.headers['Authorization'])
     return token
 
 

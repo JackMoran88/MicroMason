@@ -13,9 +13,6 @@ from channels.layers import get_channel_layer
 from mptt.templatetags.mptt_tags import cache_tree_children
 
 
-
-
-
 class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProductDetailSerializer
     pagination_class = PaginationProducts
@@ -38,12 +35,10 @@ class ProductViewSet(viewsets.GenericViewSet):
         if request.data.get('id'):
             product = Product.objects.all()
             product = get_product_annotate(product)
-            # product = product.get(id=request.data.get('id'))
             product = get_object_or_404(product, id=request.data.get('id'))
         else:
             product = Product.objects.all()
             product = get_product_annotate(product)
-            # product = product.get(slug=request.data.get('slug'))
             product = get_object_or_404(product, slug=request.data.get('slug'))
 
         serializer = ProductDetailSerializer(product)
@@ -72,7 +67,7 @@ class ProductViewSet(viewsets.GenericViewSet):
             serializer = ProductDetailSerializer(page, many=True)
 
             return self.get_paginated_response(serializer.data)
-            # return Response(serializer.data)
+            # returnв Response(serializer.data)
         else:
             return Response(status=400)
 
@@ -89,4 +84,12 @@ class ProductViewSet(viewsets.GenericViewSet):
         else:
             return Response(status=400)
 
-
+    def last_added(self, request):
+        count = 10
+        if(request.GET.get('count')):
+            count = int(request.GET.get('count'))
+        print(count)
+        products = Product.objects.all().order_by('-id')[:count]
+        products = get_product_annotate(products)
+        serializer = ProductDetailSerializer(products, many=True)
+        return Response(serializer.data)

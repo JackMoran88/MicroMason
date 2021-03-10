@@ -53,6 +53,8 @@ class Category(MPTTModel):
 
     row = SmallIntegerField(null=True, blank=True)
 
+    order_by = PositiveIntegerField(blank=True, null=True)
+
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 

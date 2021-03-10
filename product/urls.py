@@ -7,6 +7,7 @@ urlpatterns = [
     path('products/', ProductViewSet.as_view({'post': 'list'})),
     path('products/search/detail/', ProductViewSet.as_view({'post': 'search_detail'})),
     path('products/search/list/', ProductViewSet.as_view({'post': 'search_list'})),
+    path('products/last/', ProductViewSet.as_view({'get': 'last_added'})),
     path('product/', ProductViewSet.as_view({'post': 'retrieve'})),
 
 

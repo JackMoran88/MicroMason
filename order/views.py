@@ -9,6 +9,7 @@ from cart.models import *
 import base64
 import hashlib
 from django.conf import settings
+from _novaposhta.services import *
 
 
 class OrderViewSet(viewsets.ViewSet):
@@ -40,11 +41,17 @@ class OrderViewSet(viewsets.ViewSet):
         payment_method = get_object_or_404(Payment, id=request.data.get('payment'))
         shipping_method = get_object_or_404(Shipping, id=request.data.get('shipping'))
         address = get_object_or_404(Address, id=request.data.get('address'))
+
         data = {
             'payment_method': payment_method,
             'shipping': shipping_method,
             'address': address,
         }
+        if (request.data.get('note')):
+            data['note'] = request.data.get('note')
+        if (request.data.get('branch')):
+            data['delivery_point'] = request.data.get('branch')
+
         if 'customer' in user.keys():
             user = user['customer']
             data['customer'] = user
@@ -93,8 +100,9 @@ class OrderViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=201)
 
     def pay(self, request):
+        print(request.data)
         if not (request.data.get('order_id')):
-            return Response(404)
+            return Response(status=404)
 
         order = Order.objects.filter(id=request.data.get('order_id')).first()
 
@@ -103,7 +111,7 @@ class OrderViewSet(viewsets.ViewSet):
         print(order.get_description())
         print(order.get_amount())
         if not (order):
-            return Response(404)
+            return Response(status=404)
 
         json_string = {
             "public_key": settings.LIQPAY_PUBLIC_KEY,
@@ -114,8 +122,6 @@ class OrderViewSet(viewsets.ViewSet):
             "description": order.get_description(),
             "order_id": order.id
         }
-
-
 
         private_key = settings.LIQPAY_PRIVATE_KEY
 
@@ -140,10 +146,10 @@ class AddressViewSet(viewsets.ViewSet):
         user = get_user(request)
         if 'customer' in user.keys():
             user = user['customer']
-            queryset = Address.objects.filter(customer=user)
+            queryset = Address.objects.filter(customer=user).order_by('-priority')
         elif 'anonymous' in user.keys():
             user = user['anonymous']
-            queryset = Address.objects.filter(anonymous_customer=user)
+            queryset = Address.objects.filter(anonymous_customer=user).order_by('-priority')
         else:
             return Response(status=400)
 
@@ -166,7 +172,10 @@ class AddressViewSet(viewsets.ViewSet):
         }
         if 'customer' in user.keys():
             user = user['customer']
+            Address.objects.all().filter(customer=user).update(priority=False)
             data['defaults']['customer'] = user
+            data['defaults']['priority'] = True
+
         elif 'anonymous' in user.keys():
             user = user['anonymous']
             data['defaults']['anonymous_customer'] = user

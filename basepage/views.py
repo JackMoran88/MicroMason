@@ -26,7 +26,15 @@ from product.filters import *
 
 from django.http import JsonResponse, HttpResponseRedirect
 from django.core import serializers as CoreSerializer
-from mailer import send_mail
+
+from model_search import model_search
+from novaposhta.models import Warehouse
+
+from .tasks import send_email
+from django.conf import settings
+import requests
+from django.conf import settings
+from oauth2_provider.models import Application
 
 
 class CategoryViewSet(viewsets.GenericViewSet):
@@ -67,7 +75,7 @@ class CategoryViewSet(viewsets.GenericViewSet):
                 if prices:
                     min_max = [min(prices), max(prices)]
                 else:
-                    min_max = [0,0]
+                    min_max = [0, 0]
                 response['filters']['prices'] = min_max
 
             def remove_dublicates(arr):
@@ -403,21 +411,42 @@ class CustomerViewSet(viewsets.ViewSet):
         user = get_user(request)
         if 'customer' in user.keys():
             user = user['customer']
+
+            print(request.data)
+
+            if not (request.data.get('password')):
+                return Response({'password': 'This field is required'}, status=400)
+
+            password = request.data.get('password')
+            if not (user.check_password(password)):
+                return Response({'password': 'Неверный пароль'}, status=400)
+
+            headers = {
+                'Authorization': request.headers.get('Authorization')
+            }
+            data = {
+                'current_password': password,
+            }
+
             if (request.data.get('first_name')):
                 user.first_name = request.data.get('first_name')
             if (request.data.get('last_name')):
                 user.last_name = request.data.get('last_name')
-            if (request.data.get('email')):
-                user.email = request.data.get('email')
             if (request.data.get('phone')):
                 user.phone_number = request.data.get('phone')
-            user.save()
-            print('SEND EMAIL')
-            send_mail('Тест, изменение данных в аккаунте',
-                      'Отныне, вы петух!',
-                      settings.EMAIL_HOST_USER,
-                      ['dmitriy.evseev.99@gmail.com'])
 
+            if (request.data.get('email')):
+                data['new_email'] = request.data.get('email')
+                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
+                print('RRR')
+                print(r)
+                return Response(r.json(), status=r.status_code)
+            if(request.data.get('new_password')):
+                data['new_password'] = request.data.get('new_password')
+                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data, headers=headers)
+                return Response(r.json(), status=r.status_code)
+
+            user.save()
             return Response(status=200)
         else:
             return Response(status=400)
@@ -426,26 +455,28 @@ class CustomerViewSet(viewsets.ViewSet):
 class CustomerSocial(viewsets.ViewSet):
 
     def social(self, request):
-        import requests as req
         url = 'https://oauth2.googleapis.com/token'
         provider_data = {
-            'client_id': '1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com',
-            'client_secret': 'IWH3HU3Lpvcp25_PHXeuhL6q',
-            'redirect_uri': 'http://localhost:8080',
+            'client_id': settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY,
+            'client_secret': settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET,
+            'redirect_uri': settings.FRONT_END_HOST,
             'provider': 'google',
         }
         data = {
             'grant_type': 'authorization_code',
         }
         data = dict(list(data.items()) + list(request.data.items()) + list(provider_data.items()))
-        res = req.post(url, json=data)
+        res = requests.post(url, json=data)
+        print('ОТВЕТ GOOGLE')
+        print(res)
+        print(res.json())
         if res.status_code == 200:
             local_prodvider_data = {
                 'provider': {
                     'provider': 'google',
-                    'client_id': 'gkYiRUOGWwlBlKMnB2VPtnWgdHOZ9PVQbcPFI2ml',
-                    'client_secret': 'ZOAYHCPMjybPU6FQBkZIG9xfAZoAq49W7GtqzJ0ZFVLpFXeh0tU54UCsDnRqO9gDLm20xnkv4wrwcu9QobbUpQ6yu2a3yNRZmttkZxApNzyJtlY3qI1omTILXjNcSv4A',
-                    'redirect_uri': 'http://localhost:8080',
+                    'client_id': Application.objects.get(name='Google Auth').client_id,
+                    'client_secret': Application.objects.get(name='Google Auth').client_secret,
+                    'redirect_uri': settings.FRONT_END_HOST,
                 }
             }
             result = dict(list(res.json().items()) + list(local_prodvider_data.items()))
@@ -466,4 +497,16 @@ class AnonymousViewSet(viewsets.ViewSet):
 class RedirectToFront(viewsets.ViewSet):
 
     def pass_reset_confirm(self, request, uid, token):
-        return HttpResponseRedirect(f'{settings.FRONT_END_HOST}user/password/reset/confirm/{uid}/{token}')
+        return HttpResponseRedirect(f'{settings.FRONT_END_HOST}/user/password/reset/confirm/{uid}/{token}')
+
+
+class NovaPoshtaViewSet(viewsets.ViewSet):
+    def search(self, request):
+        print(request.data)
+        if not (request.data.get('query')):
+            return Response(status=204)
+        query = request.data.get('query')
+        print(query)
+        queryset = Warehouse.objects.all().filter(address__istartswith=str(query)).values('address').distinct()
+        serializer = NovaPoshtaCitySerializer(queryset, many=True)
+        return Response(serializer.data, status=200)

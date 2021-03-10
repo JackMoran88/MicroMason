@@ -23,7 +23,7 @@ from tempfile import NamedTemporaryFile
 
 PATH = {
     'type': 'csv',
-    'dir': 'D:\OpenServer\OSPanel\domains\MicroMason\data',
+    'dir': 'data',
     'files': {
         'category': 'category',
         'product': 'product',
@@ -53,12 +53,12 @@ SETTINGS = {
     'product': {
         'clear': 1,
         'product': 1,
-        'image': 1,
+        'image': 0,
         'images': 0,
     },
     'category': {
         'clear': 1,
-        'category': 0,
+        'category': 1,
         'image': 0,
     },
     'option': {

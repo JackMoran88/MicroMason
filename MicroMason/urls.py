@@ -23,6 +23,7 @@ from django.conf import settings
 # from basepage.views import AuthCheck
 
 from basepage.views import *
+from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
@@ -42,7 +43,17 @@ urlpatterns = [
                   # path('api/v2/', include('user.urls')),
                   #
 
-                  path('user/password/reset/confirm/<str:uid>/<str:token>', RedirectToFront.as_view({'get': 'pass_reset_confirm'})),
+                  path('user/password/reset/confirm/<str:uid>/<str:token>',
+                       RedirectToFront.as_view({'get': 'pass_reset_confirm'})),
+                  #
+                  path('api/v2/novaposhta/', include('novaposhta.urls')),
+                  path('api/v2/novaposhta/search/', NovaPoshtaViewSet.as_view({'post': 'search'})),
+
+                  path('i18n/', include('django.conf.urls.i18n')),
 
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += i18n_patterns(
+    path('api/v2/shipping/novaposhta/', include('_novaposhta.urls'))
+)

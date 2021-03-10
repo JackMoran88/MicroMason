@@ -29,11 +29,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-FRONT_END_HOST = 'http://192.168.1.243:8080/'
+# FRONT_END_HOST = 'http://192.168.1.243:8080/'
+FRONT_END_HOST = 'http://localhost:8080'
+BACK_END_HOST = 'http://192.168.1.228:8000'
 
+SITE_NAME = 'MicroMason'
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
     'product',
     'cart',
     'category',
+    '_novaposhta',
 
     'corsheaders',
     'djoser',
@@ -63,19 +68,23 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
 
-    "mailer",
-    "django_crontab",
-
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
 
+    'novaposhta',
+
+    'celery',
+    'django_celery_beat',
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',
+
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,8 +98,9 @@ ROOT_URLCONF = 'MicroMason.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        # 'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -114,13 +124,25 @@ SOCIAL_AUTH_USER_MODEL = 'basepage.Customer'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'MicroMason_18',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_17',
+        'NAME': 'MicroMason_1',
         'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'PASSWORD': 'password',
+        'HOST': 'db',
         'PORT': '3306',
 
     }
@@ -147,7 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Europe/Kiev'
 
@@ -156,6 +178,13 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+gettext = lambda s: s
+LANGUAGES = (
+    ('ru', gettext('Russian')),
+    ('uk', gettext('Ukrainian')),
+    ('en', gettext('English')),
+)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -182,16 +211,19 @@ EMAIL_HOST_USER = 'dmitriy.evseev.99@gmail.com'
 EMAIL_HOST_PASSWORD = 'pniraopitkyprsbe'
 EMAIL_PORT = 587
 
-# Django_mailer
-EMAIL_BACKEND = "mailer.backend.DbBackend"
-
 # Настройка auth
 DJOSER = {
+    # Ссылка на восстановление пароля
     'PASSWORD_RESET_CONFIRM_URL': 'user/password/reset/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': False,
+    # Подтвердить email
+    'SEND_CONFIRMATION_EMAIL': True,
     'SERIALIZERS': {},
+    'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+
 }
 
 # Настройка auth
@@ -237,7 +269,6 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -272,7 +303,6 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
-
 
 # WSGI_APPLICATION = 'MicroMason.wsgi.application'
 ASGI_APPLICATION = "MicroMason.routing.application"
@@ -353,14 +383,6 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     'progressive_jpeg': False
 }
 
-path_to_python = 'python'
-path_to_manager = 'D:\OpenServer\OSPanel\domains\MicroMason\manage.py'
-CRONJOBS = [
-    ('* * * * *', f'(${path_to_python} ${path_to_manager} send_mail)'),
-    ('0,20,40 * * * *', f'(${path_to_python} ${path_to_manager} retry_deferred)'),
-    ('0 0 * * *', f'(${path_to_python} ${path_to_manager} purge_mail_log)')
-]
-
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'IWH3HU3Lpvcp25_PHXeuhL6q'
 
@@ -406,7 +428,7 @@ SOCIAL_AUTH_PIPELINE = (
 
     # Associates the current social details with another user account with
     # a similar email address. Disabled by default.
-    # 'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.social_auth.associate_by_email',
 
     # Create a user account if we haven't found one yet.
     'social_core.pipeline.user.create_user',
@@ -424,7 +446,7 @@ SOCIAL_AUTH_PIPELINE = (
 
 GOOGLE_EXTENDED_PERMISSIONS = ['user_birthday']
 SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = True
-SOCIAL_AUTH_GOOGLE_EXTRA_DATA = [ ('location', 'location'),('gender','gender'),('hometown', 'hometown')]
+SOCIAL_AUTH_GOOGLE_EXTRA_DATA = [('location', 'location'), ('gender', 'gender'), ('hometown', 'hometown')]
 
 USER_FIELDS = ['email', 'profile.email', 'backend', 'birthday']
 
@@ -432,12 +454,31 @@ SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 LOGOUT_URL = 'auth/token/logout/'
 
-
-
-
 #   LiqPay
 
 LIQPAY_PUBLIC_KEY = 'sandbox_i80911148214'
 LIQPAY_PRIVATE_KEY = 'sandbox_WOrksBUssSUPN88B36ppPsDcRn4i5cL2AxPaLFyV'
 LIQPAY_VERSION = '3'
 LIQPAY_CURRENCY = 'UAH'
+
+# Новая почта
+
+NOVA_POSHTA_API_KEY = '9f114041505c633de9523ec691981d44'
+NOVA_POSHTA_PHONE_NUMBER = '380508840819'
+# CELERY
+
+REDIS_HOST = 'redis'
+REDIS_PORT = '6379'
+
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Locale
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]

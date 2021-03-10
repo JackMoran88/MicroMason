@@ -11,7 +11,7 @@ from .service import *
 
 from order.serializers import *
 from product.serializers import *
-
+from novaposhta.models import Warehouse
 
 ######################################################################
 
@@ -160,3 +160,7 @@ class CompareDetailSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 
+class NovaPoshtaCitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warehouse
+        fields = ('address',)

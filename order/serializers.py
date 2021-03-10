@@ -11,6 +11,7 @@ from basepage.service import *
 from basepage.serializers import *
 
 import product.models
+from _novaposhta.models import *
 
 ######################################################################
 
@@ -83,6 +84,12 @@ class OrderStatusDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class DeliveryDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Delivery
+        fields = '__all__'
+
+
 class OrderDetailSerializer(serializers.ModelSerializer):
     order_products = OrderProductDetailSerializer(many=True, required=True)
     paid = ChoiceField(choices=Order.PAID_STAUTUSES)
@@ -94,6 +101,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     status = OrderStatusDetailSerializer()
     shipping = ShippingDetailSerializer()
     address = AddressDetailSerializer()
+    delivery = DeliveryDetailSerializer(many=True)
 
     class Meta:
         model = Order

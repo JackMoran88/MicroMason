@@ -30,6 +30,10 @@ from basepage.models import *
 
 
 class Address(Model):
+    ADDRESS_TYPE = (
+        ('address', 'Адресс'),
+        ('novaposhta_warehouse', 'Отделение новой почты'),
+    )
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Phone number must be entered in the format: '+380991234567'.")
 
@@ -38,11 +42,17 @@ class Address(Model):
 
     first_name = CharField(max_length=50)
     last_name = CharField(max_length=50)
+    middle_name = CharField(max_length=50)
+
     email = EmailField()
     phone_number = CharField(validators=[phone_regex], max_length=17, blank=True)
     address = CharField(max_length=250)
     postal_code = CharField(max_length=20, null=True, blank=True)
     city = CharField(max_length=100)
+
+    address_type = CharField('Тип адресса', null=True, blank=True, max_length=255, choices=ADDRESS_TYPE)
+
+    priority = BooleanField(default=False)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -54,12 +64,17 @@ class Address(Model):
     def __str__(self):
         return f'{self.first_name} {self.last_name} - {self.city}'
 
+    def get_full_name(self):
+        return f'{self.last_name} {self.first_name} {self.middle_name}'
+
 
 class Shipping(Model):
     name = CharField(max_length=225)
     description = CharField(max_length=5000)
 
     price = PositiveIntegerField()
+
+    order_by = PositiveIntegerField(null=True, blank=True)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -75,14 +90,17 @@ class Shipping(Model):
 class Payment(Model):
     name = CharField(max_length=255)
     type = CharField(max_length=255, null=True, blank=True)
+
+    description = TextField(blank=True, null=True)
+
     order_by = PositiveIntegerField(blank=True, null=True)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'Способ оплаты'
-        verbose_name_plural = 'Способы оплаты'
+        verbose_name = 'Метод оплаты'
+        verbose_name_plural = 'Методы оплаты'
 
     def __str__(self):
         return f'{self.name}'
@@ -113,12 +131,15 @@ class Order(Model):
     anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
 
     shipping = ForeignKey(Shipping, on_delete=CASCADE, null=True, blank=True, verbose_name='Способ доставки')
+    delivery_point = TextField(null=True, blank=True)
     address = ForeignKey(Address, on_delete=CASCADE, null=True, blank=True, verbose_name='Адресс доставки')
 
     payment_method = ForeignKey(Payment, on_delete=CASCADE, verbose_name='Способ оплаты')
     paid = CharField(max_length=255, choices=PAID_STAUTUSES, default=0, verbose_name='Статус оплаты')
     status = ForeignKey(OrderStatus, on_delete=CASCADE, verbose_name='Статус заказа',
-                        null=True, default=1)
+                        null=True)
+
+    note = TextField(blank=True, null=True)
 
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
@@ -148,6 +169,12 @@ class Order(Model):
             item_description = f'{item.product.name} x {item.quantity} \n'
             description += item_description
         return description
+
+    def save(self, *args, **kwargs):
+        if not self.status:
+            self.status = OrderStatus.objects.get(order_by=1)
+
+        super(Order, self).save(*args, **kwargs)
 
 
 class OrderProduct(Model):
