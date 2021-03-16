@@ -88,8 +88,7 @@ class ProductViewSet(viewsets.GenericViewSet):
         count = 10
         if(request.GET.get('count')):
             count = int(request.GET.get('count'))
-        print(count)
-        products = Product.objects.all().order_by('-id')[:count]
+        products = Product.objects.all().filter(~Q(status=0)).order_by('-id')[:count]
         products = get_product_annotate(products)
         serializer = ProductDetailSerializer(products, many=True)
         return Response(serializer.data)

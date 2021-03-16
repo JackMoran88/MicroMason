@@ -28,7 +28,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.core import serializers as CoreSerializer
 
 from model_search import model_search
-from novaposhta.models import Warehouse
+from _novaposhta.models import Warehouse
 
 from .tasks import send_email
 from django.conf import settings
@@ -438,13 +438,20 @@ class CustomerViewSet(viewsets.ViewSet):
             if (request.data.get('email')):
                 data['new_email'] = request.data.get('email')
                 r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
-                print('RRR')
-                print(r)
-                return Response(r.json(), status=r.status_code)
-            if(request.data.get('new_password')):
+                try:
+                    r = r.json()
+                except:
+                    pass
+                return Response(r, status=r.status_code)
+            if (request.data.get('new_password')):
                 data['new_password'] = request.data.get('new_password')
-                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data, headers=headers)
-                return Response(r.json(), status=r.status_code)
+                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data,
+                                  headers=headers)
+                try:
+                    r = r.json()
+                except:
+                    pass
+                return Response(r, status=r.status_code)
 
             user.save()
             return Response(status=200)
@@ -502,11 +509,12 @@ class RedirectToFront(viewsets.ViewSet):
 
 class NovaPoshtaViewSet(viewsets.ViewSet):
     def search(self, request):
-        print(request.data)
+        print(request.data.get('query'))
         if not (request.data.get('query')):
             return Response(status=204)
         query = request.data.get('query')
-        print(query)
-        queryset = Warehouse.objects.all().filter(address__istartswith=str(query)).values('address').distinct()
+        queryset = Warehouse.objects.all().filter(
+            Q(city_description_ru__istartswith=str(query)) | Q(city_description_uk__istartswith=str(query))).values(
+            'description').distinct()
         serializer = NovaPoshtaCitySerializer(queryset, many=True)
         return Response(serializer.data, status=200)
