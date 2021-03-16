@@ -29,6 +29,7 @@ from versatileimagefield.placeholder import OnStoragePlaceholderImage
 from basepage.models import *
 
 
+
 class Address(Model):
     ADDRESS_TYPE = (
         ('address', 'Адресс'),
@@ -144,6 +145,22 @@ class Order(Model):
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
+    tracker = FieldTracker(
+        fields=('status',), )
+
+    def save(self, *args, **kwargs):
+        if not self.status:
+            self.status = OrderStatus.objects.get(order_by=1)
+
+        ret = super().save(*args, **kwargs)
+        has_changed = self.tracker.changed()
+        if has_changed:
+            from basepage.tasks import se_order
+
+            se_order('update', self, [self.customer.email])
+            return ret
+        super(Order, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
@@ -169,12 +186,6 @@ class Order(Model):
             item_description = f'{item.product.name} x {item.quantity} \n'
             description += item_description
         return description
-
-    def save(self, *args, **kwargs):
-        if not self.status:
-            self.status = OrderStatus.objects.get(order_by=1)
-
-        super(Order, self).save(*args, **kwargs)
 
 
 class OrderProduct(Model):

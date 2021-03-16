@@ -412,8 +412,6 @@ class CustomerViewSet(viewsets.ViewSet):
         if 'customer' in user.keys():
             user = user['customer']
 
-            print(request.data)
-
             if not (request.data.get('password')):
                 return Response({'password': 'This field is required'}, status=400)
 
@@ -435,23 +433,23 @@ class CustomerViewSet(viewsets.ViewSet):
             if (request.data.get('phone')):
                 user.phone_number = request.data.get('phone')
 
-            if (request.data.get('email')):
-                data['new_email'] = request.data.get('email')
-                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
-                try:
-                    r = r.json()
-                except:
-                    pass
-                return Response(r, status=r.status_code)
+            if (request.data.get('email') and user.email != request.data.get('email')):
+                    data['new_email'] = request.data.get('email')
+                    r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
+                    try:
+                        response = r.json()
+                    except:
+                        response = r
+                    return Response(response, status=r.status_code)
             if (request.data.get('new_password')):
                 data['new_password'] = request.data.get('new_password')
                 r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data,
                                   headers=headers)
                 try:
-                    r = r.json()
+                    response = r.json()
                 except:
-                    pass
-                return Response(r, status=r.status_code)
+                    response = r
+                return Response(response, status=r.status_code)
 
             user.save()
             return Response(status=200)
