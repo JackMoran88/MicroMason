@@ -211,6 +211,20 @@ EMAIL_HOST_USER = 'dmitriy.evseev.99@gmail.com'
 EMAIL_HOST_PASSWORD = 'pniraopitkyprsbe'
 EMAIL_PORT = 587
 
+MAIL = {
+    'title': 'MicroMason',
+    'phone': '+380508840819',
+    'links': {
+        'backend': {
+            'main': 'http://192.168.1.228:8000',
+        },
+        'frontend': {
+            'main': 'http://192.168.1.228:8081',
+            'cabinet': 'http://192.168.1.228:8081/account/',
+        },
+    }
+}
+
 # Настройка auth
 DJOSER = {
     # Ссылка на восстановление пароля

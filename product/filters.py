@@ -26,6 +26,7 @@ class ProductFilter(filters.FilterSet):
     count_cores = filters.CharFilter(method='get_filter_queryset')
     count_sims = filters.CharFilter(method='get_filter_queryset')
     brand = filters.CharFilter(method='get_filter_queryset')
+    proizvoditel = filters.CharFilter(method='get_filter_queryset')
     tip_noutbuka = filters.CharFilter(method='get_filter_queryset')
 
 

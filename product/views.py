@@ -11,6 +11,7 @@ from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count
 from django.shortcuts import get_object_or_404
 from channels.layers import get_channel_layer
 from mptt.templatetags.mptt_tags import cache_tree_children
+import json
 
 
 class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
@@ -30,7 +31,6 @@ class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
 
 class ProductViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
-
     def retrieve(self, request):
         if request.data.get('id'):
             product = Product.objects.all()
@@ -46,7 +46,8 @@ class ProductViewSet(viewsets.GenericViewSet):
 
     def list(self, request):
         if request.data.get('ids'):
-            ids = request.data.get('ids')
+            # Array str to array
+            ids = json.loads(request.data.get('ids'))
             products = Product.objects.filter(id__in=ids)
             products = get_product_annotate(products)
         else:

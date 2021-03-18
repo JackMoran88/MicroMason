@@ -27,7 +27,9 @@ from versatileimagefield.fields import VersatileImageField, PPOIField
 from versatileimagefield.placeholder import OnStoragePlaceholderImage
 
 from basepage.models import *
-
+# Signals
+from django.db import models
+from django.dispatch import receiver
 
 
 class Address(Model):
@@ -142,23 +144,24 @@ class Order(Model):
 
     note = TextField(blank=True, null=True)
 
+    ready = BooleanField(default=False)
     created_at = DateTimeField(auto_now_add=True)
     updated_at = DateTimeField(auto_now=True)
 
     tracker = FieldTracker(
-        fields=('status',), )
+        fields=('ready',), )
 
     def save(self, *args, **kwargs):
+        has_changed = self.tracker.changed()
+        if has_changed:
+            if self.ready is True:
+                if self.customer:
+                    from basepage.tasks import se_order
+                    se_order('create', self, [self.customer.email])
+
         if not self.status:
             self.status = OrderStatus.objects.get(order_by=1)
 
-        ret = super().save(*args, **kwargs)
-        has_changed = self.tracker.changed()
-        if has_changed:
-            from basepage.tasks import se_order
-
-            se_order('update', self, [self.customer.email])
-            return ret
         super(Order, self).save(*args, **kwargs)
 
     class Meta:
@@ -202,3 +205,13 @@ class OrderProduct(Model):
 
     def __str__(self):
         return f'x{self.quantity} {self.product.name}'
+
+    def sum(self):
+        return self.product.price * self.quantity
+
+# @receiver(models.signals.post_save, sender=Order)
+# def execute_after_save(sender, instance, created, *args, **kwargs):
+#     if created:
+#         if instance.customer:
+#             from basepage.tasks import se_order
+#             se_order('create', instance, [instance.customer.email])

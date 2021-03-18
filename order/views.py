@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, generics, viewsets
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from .serializers import *
 from .models import *
 from basepage.models import *
@@ -94,7 +94,10 @@ class OrderViewSet(viewsets.ViewSet):
             Cart.objects.filter(anonymous_customer=user).delete()
         else:
             return Response(status=400)
-
+        # Все товары загружены, заказ готов
+        order.ready = True
+        order.save()
+        #
         queryset = Order.objects.get(id=order.id)
         serializer = OrderDetailSerializer(queryset)
         return Response(serializer.data, status=201)
@@ -214,3 +217,31 @@ class PaymentViewSet(viewsets.ViewSet):
         queryset = Payment.objects.all()
         serializer = PaymentDetailSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class TestViewSet(viewsets.ViewSet):
+
+    def email(self, request):
+        from django.core.mail import send_mail
+        from django.template.loader import render_to_string
+
+        order = Order.objects.all().first()
+        products = OrderProduct.objects.filter(order=order)
+
+        msg_plain = 'text'
+        msg_html = render_to_string('../templates/email/order/order_created.html',
+                                    {
+                                        'user_name': 'Дмитрий',
+                                        'order': order,
+                                        'products': products,
+                                        'settings': settings
+                                    }
+                                    )
+
+        send_mail(f'Ваша заявка №{order.id} - принята',
+                  msg_plain,
+                  settings.EMAIL_HOST_USER,
+                  ['dmitriy.evseev.99@gmail.com'],
+                  fail_silently=False,
+                  html_message=msg_html,
+                  )

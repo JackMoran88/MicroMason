@@ -90,7 +90,7 @@ class Product(Model):
     brand = ForeignKey(Brand, on_delete=CASCADE, null=True, blank=True)
     code = CharField(null=False, max_length=255)
     quantity = PositiveIntegerField(editable=True, default=0)
-    price = FloatField(null=False)
+    price = PositiveIntegerField(null=False)
     description = TextField(blank=True, null=True)
     main_image = VersatileImageField(
         "Изображение",

@@ -20,6 +20,7 @@ class OrderAdminForm(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderAdminForm, ]
+    exclude = ('ready',)
 
     change_form_template = "admin/order_order__change_form.html"
 

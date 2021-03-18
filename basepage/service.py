@@ -17,10 +17,14 @@ import math
 import re
 from django.core.mail import send_mail
 
+
 # Mailer
-def send(subject, body, recipients):
+def mailer_send(subject, body, recipients):
     send_mail(subject, body, settings.EMAIL_HOST_USER, recipients, fail_silently=False)
 
+
+def mailer_html_send(subject, body='', recipients='', html=''):
+    send_mail(subject, body, settings.EMAIL_HOST_USER, recipients, fail_silently=False, html_message=html)
 
 class PaginationProducts(PageNumberPagination):
     page_size = 24
@@ -73,11 +77,9 @@ class PaginationProducts(PageNumberPagination):
             'results': data,
         })
 
-
 def clear_token(request):
     token = re.sub('^[\w]+ ', '', request.headers['Authorization'])
     return token
-
 
 def sort_by_choice(request):
     if (request.data.get('sort_by')):
@@ -85,7 +87,6 @@ def sort_by_choice(request):
     else:
         sort_by = ProductSortType.objects.get(order=1)
     return sort_by.field
-
 
 def get_product_annotate(object):
     object = object.annotate(
@@ -95,14 +96,12 @@ def get_product_annotate(object):
     )
     return object
 
-
 def get_cart_annotate(object):
     object = object.annotate(
         totals=Sum(F('price') * F('cartproduct__quantity'), output_field=FloatField()),
         qty=Sum(F('cartproduct__quantity'))
     )
     return object
-
 
 def get_user(request):
     if (request.headers.get('Authorization')):
