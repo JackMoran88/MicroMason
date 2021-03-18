@@ -10,6 +10,8 @@ a {
 
 .header {
   background: #0D1F2F;
+}
+.header * {
   color: white;
 }
 .header > td {

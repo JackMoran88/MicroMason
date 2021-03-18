@@ -28,7 +28,9 @@ table.letter {
 
 .header {
   background: $bg-header;
-  color: $text-light;
+  *{
+    color: $text-light;
+  }
 
   > td {
     padding: 15px 30px 15px 30px;

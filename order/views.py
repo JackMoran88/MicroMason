@@ -228,20 +228,5 @@ class TestViewSet(viewsets.ViewSet):
         order = Order.objects.all().first()
         products = OrderProduct.objects.filter(order=order)
 
-        msg_plain = 'text'
-        msg_html = render_to_string('../templates/email/order/order_created.html',
-                                    {
-                                        'user_name': 'Дмитрий',
-                                        'order': order,
-                                        'products': products,
-                                        'settings': settings
-                                    }
-                                    )
 
-        send_mail(f'Ваша заявка №{order.id} - принята',
-                  msg_plain,
-                  settings.EMAIL_HOST_USER,
-                  ['dmitriy.evseev.99@gmail.com'],
-                  fail_silently=False,
-                  html_message=msg_html,
-                  )
+        return render(request, '../templates/email/password_reset.html')

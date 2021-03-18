@@ -29,7 +29,7 @@ def se_order(type, order, recipients):
         print(products)
 
 
-        msg_html = render_to_string('../templates/email/order/order_created.html',
+        msg_html = render_to_string('../templates/email/templates/order_created.html',
                                     {
                                         'user_name': order.address.get_name(),
                                         'order': order,
