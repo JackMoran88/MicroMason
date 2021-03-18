@@ -70,6 +70,9 @@ class Address(Model):
     def get_full_name(self):
         return f'{self.last_name} {self.first_name} {self.middle_name}'
 
+    def get_name(self):
+        return f'{self.last_name} {self.first_name}'
+
 
 class Shipping(Model):
     name = CharField(max_length=225)
@@ -155,9 +158,10 @@ class Order(Model):
         has_changed = self.tracker.changed()
         if has_changed:
             if self.ready is True:
-                if self.customer:
-                    from basepage.tasks import se_order
-                    se_order('create', self, [self.customer.email])
+                print('******')
+                print(self.address.email)
+                from basepage.tasks import se_order
+                se_order('create', self, [self.address.email])
 
         if not self.status:
             self.status = OrderStatus.objects.get(order_by=1)

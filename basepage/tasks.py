@@ -31,7 +31,7 @@ def se_order(type, order, recipients):
 
         msg_html = render_to_string('../templates/email/order/order_created.html',
                                     {
-                                        'user_name': order.customer.get_full_name(),
+                                        'user_name': order.address.get_name(),
                                         'order': order,
                                         'products': products,
                                         'settings': settings

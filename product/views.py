@@ -47,7 +47,9 @@ class ProductViewSet(viewsets.GenericViewSet):
     def list(self, request):
         if request.data.get('ids'):
             # Array str to array
-            ids = json.loads(request.data.get('ids'))
+            ids = request.data.get('ids')
+            if not isinstance(ids, list):
+                ids = json.loads(request.data.get('ids'))
             products = Product.objects.filter(id__in=ids)
             products = get_product_annotate(products)
         else:

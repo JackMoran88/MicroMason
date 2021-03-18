@@ -163,7 +163,8 @@
                                         № {{ order.id }} или отправим информационное письмо.
                                     </p>
                                     <p>
-                                        Вы можете отследить статус своего заказа в <a href="{{ settings.MAIL.links.frontend.cabinet }}">личном кабинете</a>.
+                                        Вы можете отследить статус своего заказа в <a
+                                            href="{{ settings.MAIL.links.frontend.cabinet }}">личном кабинете</a>.
                                     </p>
                                 </td>
                             </tr>
@@ -194,24 +195,24 @@
                                             <td colspan="3"
                                                 class="b-sm-y">
                                                 <table>
-                                                    <tr>
-                                                        <td style="padding-left: 20px;padding-right: 20px;padding-top: 5px;padding-bottom: 5px;width: 100px;vertical-align: middle;">
-                                                            <a href="">
-                                                                <img src="
+                                                    {% for product in products %}
+                                                        <tr>
+                                                            <td style="padding-left: 20px;padding-right: 20px;padding-top: 5px;padding-bottom: 5px;width: 100px;vertical-align: middle;">
+                                                                <a href="">
+                                                                    <img src="
 
+                                                                            {{ settings.MAIL.links.backend.main }}{{ product.product.main_image.url }}"
+                                                                         alt="{{ product.name }}"
+                                                                         width="91" height="91">
+                                                                </a>
+                                                            </td>
+                                                            <td>
 
-
-                                                                        {{ settings.MAIL.links.backend.main }}{{ product.product.main_image.url }}"
-                                                                     alt="{{ product.name }}" width="80" height="91">
-                                                            </a>
-                                                        </td>
-                                                        <td>
-                                                            {% for product in products %}
                                                                 <table style="height: 91px">
                                                                     <tr style="">
                                                                         <td colspan="3">
                                                                             <a href="{{ settings.MAIL.links.frontend.main }}/category/{{ product.product.category.slug }}/product/{{ product.product.slug }}">
-                                                                               {{ product.product.name }}
+                                                                                {{ product.product.name }}
                                                                             </a>
                                                                         </td>
                                                                     </tr>
@@ -229,9 +230,10 @@
                                                                         </td>
                                                                     </tr>
                                                                 </table>
-                                                            {% endfor %}
-                                                        </td>
-                                                    </tr>
+
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
                                                 </table>
                                             </td>
                                         </tr>
@@ -247,9 +249,8 @@
                                                         <td style="width: 260px; vertical-align: top;">
                                                             <p class="m-0">{{ order.shipping }}</p>
                                                             <p class="fz-sm">
-                                                                {{ order.shipping.delivery_point }}
-                                                                {{ order.shipping.addreess }}
-                                                            </p>
+                                                                {{ order.delivery_point }}
+                                                             </p>
                                                         </td>
                                                         <td class="t-lg"
                                                             style="width: 178px; text-align: right; vertical-align: top;">
