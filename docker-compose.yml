@@ -14,9 +14,7 @@ services:
     build: .
     command: bash -c "
       python manage.py migrate
-      && python /usr/src/micromason/manage.py runserver 0.0.0.0:8000
-      && celery -A micromason worker -l info
-      && celery -A micromason beat -l info
+      && python manage.py runserver 0.0.0.0:8000
       "
     volumes:
       - .:/usr/src/micromason
@@ -32,3 +30,22 @@ services:
     image: redis:2.8
     ports:
       - "6379:6379"
+  celery:
+    build: .
+    restart: always
+    image: celery
+    command: celery -A MicroMason worker -l info
+    volumes:
+      - .:/usr/src/micromason
+    depends_on:
+      - web
+      - redis
+  celery_beat:
+    build: .
+    command: celery -A MicroMason beat -l info
+    image: celery
+    volumes:
+      - .:/usr/src/micromason
+    depends_on:
+      - web
+      - redis

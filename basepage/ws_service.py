@@ -3,9 +3,6 @@ from basepage.serializers import *
 
 
 async def update_product(product):
-    print('ID ID ID')
-    print(product)
-    print(product.id)
     group_name = ProductDetailSerializer(product).get_group_name()
     channel_layer = get_channel_layer()
     print('Обновление продукта')

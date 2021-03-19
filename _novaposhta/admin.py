@@ -127,7 +127,7 @@ class CounterpartyAdmin(TranslationAdmin):
 
 @admin.register(Delivery)
 class DeliveryAdmin(TranslationAdmin):
-    list_display = ('int_doc_number', 'estimated_delivery_date')
+    list_display = ('int_doc_number', 'estimated_delivery_date', 'status')
     readonly_fields = ('ref', 'cost_on_site', 'estimated_delivery_date', 'int_doc_number', 'type_document', 'status', 'order')
     change_form_template = "admin/_novaposhta_delivery__change_form.html"
 

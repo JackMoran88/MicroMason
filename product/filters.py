@@ -46,3 +46,4 @@ class ProductFilter(filters.FilterSet):
         model = Product
         fields = ['price', 'sort_by', 'brand', 'min_price', 'max_price']
 
+

@@ -8,11 +8,13 @@ app = Celery('MicroMason')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
-
-
-app.conf.beat_schedule={
-    'send-email-every-minutes':{
+app.conf.beat_schedule = {
+    'send-email-every-minutes': {
         'task': 'basepage.tasks.send_beat_email',
         'schedule': crontab()
-    }
+    },
+    'send-email-every-ten-minutes': {
+        'task': 'basepage.tasks.np_update_invoice',
+        'schedule': crontab(minute='*/1')
+    },
 }
