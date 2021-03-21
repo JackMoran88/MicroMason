@@ -1,0 +1,154 @@
+{% extends 'email/email.html' %}
+
+{% block body %}
+    <tr class="body">
+                    <td>
+                        <table>
+                            <tr>
+                                <td>
+                                    <h2>{{ user_name }}, спасибо за ваш заказ!</h2>
+                                    <p>
+                                        Ваша заявка принята. Мы свяжемся с вами в ближайшее время для подтверждения
+                                        заказа
+                                        № {{ order.id }} или отправим информационное письмо.
+                                    </p>
+                                    <p>
+                                        Вы можете отследить статус своего заказа в <a
+                                            href="{{ settings.MAIL.links.frontend.cabinet }}">личном кабинете</a>.
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td colspan="2">
+                                                <h2>Заказ № {{ order.id }}</h2>
+                                            </td>
+                                            <td style="text-align: right">
+                                                {{ order.created_at }}
+                                            </td>
+                                        </tr>
+                                        <tr class="fz-sm t-sm">
+                                            <td style="padding-bottom: 5px;width: 278px;vertical-align: top;">
+                                                Название и цена товара
+                                            </td>
+                                            <td style="padding-bottom: 5px;width: 100px;vertical-align: top;">
+                                                Кол-во
+                                            </td>
+                                            <td style="padding-bottom: 5px;width: 200px;vertical-align: top;text-align: right">
+                                                Сумма
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="3"
+                                                class="b-sm-y">
+                                                <table>
+                                                    {% for product in products %}
+                                                        <tr>
+                                                            <td style="padding-left: 20px;padding-right: 20px;padding-top: 5px;padding-bottom: 5px;width: 100px;vertical-align: middle;">
+                                                                <a href="">
+                                                                    <img src="
+
+                                                                            {{ settings.MAIL.links.backend.main }}{{ product.product.main_image.url }}"
+                                                                         alt="{{ product.name }}"
+                                                                         width="91" height="91">
+                                                                </a>
+                                                            </td>
+                                                            <td>
+
+                                                                <table style="height: 91px">
+                                                                    <tr style="">
+                                                                        <td colspan="3">
+                                                                            <a href="{{ settings.MAIL.links.frontend.main }}/category/{{ product.product.category.slug }}/product/{{ product.product.slug }}">
+                                                                                {{ product.product.name }}
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class="t-lg"
+                                                                            style="width: 138px;padding-top: 10px;">
+                                                                            {{ product.product.price }} грн
+                                                                        </td>
+                                                                        <td style="width: 100px;padding-top: 10px;">
+                                                                            {{ product.quantity }}
+                                                                        </td>
+                                                                        <td class="t-lg"
+                                                                            style="width: 200px;padding-top: 10px;text-align: right;">
+                                                                            {{ product.sum }} грн
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr class="fz-md">
+                                            <td colspan="3"
+                                                class="b-sm-y"
+                                                style="padding-top: 17px;padding-bottom: 17px;">
+                                                <table>
+                                                    <tr>
+                                                        <td style="width: 140px; vertical-align: top;">
+                                                            Доставка
+                                                        </td>
+                                                        <td style="width: 260px; vertical-align: top;">
+                                                            <p class="m-0">{{ order.shipping }}</p>
+                                                            <p class="fz-sm">
+                                                                {{ order.delivery_point }}
+                                                             </p>
+                                                        </td>
+                                                        <td class="t-lg"
+                                                            style="width: 178px; text-align: right; vertical-align: top;">
+                                                            {{ order.shipping.price }} грн
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr class="fz-md">
+                                            <td colspan="3"
+                                                class="b-sm-y"
+                                                style=" padding-top: 17px;padding-bottom: 17px;">
+                                                <table>
+                                                    <tr>
+                                                        <td style="width: 140px; vertical-align: top;">
+                                                            Оплата
+                                                        </td>
+                                                        <td style="width: 260px; vertical-align: top;">
+                                                            <p class="m-0">
+                                                                {{ order.payment_method }}
+                                                            </p>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3"
+                                                class="b-sm-y"
+                                                style="padding-top: 17px;padding-bottom: 17px;">
+                                                <table>
+                                                    <tr>
+                                                        <td style="width: 289px; vertical-align: center;">
+                                                            Итого к оплате
+                                                        </td>
+                                                        <td style="width: 289px; vertical-align: center;">
+                                                            <h2 style="text-align: right">{{ order.get_amount }}
+                                                                грн</h2>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+{% endblock %}

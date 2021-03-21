@@ -1,0 +1,39 @@
+function form_sign_up() {
+    new Vue({
+        el: '#auth-modal',
+        data: {},
+        created: function () {
+            axios.get('/api/sign_up')
+                .then(function (response) {
+                    $('#auth-modal').html(response.data)
+                })
+        }
+    })
+}
+
+
+function form_sign_in() {
+    new Vue({
+        el: '#auth-modal',
+        data: {},
+        created: function () {
+            axios.get('/api/sign_in')
+                .then(function (response) {
+                    $('#auth-modal').html(response.data)
+                })
+        }
+    })
+}
+
+function shopping_cart() {
+    new Vue({
+        el: '#auth-modal',
+        data: {},
+        created: function () {
+            axios.get('/api/sign_in')
+                .then(function (response) {
+                    $('#auth-modal').html(response.data)
+                })
+        }
+    })
+}
