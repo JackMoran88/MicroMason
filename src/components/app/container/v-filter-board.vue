@@ -1,0 +1,92 @@
+<template>
+  <div class="v-filter-board">
+    <slot name="header">
+      <v-title
+        text="Фильтр"
+        type="second"
+        class="mt-0"
+        v-if="FILTERS.filters"
+      />
+    </slot>
+    <v-filter-container name="Цена" v-if="FILTERS.filters && FILTERS.filters.prices">
+      <v-filter-price
+        slot="default"
+      />
+    </v-filter-container>
+    <div v-if="!onlyPrice">
+      <v-filter-container
+        v-for="filter in FILTERS.filters"
+        :key="filter.id"
+        :name="filter[0].name"
+        :length="filter[1].choices.length"
+        v-if="filter[0].name"
+      >
+        <v-filter-multiply
+          slot="default"
+          :data="filter[1].choices"
+          :URLQuery="filter[0].request_name"
+        />
+      </v-filter-container>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {mapActions, mapGetters, mapMutations} from 'vuex';
+  import vFilterContainer from '@/components/app/filter/v-filter-container.vue';
+  import vFilterPrice from '@/components/app/filter/v-filter-price.vue';
+  import vFilterBrand from '@/components/app/filter/v-filter-brand.vue';
+  import vFilterMultiply from '@/components/app/filter/v-filter-multiply.vue';
+
+  export default {
+    name: 'v-filter-board',
+    components: {
+      vFilterPrice, vFilterContainer, vFilterBrand, vFilterMultiply,
+    },
+    props: {
+      onlyPrice: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data() {
+      return {
+        price: '',
+      };
+    },
+    methods: {
+      load() {
+        if (this.$route.params.slug) {
+          this.GET_FILTERS(this.$route.params.slug);
+        }
+      },
+      loadQueryFromUrl() {
+        // Можно не писать, поскольку, это уже отрабатывает sort_by
+      },
+      ...mapActions(['GET_PRODUCTS', 'GET_FILTERS']),
+      ...mapMutations(['CLEAR_FILTERS'])
+    },
+    computed: {
+      ...mapGetters(['FILTERS']),
+    },
+    mounted() {
+      this.load();
+    },
+    watch: {
+      $route() {
+        this.CLEAR_FILTERS()
+        this.load();
+      },
+    },
+  };
+</script>
+
+<style scoped lang="scss">
+
+  .v-filter-board {
+    .v-filter-container {
+      margin: .5rem 0;
+    }
+  }
+
+</style>

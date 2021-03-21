@@ -1,0 +1,105 @@
+//Transitions
+
+.zoom-enter-active,
+.zoom-leave-active {
+  animation-duration: 0.25s;
+  animation-fill-mode: both;
+  animation-name: zoom;
+}
+
+.zoom-leave-active {
+  animation-direction: reverse;
+}
+
+@keyframes zoom {
+  from {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.25s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0
+}
+
+
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition-duration: 0.5s;
+  transition-property: height, opacity, transform;
+  transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+  overflow: hidden;
+}
+
+.slide-left-enter,
+.slide-right-leave-active {
+  opacity: 0;
+  transform: translate(2em, 0);
+}
+
+.slide-left-leave-active,
+.slide-right-enter {
+  opacity: 0;
+  transform: translate(-2em, 0);
+}
+
+
+.slideDown-enter-active,
+.slideDown-leave-active {
+  animation-duration: .5s !important;
+  animation-name: slideDown !important;
+  transform-origin: top;
+}
+
+.slideDown-leave-active {
+  animation-direction: reverse;
+}
+
+@keyframes slideDown {
+  from {
+    transform: scaleY(0);
+  }
+
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+
+//Animations
+
+@keyframes rotateCircle {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    background-color: var(--background-light-second);
+  }
+  50% {
+    background-color: var(--background-light);
+  }
+  100% {
+    background-color: var(--background-light-second);
+  }
+}
