@@ -434,13 +434,13 @@ class CustomerViewSet(viewsets.ViewSet):
                 user.phone_number = request.data.get('phone')
 
             if (request.data.get('email') and user.email != request.data.get('email')):
-                    data['new_email'] = request.data.get('email')
-                    r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
-                    try:
-                        response = r.json()
-                    except:
-                        response = r
-                    return Response(response, status=r.status_code)
+                data['new_email'] = request.data.get('email')
+                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
+                try:
+                    response = r.json()
+                except:
+                    response = r
+                return Response(response, status=r.status_code)
             if (request.data.get('new_password')):
                 data['new_password'] = request.data.get('new_password')
                 r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data,
@@ -472,9 +472,6 @@ class CustomerSocial(viewsets.ViewSet):
         }
         data = dict(list(data.items()) + list(request.data.items()) + list(provider_data.items()))
         res = requests.post(url, json=data)
-        print('ОТВЕТ GOOGLE')
-        print(res)
-        print(res.json())
         if res.status_code == 200:
             local_prodvider_data = {
                 'provider': {
@@ -507,7 +504,6 @@ class RedirectToFront(viewsets.ViewSet):
 
 class NovaPoshtaViewSet(viewsets.ViewSet):
     def search(self, request):
-        print(request.data.get('query'))
         if not (request.data.get('query')):
             return Response(status=204)
         query = request.data.get('query')
@@ -516,3 +512,5 @@ class NovaPoshtaViewSet(viewsets.ViewSet):
             'description').distinct()
         serializer = NovaPoshtaCitySerializer(queryset, many=True)
         return Response(serializer.data, status=200)
+
+

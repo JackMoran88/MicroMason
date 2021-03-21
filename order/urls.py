@@ -22,6 +22,4 @@ urlpatterns = [
                   #
                   path('payment/list/', PaymentViewSet.as_view({'post': 'list'})),
                   #
-                  path('email/test/', TestViewSet.as_view({'get': 'email'})),
-                  #
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

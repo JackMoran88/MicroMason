@@ -144,7 +144,7 @@ class Command(BaseCommand):
                             'brand': brand,
                             'code': string['code'],
                             'quantity': string['quantity'],
-                            'price': string['price'],
+                            'price': int(float(string['price'])),
                             'description': string['description'],
                             'category': category,
                             'status': string['status'],

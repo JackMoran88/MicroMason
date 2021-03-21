@@ -103,16 +103,11 @@ class OrderViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=201)
 
     def pay(self, request):
-        print(request.data)
         if not (request.data.get('order_id')):
             return Response(status=404)
 
         order = Order.objects.filter(id=request.data.get('order_id')).first()
 
-        print(order)
-        print(order.id)
-        print(order.get_description())
-        print(order.get_amount())
         if not (order):
             return Response(status=404)
 
@@ -219,14 +214,3 @@ class PaymentViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class TestViewSet(viewsets.ViewSet):
-
-    def email(self, request):
-        from django.core.mail import send_mail
-        from django.template.loader import render_to_string
-
-        order = Order.objects.all().first()
-        products = OrderProduct.objects.filter(order=order)
-
-
-        return render(request, '../templates/email/password_reset.html')

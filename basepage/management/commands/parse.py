@@ -203,13 +203,6 @@ class Parser:
                     if image.has_attr('data-img-big'):
                         images.append(image['data-img-big'])
                 images = list(set(images))
-
-
-                print(images[0])
-                print(images[1])
-                print(images[2])
-                print(images[3])
-                input('STOP')
                 # !IMG!
 
                 # OPTION

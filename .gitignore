@@ -7,3 +7,5 @@ node_modules/
 package-lock.json
 
 media/
+
+#privat_settings.py

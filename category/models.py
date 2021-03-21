@@ -46,7 +46,7 @@ class Filter(Model):
     type = CharField(max_length=32, null=True, blank=True, choices=TYPES)
 
 
-    request_name = CharField(max_length=32, blank=True)
+    request_name = CharField(max_length=255, blank=True)
     model = CharField(max_length=255, null=True, blank=True)
     model_parameter = ForeignKey(product.models.Option, null=True, blank=True, on_delete=CASCADE)
     filter = CharField(max_length=255, null=True, blank=True)

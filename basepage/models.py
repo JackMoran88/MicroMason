@@ -97,7 +97,6 @@ class CustomerManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
         )
-        print(user)
 
 
         user.set_password(password)
@@ -247,7 +246,6 @@ class Review(MPTTModel):
     def save(self, *args, **kwargs):
         ret = super().save(*args, **kwargs)
         has_changed = self.tracker.changed()
-        print(has_changed)
         if has_changed:
             from basepage.ws_service import update_product
             async_to_sync(update_product)(self.product)

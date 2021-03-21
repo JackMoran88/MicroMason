@@ -158,8 +158,6 @@ class Order(Model):
         has_changed = self.tracker.changed()
         if has_changed:
             if self.ready is True:
-                print('******')
-                print(self.address.email)
                 from basepage.tasks import se_order
                 se_order('create', self, [self.address.email])
 

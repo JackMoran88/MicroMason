@@ -12,8 +12,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-
+from datetime import timedelta
 from rest_framework import *
+
+from privat_settings import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -21,8 +23,6 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the9 secret key used in production secret!
-SECRET_KEY = '!4tla#+raaqipje&y1+ju3@p-8++v*3_m8pzon+^ch2ldyosr8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -204,27 +204,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 24,
 }
 
-# SMTP(mail)
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'dmitriy.evseev.99@gmail.com'
-EMAIL_HOST_PASSWORD = 'pniraopitkyprsbe'
-EMAIL_PORT = 587
-
-MAIL = {
-    'title': 'MicroMason',
-    'phone': '+380508840819',
-    'links': {
-        'backend': {
-            'main': 'http://192.168.1.228:8000',
-        },
-        'frontend': {
-            'main': 'http://192.168.1.228:8081',
-            'cabinet': 'http://192.168.1.228:8081/account/',
-        },
-    }
-}
-
 # Настройка auth
 DJOSER = {
     # Ссылка на восстановление пароля
@@ -241,7 +220,7 @@ DJOSER = {
 }
 
 # Настройка auth
-from datetime import timedelta
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
@@ -322,12 +301,6 @@ CORS_ALLOW_HEADERS = [
 ASGI_APPLICATION = "MicroMason.routing.application"
 
 CHANNEL_LAYERS = {
-    # 'default': {
-    #     'BACKEND': 'channels_redis.core.RedisChannelLayer',
-    #     'CONFIG': {
-    #         "hosts": [('127.0.0.1', 6379)],
-    #     },
-    # },
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
@@ -397,9 +370,6 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     'progressive_jpeg': False
 }
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'IWH3HU3Lpvcp25_PHXeuhL6q'
-
 # Определите SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE, чтобы получить дополнительные разрешения от Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
@@ -408,7 +378,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
-
     'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -468,17 +437,6 @@ SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 LOGOUT_URL = 'auth/token/logout/'
 
-#   LiqPay
-
-LIQPAY_PUBLIC_KEY = 'sandbox_i80911148214'
-LIQPAY_PRIVATE_KEY = 'sandbox_WOrksBUssSUPN88B36ppPsDcRn4i5cL2AxPaLFyV'
-LIQPAY_VERSION = '3'
-LIQPAY_CURRENCY = 'UAH'
-
-# Новая почта
-
-NOVA_POSHTA_API_KEY = '9f114041505c633de9523ec691981d44'
-NOVA_POSHTA_PHONE_NUMBER = '+380508840819'
 # CELERY
 
 REDIS_HOST = 'redis'

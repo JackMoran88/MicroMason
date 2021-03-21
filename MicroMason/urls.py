@@ -52,6 +52,7 @@ urlpatterns = [
                   path('i18n/', include('django.conf.urls.i18n')),
 
 
+
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += i18n_patterns(
