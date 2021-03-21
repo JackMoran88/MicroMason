@@ -8,4 +8,7 @@ package-lock.json
 
 media/
 
+celerybeat-schedule
+celeryd.pid
+
 #privat_settings.py
