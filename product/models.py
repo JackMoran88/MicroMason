@@ -124,9 +124,11 @@ class Product(Model):
             return ret
 
     def image_tag(self):
-        return mark_safe(
-            '<img src="/media/%s" width="75" height="75" />' % (self.main_image)
-        )
+        if (self.main_image):
+            path = f'/media/{self.main_image}'
+        else:
+            path = f'/media/images/default/product/404.png'
+        return mark_safe(f'<img src="{path}" width="75" height="75" />')
 
     image_tag.short_description = 'Image'
 

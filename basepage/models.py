@@ -1,4 +1,5 @@
 import os
+import binascii
 from django.conf import settings
 from django.utils.text import slugify
 from django.core.validators import RegexValidator
@@ -183,7 +184,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
 
 class AnonymousCustomer(Model):
-    # token = CharField(max_length=25)
+    token = CharField(max_length=40)
     last_update = DateField(auto_now_add=True, )
 
     created_at = DateTimeField(auto_now_add=True)
@@ -196,6 +197,12 @@ class AnonymousCustomer(Model):
     def __str__(self):
         return f'{self.id} - {self.last_update}'
 
+    def save(self, *args, **kwargs):
+        print('*******HERE******')
+        if not self.pk:
+            self.token = binascii.hexlify(os.urandom(20)).decode()
+            print(self.token)
+        super(AnonymousCustomer, self).save(*args, **kwargs)
 
 class RatingStar(Model):
     value = SmallIntegerField("Значение", default=0)

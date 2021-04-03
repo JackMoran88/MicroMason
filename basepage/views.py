@@ -43,7 +43,7 @@ class CategoryViewSet(viewsets.GenericViewSet):
     filterset_class = ProductFilter
 
     def list(self, request):
-        queryset = cache_tree_children(Category.objects.all().order_by('id'))
+        queryset = cache_tree_children(Category.objects.all().filter(level__lte=2).order_by('id'))
         serializer = CategoriesListSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -380,28 +380,23 @@ class CustomerViewSet(viewsets.ViewSet):
 
             if (request.data.get('anonymous')):
                 anonymous_token = request.data.get('anonymous')
-                cart = Cart.objects.filter(anonymous_customer=anonymous_token)
-                compare = Compare.objects.filter(anonymous_customer=anonymous_token)
-                # wish = Wish.objects.filter(anonymous_customer=anonymous_token)
-                if not (Cart.objects.filter(customer=customer.id)):
-                    cart.update(customer=customer)
-                    cart.update(anonymous_customer=None)
-                else:
-                    cart.delete()
+                anonymous = AnonymousCustomer.objects.filter(token=anonymous_token).first()
+                if anonymous:
+                    cart = Cart.objects.filter(anonymous_customer=anonymous)
+                    compare = Compare.objects.filter(anonymous_customer=anonymous)
+                    # wish = Wish.objects.filter(anonymous_customer=anonymous_token)
+                    if not (Cart.objects.filter(customer=customer.id)):
+                        cart.update(customer=customer)
+                        cart.update(anonymous_customer=None)
+                    else:
+                        cart.delete()
+                    if not (Compare.objects.filter(customer=customer.id)):
+                        compare.update(customer=customer)
+                        compare.update(anonymous_customer=None)
+                    else:
+                        compare.delete()
+                    anonymous.delete()
 
-                if not (Compare.objects.filter(customer=customer.id)):
-                    compare.update(customer=customer)
-                    compare.update(anonymous_customer=None)
-                else:
-                    compare.delete()
-
-                # if not (Wish.objects.filter(customer=customer.id)):
-                #     wish.update(customer=customer)
-                #     wish.update(anonymous_customer=None)
-                # else:
-                #     wish.delete()
-
-                AnonymousCustomer.objects.filter(id=anonymous_token).delete()
             serializer = CustomerDetailSerializer(customer)
             return Response(serializer.data)
         else:
@@ -488,12 +483,20 @@ class CustomerSocial(viewsets.ViewSet):
 
 class AnonymousViewSet(viewsets.ViewSet):
     def create(self, request):
-        anonymous = AnonymousCustomerCreateSerializer(data=request.data)
-        if anonymous.is_valid():
-            anonymous.save()
-            return Response(anonymous.data)
-        else:
-            return Response(status=400)
+        anonymous = AnonymousCustomer.objects.create()
+        if anonymous:
+            serializer = AnonymousCustomerDetailSerializer(anonymous)
+            return Response(serializer.data)
+        return Response(status=400)
+
+    def check(self, request):
+        if (request.data.get('token')):
+            print(request.data.get('token'))
+            user = AnonymousCustomer.objects.filter(token=request.data.get('token')).first()
+            if user:
+                return Response()
+
+        return Response(status=400)
 
 
 class RedirectToFront(viewsets.ViewSet):
@@ -512,5 +515,3 @@ class NovaPoshtaViewSet(viewsets.ViewSet):
             'description').distinct()
         serializer = NovaPoshtaCitySerializer(queryset, many=True)
         return Response(serializer.data, status=200)
-
-

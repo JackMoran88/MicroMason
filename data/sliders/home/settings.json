@@ -1,0 +1,28 @@
+{
+  "name": "Home",
+  "place": "home",
+  "width": "1200",
+  "height": "400",
+  "slides": [
+    {
+      "img": "1",
+      "title": "Подгузники",
+      "url": "https://google.com/"
+    },
+    {
+      "img": "2",
+      "title": "Оплата частями",
+      "url": "https://google.com/"
+    },
+    {
+      "img": "3",
+      "title": "Распродажа",
+      "url": "https://google.com/"
+    },
+    {
+      "img": "4",
+      "title": "Бесплатная доставка",
+      "url": "https://google.com/"
+    }
+  ]
+}

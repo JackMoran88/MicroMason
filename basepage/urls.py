@@ -34,6 +34,7 @@ urlpatterns = [
 
     #
     path('anonymous/', AnonymousViewSet.as_view({'post': 'create'})),
+    path('anonymous/check/', AnonymousViewSet.as_view({'post': 'check'})),
     #
 
 ]

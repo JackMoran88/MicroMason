@@ -1,5 +1,4 @@
-# SECURITY WARNING: keep the9 secret key used in production secret!
-SECRET_KEY = '!4tla#+raaqipje&y1+ju3@p-8++v*3_m8pzon+^ch2ldyosr8'
+
 
 # SMTP(mail)
 EMAIL_USE_TLS = True

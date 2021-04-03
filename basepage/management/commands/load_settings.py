@@ -17,6 +17,7 @@ import copy
 import os
 import logging
 import csv
+import requests
 import urllib.request
 import slugify
 import ast
@@ -160,5 +161,6 @@ class Command(BaseCommand):
                 Counterparty.objects.all().delete()
                 for string in csv_dict_reader:
                     Counterparty.objects.create(**string)
+
 
 

@@ -13,6 +13,7 @@ from order.serializers import *
 from product.serializers import *
 from _novaposhta.models import Warehouse
 
+
 ######################################################################
 
 # class ModelNameFunctionSerializer
@@ -89,15 +90,11 @@ class ReviewAnswerCreateSerializer(serializers.ModelSerializer):
         return Review
 
 
-class AnonymousCustomerCreateSerializer(serializers.ModelSerializer):
+class AnonymousCustomerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnonymousCustomer
-        exclude = ['last_update', ]
+        exclude = ['id', 'last_update']
 
-    def create(self, validated_data):
-        anonymous = AnonymousCustomer.objects.create()
-        anonymous.save()
-        return anonymous
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
     address = AddressDetailSerializer(many=True)
@@ -114,8 +111,12 @@ class CustomerChangeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RecursiveField(serializers.Serializer):
+    def to_native(self, value):
+        return CategoriesListSerializer(value, context={"parent": self.parent.object, "parent_serializer": self.parent})
+
+
 class CategoriesListSerializer(serializers.ModelSerializer):
-    children = RecursiveSerializer(many=True, required=False)
     main_image = VersatileImageFieldSerializer(sizes='category_img')
 
     class Meta:
@@ -125,17 +126,10 @@ class CategoriesListSerializer(serializers.ModelSerializer):
     def get_group_name(self):
         return 'Categories'
 
-
-class CategoriesDetailSerializer(serializers.ModelSerializer):
-    children = RecursiveSerializer(many=True, required=False)
-    main_image = VersatileImageFieldSerializer(sizes='category_img')
-
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-    def get_group_name(self):
-        return 'Categories'
+CategoriesListSerializer._declared_fields['children'] = CategoriesListSerializer(
+    many=True,
+    source='get_children',
+)
 
 
 class CompareProductDetailSerializer(serializers.ModelSerializer):
@@ -155,6 +149,7 @@ class CompareProductDetailSerializer(serializers.ModelSerializer):
 class CompareDetailSerializer(serializers.ModelSerializer):
     product = CompareProductDetailSerializer()
     category_name = serializers.CharField(source='product.category.name')
+
     class Meta:
         model = Compare
         fields = ('__all__')

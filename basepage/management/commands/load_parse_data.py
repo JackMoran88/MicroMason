@@ -63,7 +63,7 @@ SETTINGS = {
     },
     'option': {
         'clear': 1,
-    }
+    },
 }
 
 ROWS = [1, 2, 3]
@@ -168,7 +168,6 @@ class Command(BaseCommand):
                                 img.flush()
                                 ProductImage.objects.create(product_id=product).image.save(f"image_{product.id}.jpg",
                                                                                            File(img))
-
 
                         if string['options']:
                             options = ast.literal_eval(string['options'])

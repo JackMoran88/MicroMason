@@ -111,7 +111,7 @@ def get_user(request):
             customer = Customer.objects.filter(oauth2_provider_accesstoken__token=token).first()
         return {'customer': customer}
     elif (request.data.get('anonymous')):
-        anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))
+        anonymous = AnonymousCustomer.objects.get(token=request.data.get('anonymous'))
         return {'anonymous': anonymous}
     else:
         return {}

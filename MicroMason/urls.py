@@ -26,10 +26,10 @@ from basepage.views import *
 from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
-                  path('admin/', admin.site.urls),
-                  path('api-auth/', include('rest_framework.urls')),
+                  path('api/admin/', admin.site.urls),
+                  path('api/api-auth/', include('rest_framework.urls')),
                   #
-                  path('ckeditor/', include('ckeditor_uploader.urls')),
+                  path('api/ckeditor/', include('ckeditor_uploader.urls')),
                   #
                   path('api/v2/auth/', include('djoser.urls')),
                   path('api/v2/auth/', include('djoser.urls.authtoken')),

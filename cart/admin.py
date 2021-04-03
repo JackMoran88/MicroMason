@@ -9,6 +9,8 @@ from mptt.admin import MPTTModelAdmin
 
 # Register your models here.
 
-
-admin.site.register(Cart)
 admin.site.register(CartProduct)
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'anonymous_customer')
