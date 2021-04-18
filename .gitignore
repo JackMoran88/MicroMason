@@ -11,7 +11,13 @@ product.csv
 node_modules/
 package-lock.json
 
-media/
+media/Categories
+media/ProductImages
+media/Products
+media/Slides
+media/__placeholder__
+media/__sized__
+
 
 celerybeat-schedule
 celeryd.pid
