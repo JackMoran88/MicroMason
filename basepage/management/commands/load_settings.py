@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from product.models import Product, Brand, ProductImage, Option, OptionProduct
-from basepage.models import Category, RatingStar
+from basepage.models import Category, RatingStar, Customer
 from category.models import Filter
 from order.models import Shipping, Payment, OrderStatus
 from _novaposhta.models import Counterparty
@@ -40,6 +40,7 @@ PATH = {
         'Footer': 'Footer',
         'Application': 'Application',
         'NP_Counterparty': 'NP_Counterparty',
+        'Managers': 'Managers',
     }
 }
 
@@ -89,8 +90,10 @@ SETTINGS = {
     'NP_Counterparty': {
         'load': 1,
     },
+    'Managers': {
+        'load': 1,
+    },
 }
-
 
 
 class Command(BaseCommand):
@@ -98,6 +101,13 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         load_path()
+
+        if SETTINGS['Managers']['load']:
+            with open(PATH['files']['Managers'], 'r', encoding='utf-8') as read_obj:
+                csv_dict_reader = csv.DictReader(read_obj)
+                Counterparty.objects.all().delete()
+                for string in csv_dict_reader:
+                    Customer.objects.create_superuser(**string)
 
         if SETTINGS['RatingStar']['load']:
             with open(PATH['files']['RatingStar'], 'r', encoding='utf-8') as read_obj:
@@ -161,6 +171,3 @@ class Command(BaseCommand):
                 Counterparty.objects.all().delete()
                 for string in csv_dict_reader:
                     Counterparty.objects.create(**string)
-
-
-

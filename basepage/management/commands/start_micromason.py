@@ -53,13 +53,13 @@ SETTINGS = {
     'product': {
         'clear': 1,
         'product': 1,
-        'image': 1,
+        'image': 0,
         'images': 0,
     },
     'category': {
         'clear': 1,
         'category': 1,
-        'image': 1,
+        'image': 0,
     },
     'option': {
         'clear': 1,
@@ -132,8 +132,7 @@ class Command(BaseCommand):
                     category = Category.objects.filter(name=string['category']).first()
 
                     if not category:
-                        logger.info(f"Не найдена категория для {string['name']}")
-                        continue
+                        break
 
                     brand = Brand.objects.filter(name=string['brand']).first()
                     if brand is None:
@@ -178,7 +177,7 @@ class Command(BaseCommand):
                                 if cur_option is None:
                                     cur_option = Option.objects.create(name=option['name'],
                                                                        request_name=slugify.slugify(option['name']))
-                                cur_option.category.add(category)
+                                    cur_option.category.set([category, ])
 
                                 OptionProduct.objects.create(name=option['parameter'], parameter=cur_option,
                                                              product=product)

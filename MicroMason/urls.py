@@ -46,7 +46,7 @@ urlpatterns = [
                   path('user/password/reset/confirm/<str:uid>/<str:token>',
                        RedirectToFront.as_view({'get': 'pass_reset_confirm'})),
                   #
-                  path('api/v2/novaposhta/', include('novaposhta.urls')),
+                  # path('api/v2/novaposhta/', include('novaposhta.urls')),
                   path('api/v2/novaposhta/search/', NovaPoshtaViewSet.as_view({'post': 'search'})),
 
                   path('i18n/', include('django.conf.urls.i18n')),

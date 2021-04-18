@@ -29,7 +29,7 @@ from versatileimagefield.placeholder import OnStoragePlaceholderImage
 import basepage.models
 
 class Option(Model):
-    name = CharField(max_length=225)
+    name = CharField(max_length=225, blank=True)
     request_name = CharField(max_length=225, null=True, blank=True)
     category = ManyToManyField(basepage.models.Category)
     order = PositiveIntegerField(blank=True, null=True)
@@ -86,7 +86,7 @@ class Product(Model):
         ('3', 'Предзаказ'),
     )
 
-    name = CharField(max_length=120, null=False)
+    name = CharField(max_length=255, null=False)
     brand = ForeignKey(Brand, on_delete=CASCADE, null=True, blank=True)
     code = CharField(null=False, max_length=255)
     quantity = PositiveIntegerField(editable=True, default=0)

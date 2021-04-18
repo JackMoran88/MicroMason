@@ -43,15 +43,15 @@ class Address(Model):
     customer = ForeignKey(Customer, on_delete=CASCADE, null=True, blank=True, related_name='address')
     anonymous_customer = ForeignKey(AnonymousCustomer, on_delete=SET_NULL, null=True, blank=True)
 
-    first_name = CharField(max_length=50)
-    last_name = CharField(max_length=50)
-    middle_name = CharField(max_length=50)
+    first_name = CharField(max_length=255)
+    last_name = CharField(max_length=255)
+    middle_name = CharField(max_length=255)
 
     email = EmailField()
     phone_number = CharField(validators=[phone_regex], max_length=17, blank=True)
     address = CharField(max_length=250)
-    postal_code = CharField(max_length=20, null=True, blank=True)
-    city = CharField(max_length=100)
+    postal_code = CharField(max_length=255, null=True, blank=True)
+    city = CharField(max_length=255)
 
     address_type = CharField('Тип адресса', null=True, blank=True, max_length=255, choices=ADDRESS_TYPE)
 

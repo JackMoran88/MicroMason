@@ -31,6 +31,7 @@ class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
 
 class ProductViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
+
     def retrieve(self, request):
         if request.data.get('id'):
             product = Product.objects.all()
@@ -89,9 +90,52 @@ class ProductViewSet(viewsets.GenericViewSet):
 
     def last_added(self, request):
         count = 10
-        if(request.GET.get('count')):
+        if (request.GET.get('count')):
             count = int(request.GET.get('count'))
         products = Product.objects.filter(~Q(status=0)).order_by('-id')[:count]
         products = get_product_annotate(products)
         serializer = smProductDetailSerializer(products, many=True)
         return Response(serializer.data)
+
+    def most_popular(self, request):
+        count = 10
+        if (request.GET.get('count')):
+            count = int(request.GET.get('count'))
+        products = Product.objects.filter(~Q(status=0))
+        products = get_product_annotate(products).order_by('rating_avg')[:count]
+        serializer = smProductDetailSerializer(products, many=True)
+        return Response(serializer.data)
+
+    def querysets(self, request):
+        if (request.GET.get('type')):
+            type = request.GET.get('type')
+
+            count = 10
+            if (request.GET.get('count')):
+                count = int(request.GET.get('count'))
+
+            if type == 'last':
+                products = Product.objects.filter(~Q(status=0)).order_by('-id')[:count]
+                products = get_product_annotate(products)
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)
+
+            if type == 'popular':
+                products = Product.objects.filter(~Q(status=0))
+                products = get_product_annotate(products).order_by('rating_avg')[:count]
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)
+
+            if type == 'popular_from_category':
+                products = Product.objects.filter(~Q(status=0), category_id=request.GET.get('id'))
+                products = get_product_annotate(products).order_by('rating_avg')[:count]
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)
+
+            if type == 'popular_wish':
+                favorite_wish = Wish.objects.all().values('product_id').annotate(total=Count('product_id')).order_by(
+                    '-total').values_list('product_id', flat=True)
+                products = Product.objects.filter(~Q(status=0), id__in=favorite_wish)
+                products = get_product_annotate(products).order_by('rating_avg')[:count]
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)

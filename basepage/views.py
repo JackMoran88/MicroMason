@@ -43,7 +43,7 @@ class CategoryViewSet(viewsets.GenericViewSet):
     filterset_class = ProductFilter
 
     def list(self, request):
-        queryset = cache_tree_children(Category.objects.all().filter(level__lte=2).order_by('id'))
+        queryset = cache_tree_children(Category.objects.all().filter(level__lte=2))
         serializer = CategoriesListSerializer(queryset, many=True)
         return Response(serializer.data)
 

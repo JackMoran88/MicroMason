@@ -10,6 +10,8 @@ import collections
 import bs4
 import csv
 import lxml
+from django.core.management.base import BaseCommand
+from multiprocessing import Pool
 
 SETTINGS = {
     'parse': {
@@ -20,7 +22,8 @@ SETTINGS = {
 
 PATH = {
     'type': 'csv',
-    'dir': 'D:\OpenServer\OSPanel\domains\MicroMason\data',
+    # 'dir': 'data',
+    'dir': 'C:\MICROMASON\\backend\data',
     'files': {
         'category': 'category',
         'product': 'product',
@@ -28,16 +31,18 @@ PATH = {
     }
 }
 
-SKIP_CATEGORY = ['Товары для детей', 'Детская одежда', 'Рыбалка', 'Туризм и кемпинг', 'Печать, расходные']
+SKIP_CATEGORY = ['Товары для детей', 'Детская одежда', 'Рыбалка', 'Туризм и кемпинг', 'Печать, расходные',
+                 'Товары для дома и сада', 'Подарочные сертификаты']
 
 
 def load_path():
     PATH.get('dir')
     for file in PATH['files']:
         PATH['files'][file] = os.path.join(PATH['dir'], f'{PATH["files"][file]}.{PATH["type"]}')
+    logger.info('Path loaded')
+    return PATH
 
-
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('wb')
 
 
@@ -102,18 +107,21 @@ class Parser:
 
     def save_result(self, file):
         path = PATH['files'][file]
-        logger.info('Сохранение...')
+
+        #Windows - shit
+        if path == 'product':
+            path = 'C:\MICROMASON\\backend\data\product.csv'
+        logger.info(f'Сохранение {file}...')
         logger.debug(f'Путь сохраниния: {path}')
 
-        # for result_key in self.result:
-        for row in self.result[file]:
-            keys = row.keys()
-            with open(path, 'w', newline='', encoding="utf-8") as f:
-                dict_writer = csv.DictWriter(f, keys)
+        with open(path, 'a+', newline='', encoding="utf-8") as f:
+            dict_writer = csv.DictWriter(f, self.result[file][0].keys())
+            if f.tell() == 0:
                 dict_writer.writeheader()
-                dict_writer.writerows(self.result[file])
+            dict_writer.writerows(self.result[file])
 
-        logger.info('Сохранение завершено.')
+        self.result[file] = []
+        logger.info(f'Сохранение {file} завершено.')
 
     def parse_categories(self, block):
         container = block.select('.case.container > .portal-class')
@@ -167,13 +175,13 @@ class Parser:
 
         self.save_result('category')
 
-    def parse_products(self, path, page=1, max_page=1):
+    def parse_products(self, path, page=1, max_page=10):
         if page >= 2:
             text = self.load_page(f'{path}page={page}/')
         else:
             text = self.load_page(path)
 
-        logger.info(f'PAGE: {page}')
+        logger.info(f'PATH {path}page={page}/')
 
         body = self.parse_page(text=text)
         stuffs = body.select('.catalog__content .stuff')
@@ -243,10 +251,12 @@ class Parser:
                         'options': options,
                     }
                 )
+
             self.save_result('product')
 
             self.parse_products(path=path, page=page + 1)
         else:
+            # self.save_result('product')
             logger.info(f'Парсинг закончен на странице {page - 1}')
             return
 
@@ -257,16 +267,29 @@ class Parser:
             logger.info('Конец парсинга категорий')
         if SETTINGS['parse']['product']:
             logger.info('Запуск парсинга продуктов')
+
+            category_urls = []
             with open(PATH['files']['category'], 'r', encoding='utf-8') as read_obj:
                 csv_dict_reader = csv.DictReader(read_obj)
-                for row in csv_dict_reader:
-                    self.parse_products(path=f'https://www.itbox.ua/{row["url"]}')
-            logger.info('Конец парсинга продуктов')
+                for category in list(csv_dict_reader):
+                    category_urls.append(f"https://www.itbox.ua/{category['url']}")
+            with Pool(12) as p:
+                p.map(self.parse_products, category_urls)
 
+            logger.info('Конец парсинга продуктов')
     def run(self):
         load_path()
         text = self.load_page('https://www.itbox.ua/ru/catalog/')
         self.parse_block(block=self.parse_page(text=text))
+
+
+# class Command(BaseCommand):
+#     help = 'Парсинг сайта itBox.ua'
+#
+#     def handle(self, **options):
+#         parser = Parser()
+#         parser.run()
+
 
 
 if __name__ == '__main__':

@@ -74,12 +74,10 @@ INSTALLED_APPS = [
     'social_django',
     'rest_framework_social_oauth2',
 
-    'novaposhta',
-
     'celery',
     'django_celery_beat',
 
-    'cachalot',
+    # 'cachalot',
 
 ]
 
@@ -313,7 +311,7 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     # The save quality of modified JPEG images. More info here:
     # https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html#jpeg
     # Defaults to 70
-    'jpeg_resize_quality': 60,
+    'jpeg_resize_quality': 70,
     # The name of the top-level folder within storage classes to save all
     # sized images. Defaults to '__sized__'
     'sized_directory_name': '__sized__',

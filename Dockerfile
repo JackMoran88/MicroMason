@@ -27,8 +27,7 @@ RUN apk add libmagic
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-#Delete
-RUN pip install django-novaposhta
+
 
 
 
@@ -36,6 +35,6 @@ RUN pip install django-novaposhta
 COPY . .
 
 # chown all the files to the app user
-RUN chown -R app:app .
+#RUN chown -R app:app .
 
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
