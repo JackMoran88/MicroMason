@@ -35,6 +35,6 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # chown all the files to the app user
-#RUN chown -R app:app .
+RUN chown -R app:app .
 
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+ENTRYPOINT ["sh", "/usr/src/app/entrypoint.sh"]
