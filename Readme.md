@@ -27,6 +27,12 @@ service vsftpd start
 ```
 
 
+Файлы, в которых нужно изменить ip и прочее
+./.env
+./backend/private_settings.py
+./frontend/.env
+
+
 
 
 

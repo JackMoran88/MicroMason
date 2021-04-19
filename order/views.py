@@ -138,6 +138,11 @@ class OrderViewSet(viewsets.ViewSet):
 
         return Response(response)
 
+    def paid(self, request):
+        print(request)
+        print(request.data)
+
+
 
 class AddressViewSet(viewsets.ViewSet):
     def list(self, request):
