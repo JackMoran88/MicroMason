@@ -491,7 +491,6 @@ class AnonymousViewSet(viewsets.ViewSet):
 
     def check(self, request):
         if (request.data.get('token')):
-            print(request.data.get('token'))
             user = AnonymousCustomer.objects.filter(token=request.data.get('token')).first()
             if user:
                 return Response()

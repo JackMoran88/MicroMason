@@ -198,10 +198,8 @@ class AnonymousCustomer(Model):
         return f'{self.id} - {self.last_update}'
 
     def save(self, *args, **kwargs):
-        print('*******HERE******')
         if not self.pk:
             self.token = binascii.hexlify(os.urandom(20)).decode()
-            print(self.token)
         super(AnonymousCustomer, self).save(*args, **kwargs)
 
 class RatingStar(Model):

@@ -15,7 +15,6 @@ from mptt.admin import MPTTModelAdmin
 fields = ['image_tag']
 readonly_fields = ['image_tag']
 
-
 class ProductImagesInline(admin.TabularInline):
     model = ProductImage
     fieldsets = (

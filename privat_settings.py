@@ -13,11 +13,11 @@ MAIL = {
     'phone': '+380508840819',
     'links': {
         'backend': {
-            'main': 'http://192.168.1.228:8000',
+            'main': 'http://localhost:8000',
         },
         'frontend': {
-            'main': 'http://192.168.1.228:8081',
-            'cabinet': 'http://192.168.1.228:8081/account/',
+            'main': 'http://localhost:8081',
+            'cabinet': 'http://localhost:8081/account/',
         },
     }
 }

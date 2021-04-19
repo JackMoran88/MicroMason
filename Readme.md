@@ -21,7 +21,10 @@ File to hosting
 ```
 pscp -P 22 C:\MICROMASON\backend\data\product.csv root@194.67.112.229:/root
 ```
-
+Start FTP(+restart)
+```
+service vsftpd start
+```
 
 
 

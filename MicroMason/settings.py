@@ -33,8 +33,8 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(" ")
 
 # FRONT_END_HOST = 'http://192.168.1.243:8080/'
-FRONT_END_HOST = {os.environ.get("HOSTING_URL", default="http://localhost")}
-BACK_END_HOST = {os.environ.get("HOSTING_URL", default="http://localhost")}
+FRONT_END_HOST = os.environ.get("HOSTING_URL", default="http://localhost")
+BACK_END_HOST = os.environ.get("HOSTING_URL", default="http://localhost")
 
 SITE_NAME = 'MicroMason'
 

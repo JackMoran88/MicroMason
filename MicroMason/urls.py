@@ -25,6 +25,10 @@ from django.conf import settings
 from basepage.views import *
 from django.conf.urls.i18n import i18n_patterns
 
+admin.site.site_header = 'MicroMason'  # default: "Django Administration"
+admin.site.index_title = 'Администрирование MicroMason'  # default: "Site administration"
+admin.site.site_title = 'Администрирование MicroMason'  # default: "Django site admin"
+
 urlpatterns = [
                   path('api/admin/', admin.site.urls),
                   path('api/api-auth/', include('rest_framework.urls')),
@@ -50,8 +54,6 @@ urlpatterns = [
                   path('api/v2/novaposhta/search/', NovaPoshtaViewSet.as_view({'post': 'search'})),
 
                   path('i18n/', include('django.conf.urls.i18n')),
-
-
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
