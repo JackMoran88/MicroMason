@@ -25,6 +25,10 @@ Start FTP(+restart)
 ```
 service vsftpd start
 ```
+Docker clean
+```
+docker system prune
+```
 
 
 Файлы, в которых нужно изменить ip и прочее

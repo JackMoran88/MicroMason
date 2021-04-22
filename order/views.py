@@ -10,6 +10,7 @@ import base64
 import hashlib
 from django.conf import settings
 from _novaposhta.services import *
+import json
 
 
 class OrderViewSet(viewsets.ViewSet):
@@ -118,7 +119,8 @@ class OrderViewSet(viewsets.ViewSet):
             "amount": order.get_amount(),
             "currency": settings.LIQPAY_CURRENCY,
             "description": order.get_description(),
-            "order_id": order.id
+            "order_id": order.id,
+            "server_url": f'{settings.BACK_END_HOST}/api/v2/order/paid/'
         }
 
         private_key = settings.LIQPAY_PRIVATE_KEY
@@ -139,9 +141,19 @@ class OrderViewSet(viewsets.ViewSet):
         return Response(response)
 
     def paid(self, request):
-        print(request)
-        print(request.data)
+        callback_signature = request.data.get('signature')
+        data = request.data.get('data')
+        private_key = settings.LIQPAY_PRIVATE_KEY
+        signature = base64.b64encode((hashlib.sha1((private_key + data + private_key).encode())).digest()).decode()
 
+        if callback_signature == signature:
+            response = json.loads(base64.b64decode(data).decode('utf-8'))
+            if response['status'] == 'success':
+                order = Order.objects.get(id=response['order_id'])
+                order.paid = 2
+                order.save()
+
+        return Response(status=200)
 
 
 class AddressViewSet(viewsets.ViewSet):

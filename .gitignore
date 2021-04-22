@@ -17,6 +17,7 @@ media/Products
 media/Slides
 media/__placeholder__
 media/__sized__
+static/ckeditor/
 
 
 celerybeat-schedule

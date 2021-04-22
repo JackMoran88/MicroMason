@@ -38,21 +38,3 @@ urlpatterns = [
     #
 
 ]
-
-# {"web": {"client_id": "1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com",
-#          "project_id": "micromason", "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#          "token_uri": "https://oauth2.googleapis.com/token",
-#          "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-#          "client_secret": "IWH3HU3Lpvcp25_PHXeuhL6q"}}
-
-# https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost:8080&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&client_id=1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com
-
-#
-# https://accounts.google.com/o/oauth2/v2/auth?
-#  scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&
-#  access_type=offline&
-#  include_granted_scopes=true&
-#  response_type=code&
-#  state=state_parameter_passthrough_value&
-#  redirect_uri=http%3A//localhost:8080&
-#  client_id=1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com

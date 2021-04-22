@@ -102,10 +102,13 @@ def filters_by_options():
             'sub_filter': sub_filter[num],
             'state': True
         }
-        instance = Filter.objects.create(
-            **data
-        )
-        instance.category.set(categories[num])
+        try:
+            instance = Filter.objects.create(
+                **data
+            )
+            instance.category.set(categories[num])
+        except:
+            print(f'*** Неудача ***')
 
 
 class Command(BaseCommand):
