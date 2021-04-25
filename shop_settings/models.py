@@ -66,17 +66,6 @@ class ProductSortType(Model):
         return f'{self.name}'
 
 
-# class LanguageObject(Model):
-#
-#
-# class Language(Model):
-#     name = CharField(max_length=50)
-#     ru = CharField(max_length=255, null=True, blank=True)
-#     en = CharField(max_length=255, null=True, blank=True)
-#     ua = CharField(max_length=255, null=True, blank=True)
-#     description = CharField(max_length=1000, null=True, blank=True)
-
-
 class Slide(Model):
     title = CharField(max_length=255, null=True, blank=True)
     image = VersatileImageField("Слайд", upload_to="Slides/", blank=True, ppoi_field='slide_ppoi')

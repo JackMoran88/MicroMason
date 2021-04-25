@@ -107,7 +107,8 @@ class Command(BaseCommand):
                 csv_dict_reader = csv.DictReader(read_obj)
                 Counterparty.objects.all().delete()
                 for string in csv_dict_reader:
-                    Customer.objects.create_superuser(**string)
+                    if not len(Customer.objects.filter(email=string['email'])):
+                        Customer.objects.create_superuser(**string)
 
         if SETTINGS['RatingStar']['load']:
             with open(PATH['files']['RatingStar'], 'r', encoding='utf-8') as read_obj:
@@ -157,6 +158,7 @@ class Command(BaseCommand):
                 Footer.objects.all().delete()
                 for string in csv_dict_reader:
                     Footer.objects.create(**string)
+                Setting.objects.all().first().footer.add(*Footer.objects.all())
 
         if SETTINGS['Application']['load']:
             with open(PATH['files']['Application'], 'r', encoding='utf-8') as read_obj:

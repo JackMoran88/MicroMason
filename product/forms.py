@@ -1,10 +1,11 @@
 from django import forms
 from django.core.validators import validate_image_file_extension
 from django.utils.translation import gettext as _
+from basepage.models import *
 from .models import *
-from product.models import *
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from django.db import models
 
 class ProductAdminForm(forms.ModelForm):
     class Meta:

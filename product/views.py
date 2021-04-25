@@ -61,8 +61,8 @@ class ProductViewSet(viewsets.GenericViewSet):
 
     def search_detail(self, request):
 
-        if (request.data.get('query')):
-            query = request.data.get('query')
+        if (request.GET.get('query')):
+            query = request.GET.get('query')
 
             queryset = Product.objects.filter(name__icontains=query)
             queryset = get_product_annotate(queryset)
@@ -71,7 +71,6 @@ class ProductViewSet(viewsets.GenericViewSet):
             serializer = ProductDetailSerializer(page, many=True)
 
             return self.get_paginated_response(serializer.data)
-            # returnв Response(serializer.data)
         else:
             return Response(status=400)
 

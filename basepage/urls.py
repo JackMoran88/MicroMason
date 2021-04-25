@@ -14,6 +14,7 @@ urlpatterns = [
     path('wish/add/', WishViewSet.as_view({'post': 'create'})),
     path('wish/delete/', WishViewSet.as_view({'post': 'delete'})),
     path('wish/detail/', WishViewSet.as_view({'post': 'list'})),
+    path('wish/ids/', WishViewSet.as_view({'post': 'ids'})),
     #
     path('compare/add/', CompareViewSet.as_view({'post': 'create'})),
     path('compare/delete/', CompareViewSet.as_view({'post': 'delete'})),

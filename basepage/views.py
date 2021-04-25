@@ -152,7 +152,6 @@ class CategoryViewSet(viewsets.GenericViewSet):
 
             serializer = smProductDetailSerializer(page, many=True)
 
-            # return Response(serializer.data)
             return self.get_paginated_response(serializer.data)
         else:
             return Response(status=400)
@@ -170,8 +169,8 @@ class CategoryViewSet(viewsets.GenericViewSet):
             return Response(status=400)
 
 
-class WishViewSet(viewsets.ViewSet):
-
+class WishViewSet(viewsets.GenericViewSet):
+    pagination_class = PaginationProducts
     def list(self, request):
         user = get_user(request)
         if 'customer' in user.keys():
@@ -181,9 +180,26 @@ class WishViewSet(viewsets.ViewSet):
             user = user['anonymous']
             queryset = Product.objects.all().filter(product__anonymous_customer=user)
 
+
         queryset = get_product_annotate(queryset)
-        serializer = smProductDetailSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = smProductDetailSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def ids(self, request):
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            queryset = Product.objects.all().filter(product__customer=user)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            queryset = Product.objects.all().filter(product__anonymous_customer=user)
+
+
+        # queryset = get_product_annotate(queryset)
+        queryset = queryset.values_list('id', flat=True)
+        # serializer = smProductDetailSerializer(page, many=True)
+        return Response(queryset)
 
     def create(self, request):
         user = get_user(request)

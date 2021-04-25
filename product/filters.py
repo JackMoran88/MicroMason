@@ -28,6 +28,7 @@ class ProductFilter(filters.FilterSet):
     brand = filters.CharFilter(method='get_filter_queryset')
     proizvoditel = filters.CharFilter(method='get_filter_queryset')
     tip_noutbuka = filters.CharFilter(method='get_filter_queryset')
+    ves = filters.CharFilter(method='get_filter_queryset')
 
 
 

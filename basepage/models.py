@@ -28,8 +28,6 @@ from versatileimagefield.fields import VersatileImageField, PPOIField
 from versatileimagefield.placeholder import OnStoragePlaceholderImage
 
 
-# import product.models
-
 
 class Category(MPTTModel):
     parent = TreeForeignKey("self", on_delete=CASCADE, null=True, blank=True, related_name='children')
@@ -82,8 +80,6 @@ class Category(MPTTModel):
 
 
 mptt.register(Category, order_insertion_by=['name'])
-
-
 
 
 class CustomerManager(BaseUserManager):
@@ -162,8 +158,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Пользователи"
 
     def __str__(self):
-        # НЕ ТРОГАТь, задействуется при отображнии автора коментария!(Уже не трогал: 3)
-        full_name = f"{self.id} - {self.get_full_name()}"
+        full_name = f"{self.get_full_name()}"
         return full_name.strip()
 
     def get_full_name(self):
@@ -216,7 +211,6 @@ class RatingStar(Model):
         verbose_name_plural = "Звезды рейтинга"
         ordering = ["-value"]
 
-
 class Review(MPTTModel):
     author = ForeignKey(Customer, on_delete=CASCADE, blank=False)
     star = ForeignKey(RatingStar, on_delete=CASCADE, verbose_name="Звезда", null=True, blank=True)
@@ -262,7 +256,6 @@ class Review(MPTTModel):
     class Meta:
         verbose_name = "Рейтинг"
         verbose_name_plural = "Рейтинги"
-
 
 class Wish(Model):
     customer = ForeignKey(Customer, on_delete=CASCADE, related_name='wish', null=True, blank=True)

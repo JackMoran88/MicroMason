@@ -6,12 +6,25 @@ from django.contrib.admin import helpers
 import copy
 
 
-admin.site.register(Setting)
-admin.site.register(ProductSortType)
-admin.site.register(Slide)
-admin.site.register(Slider)
-
-
 @admin.register(Footer)
 class FooterAdmin(admin.ModelAdmin):
     form = FooterAdminForm
+    list_display = ['id', 'name']
+
+@admin.register(Setting)
+class SettingAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'phone', 'email']
+
+@admin.register(ProductSortType)
+class ProductSortTypeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'field', 'order']
+
+@admin.register(Slide)
+class SlideAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'url']
+
+@admin.register(Slider)
+class SliderTypeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'place']
+
+

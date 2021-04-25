@@ -46,7 +46,7 @@ def get_row(num):
         return get_row(num)
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('wb')
 
 SETTINGS = {
@@ -59,7 +59,7 @@ SETTINGS = {
     'category': {
         'clear': 1,
         'category': 1,
-        'image': 0,
+        'image': 1,
     },
     'option': {
         'clear': 1,
@@ -132,7 +132,8 @@ class Command(BaseCommand):
                     category = Category.objects.filter(name=string['category']).first()
 
                     if not category:
-                        break
+                        logger.info(f"Не найдена категория для {string['name']}")
+                        continue
 
                     brand = Brand.objects.filter(name=string['brand']).first()
                     if brand is None:
@@ -150,7 +151,10 @@ class Command(BaseCommand):
                             'status': string['status'],
                         }
 
-                        product = Product.objects.create(**data)
+                        try:
+                            product = Product.objects.create(**data)
+                        except:
+                            continue
 
                         if string['main_img'] and SETTINGS['product']['image']:
                             img = NamedTemporaryFile(delete=True)
@@ -177,7 +181,7 @@ class Command(BaseCommand):
                                 if cur_option is None:
                                     cur_option = Option.objects.create(name=option['name'],
                                                                        request_name=slugify.slugify(option['name']))
-                                    cur_option.category.set([category, ])
+                                cur_option.category.add(category)
 
                                 OptionProduct.objects.create(name=option['parameter'], parameter=cur_option,
                                                              product=product)
