@@ -20,9 +20,9 @@ class TestConnection(viewsets.ViewSet):
     def post(self, request):
         return Response(status=200)
 
-@method_decorator(cache_page(60 * 60 * 2))
-class SettingsViewSet(viewsets.ViewSet):
 
+class SettingsViewSet(viewsets.ViewSet):
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         settings = Setting.objects.all()
         serializer = SettingDetailSerializer(settings, many=True)
