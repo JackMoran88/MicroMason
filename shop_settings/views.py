@@ -12,12 +12,15 @@ from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count
 
 from channels.layers import get_channel_layer
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 
 class TestConnection(viewsets.ViewSet):
     def post(self, request):
         return Response(status=200)
 
-
+@method_decorator(cache_page(60 * 60 * 2))
 class SettingsViewSet(viewsets.ViewSet):
 
     def list(self, request):

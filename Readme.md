@@ -41,6 +41,7 @@ chmod -R 777 MICROMASON/
 ./frontend/.env
 ./backend/settings *WSGI ASGI*
 
+Включить prerender
 
 
 
