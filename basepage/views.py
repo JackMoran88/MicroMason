@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, generics, viewsets, mixins
 
+
 from .serializers import *
 from .models import *
 from shop_settings.models import *
@@ -36,12 +37,16 @@ import requests
 from django.conf import settings
 from oauth2_provider.models import Application
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 
 class CategoryViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ProductFilter
 
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         queryset = cache_tree_children(Category.objects.all().filter(level__lte=2))
         serializer = CategoriesListSerializer(queryset, many=True)
@@ -52,14 +57,14 @@ class CategoryViewSet(viewsets.GenericViewSet):
             'filters': {}
         }
 
-        if (request.data.get('slug')):
-            categories = Category.objects.all().filter(slug=request.data.get('slug')).get_descendants(
+        if (request.GET.get('slug')):
+            categories = Category.objects.all().filter(slug=request.GET.get('slug')).get_descendants(
                 include_self=True).values_list('slug', flat=True)
 
             products = Product.objects.filter(category__slug__in=categories)
-            cur_category = Category.objects.all().filter(slug=request.data.get('slug')).values()
+            cur_category = Category.objects.all().filter(slug=request.GET.get('slug')).values()
 
-            filters_of_category = Filter.objects.all().values().filter(category__slug=request.data.get('slug'), state=1)
+            filters_of_category = Filter.objects.all().values().filter(category__slug=request.GET.get('slug'), state=1)
 
             def rename_key(arr):
                 for dict in arr:
@@ -139,8 +144,8 @@ class CategoryViewSet(viewsets.GenericViewSet):
             return JsonResponse(response)
 
     def detail_products(self, request):
-        if (request.data.get('slug')):
-            parent_category = get_object_or_404(Category, slug=request.data.get('slug'))
+        if (request.GET.get('slug')):
+            parent_category = get_object_or_404(Category, slug=request.GET.get('slug'))
             category = parent_category.get_descendants(include_self=True)
 
             queryset = Product.objects.filter(category__in=category)
@@ -157,8 +162,8 @@ class CategoryViewSet(viewsets.GenericViewSet):
             return Response(status=400)
 
     def search_list(self, request):
-        if (request.data.get('query')):
-            query = request.data.get('query')
+        if (request.GET.get('query')):
+            query = request.GET.get('query')
 
             queryset = Category.objects.filter(name__icontains=query)
             queryset = queryset[:5]
@@ -360,9 +365,9 @@ class ReviewViewSet(viewsets.ViewSet):
             return Response(status=200)
 
     def list(self, request):
-        if (request.data.get('id')):
+        if (request.GET.get('id')):
             reviews = Review.objects.all().filter(
-                product=request.data.get('id')
+                product=request.GET.get('id')
             )
             serializer = ReviewDetailSerializer(reviews, many=True)
             return Response(serializer.data)
@@ -394,8 +399,8 @@ class CustomerViewSet(viewsets.ViewSet):
             if not (customer):
                 customer = Customer.objects.filter(oauth2_provider_accesstoken__token=token).first()
 
-            if (request.data.get('anonymous')):
-                anonymous_token = request.data.get('anonymous')
+            if (request.GET.get('anonymous')):
+                anonymous_token = request.GET.get('anonymous')
                 anonymous = AnonymousCustomer.objects.filter(token=anonymous_token).first()
                 if anonymous:
                     cart = Cart.objects.filter(anonymous_customer=anonymous)

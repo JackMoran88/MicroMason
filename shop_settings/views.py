@@ -37,7 +37,7 @@ class ParametersViewSet(viewsets.ViewSet):
 class BreadCrumbsViewSet(viewsets.ViewSet):
 
     def list(self, request):
-        crumb = request.data.get('breadcrumb')
+        crumb = request.GET.get('breadcrumb')
         CategoryQuery = Category.objects.filter(slug=crumb).first()
         if(CategoryQuery):
             serializer = BreadCrumbCategorySerializer(CategoryQuery)

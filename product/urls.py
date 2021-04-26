@@ -14,6 +14,4 @@ urlpatterns = [
 
 
 
-    path('test/', ProductPaginationGeneric.as_view({'post': 'list'})),
-
 ]
