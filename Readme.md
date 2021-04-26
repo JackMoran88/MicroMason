@@ -31,7 +31,7 @@ docker system prune
 ```
 Права на изменения
 ```
-chmode -R 777 MICROMASON/   
+chmod -R 777 MICROMASON/   
 ```
 
 
