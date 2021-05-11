@@ -21,7 +21,6 @@ class ProductAdminForm(forms.ModelForm):
         required=False,
     )
 
-
     def clean_photos(self):
         """Make sure only images can be uploaded."""
         for upload in self.files.getlist("images"):

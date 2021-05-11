@@ -39,7 +39,6 @@ class ProductImagesInline(admin.TabularInline):
 
 class ProductOptionsInline(admin.TabularInline):
     model = OptionProduct
-    # raw_id_fields = ("parameter",)
     extra = 0
     classes = ['collapse']
 

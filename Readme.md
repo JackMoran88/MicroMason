@@ -40,6 +40,7 @@ chmod -R 777 MICROMASON/
 ./backend/private_settings.py
 ./frontend/.env
 ./backend/settings *WSGI ASGI*
+ws/ to wss/
 
 Включить prerender
 

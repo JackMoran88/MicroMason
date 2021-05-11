@@ -85,7 +85,6 @@ class Product(Model):
         ('2', 'Ожидается'),
         ('3', 'Предзаказ'),
     )
-
     name = CharField(max_length=255, null=False)
     brand = ForeignKey(Brand, on_delete=CASCADE, null=True, blank=True)
     code = CharField(null=False, max_length=255)
