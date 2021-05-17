@@ -82,10 +82,14 @@ def clear_token(request):
     return token
 
 def sort_by_choice(request):
+    print(request.data.get('sort_by'))
+    print(request.GET.get('sort_by'))
+    print(ProductSortType.objects.all().values())
+
     if (request.data.get('sort_by')):
-        sort_by = ProductSortType.objects.get(id=request.data.get('sort_by'))
+        sort_by = ProductSortType.objects.get(field=request.data.get('sort_by'))
     elif(request.GET.get('sort_by')):
-        sort_by = ProductSortType.objects.get(id=request.GET.get('sort_by'))
+        sort_by = ProductSortType.objects.get(field=request.GET.get('sort_by'))
     else:
         sort_by = ProductSortType.objects.get(order=1)
     return sort_by.field

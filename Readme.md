@@ -46,4 +46,12 @@ ws/ to wss/
 
 
 
+Запуск
+```
+docker-compose -f docker-compose.base.yaml -f docker-compose.prod+ssl.yaml up --build
+docker exec -it micromason_django_1 /bin/sh
+```
+
+
+
 

@@ -69,10 +69,10 @@ class Category(MPTTModel):
         return f"{self.name}"
 
     class MPTTMeta:
-        order_insertion_by = ['name']
+        order_insertion_by = ['order_by']
 
 
-mptt.register(Category, order_insertion_by=['name'])
+mptt.register(Category, order_insertion_by=['order_by'])
 
 
 class CustomerManager(BaseUserManager):
