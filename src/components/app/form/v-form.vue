@@ -1,5 +1,5 @@
 <template>
-    <form class="form">
+    <form class="form" ref="form">
         <slot name="header"></slot>
         <slot name="body"></slot>
         <slot name="errors"></slot>
@@ -10,6 +10,11 @@
 <script>
 export default {
   name: 'v-form',
+  methods:{
+    reset(){
+      this.$refs.form.reset()
+    },
+  }
 
 };
 </script>
@@ -31,7 +36,7 @@ export default {
             padding: .3rem;
 
             label {
-                @include fz(14);
+                @include fz(14px);
                 color: var(--label-text);
                 margin: 0;
                 width: 100%;

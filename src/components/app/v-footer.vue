@@ -1,40 +1,27 @@
 <template>
   <section class="footer">
     <div class="footer__inner conteiner">
-
-
-      <ul class="footer__row" v-if="SETTINGS.footer && SETTINGS.footer.length">
-        <li class="footer__item-header">Информация</li>
-        <li class="footer__item"
-            v-for="item in SETTINGS.footer" :key="item.id"
-            @click="showInfo(item.name, item.description)"
-        >
-          <a>{{item.name}}</a>
-        </li>
-      </ul>
-      <ul class="footer__row">
-        <li class="footer__item-header">Помощь</li>
-        <li class="footer__item"><a href="">Мои заказы</a></li>
-        <li class="footer__item"><a href="">Рассылка</a></li>
-        <li class="footer__item"></li>
-        <li class="footer__item"><a href="">Мои отзывы</a></li>
-      </ul>
-      <ul class="footer__row">
-        <li class="footer__item-header">Наши соцсети</li>
-        <li class="footer__item">
-          <a :href="SETTINGS.instagram">
-            <font-awesome-icon :icon="['fab', 'instagram']" :style="{ color: '#A42A9E' }"/>
-            Instagram</a>
-        </li>
-        <li class="footer__item">
-          <a :href="SETTINGS.youtube">
-            <font-awesome-icon :icon="['fab', 'youtube']" :style="{ color: '#FF0000' }"/>
-            YouTube</a>
-        </li>
-        <li class="footer__item">
-          <a :href="SETTINGS.telegram">
-            <font-awesome-icon :icon="['fab', 'telegram']" :style="{ color: '#2CA3E0' }"/>
-            Telegram</a>
+      <ul class="footer__row" v-for="col in FOOTER">
+        <li class="footer__item-header">{{col.header}}</li>
+        <li class="footer__item" v-for="item in col.items">
+          <!--     Local links     -->
+          <router-link :to="item.link.href" v-if="item.link && item.link.type === 'local'">
+            <font-awesome-icon v-if="item.icon" :icon="item.icon.icon"
+                               :style="{ color: item.icon.color }"/>
+            {{item.name}}
+          </router-link>
+          <!--    Global links     -->
+          <a :href="item.link.href" v-if="item.link && item.link.type === 'global'">
+            <font-awesome-icon v-if="item.icon" :icon="item.icon.icon"
+                               :style="{ color: item.icon.color }"/>
+            {{item.name}}
+          </a>
+          <!--    Modals      -->
+          <div v-else-if="item.click" @click="showInfo(item.click.name, item.click.description)">
+            <font-awesome-icon v-if="item.icon" :icon="item.icon.icon"
+                               :style="{ color: item.icon.color }"/>
+            {{item.name}}
+          </div>
         </li>
       </ul>
     </div>
@@ -54,15 +41,23 @@
 
 <script>
   import {mapGetters} from 'vuex';
+  import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+
+  import {library} from "@fortawesome/fontawesome-svg-core";
+  import {faInstagram, faTelegram, faYoutube} from '@fortawesome/free-brands-svg-icons';
+
+  library.add(faInstagram, faYoutube, faTelegram);
 
   export default {
     name: 'v-footer',
+    components: {
+      FontAwesomeIcon
+    },
     data() {
       return {
         infoModal: {
           name: null,
           description: null,
-
         },
       };
     },
@@ -72,10 +67,46 @@
         this.infoModal.description = description;
         this.$bvModal.show('infoModal');
       },
+      loadData() {
+        if (!this.SETTINGS.footer) {
+          return
+        }
+        this.FOOTER.col1.items = []
+        this.SETTINGS.footer.forEach((value) => {
+          this.FOOTER.col1.items.push({
+            name: value.name,
+            click: {name: value.name, description: value.description}
+          },)
+        })
+        this.loadSocial()
+      },
+      loadSocial() {
+        let items = this.FOOTER.col3.items
+        this.$search_by(items, 'name', 'Instagram').link = {
+          type: 'global',
+          href: this.SETTINGS.instagram
+        }
+        this.$search_by(items, 'name', 'Youtube').link = {
+          type: 'global',
+          href: this.SETTINGS.youtube
+        }
+        this.$search_by(items, 'name', 'Telegram').link = {
+          type: 'global',
+          href: this.SETTINGS.telegram
+        }
+      }
     },
     computed: {
-      ...mapGetters(['SETTINGS']),
+      ...mapGetters(['SETTINGS', 'FOOTER']),
     },
+    mounted() {
+      this.loadSocial()
+    },
+    watch: {
+      'SETTINGS'() {
+        this.loadData()
+      }
+    }
   };
 </script>
 
@@ -132,7 +163,7 @@
       }
 
       &-brand {
-        @include fz(30);
+        @include fz(30px);
       }
 
       @include link($color: var(--text-second));

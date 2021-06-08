@@ -1,17 +1,15 @@
 <template>
-
-  <div class="v-viewed-products"
-       v-if="VIEWED && VIEWED.length >= 1"
-  >
+  <div class="v-viewed-products">
     <v-title
       text="Просмотренные товары"
       type="second"
+      v-if="VIEWED.load && VIEWED.queryset.length"
     />
     <v-card-line
-      :Products="VIEWED"
+      :Products="VIEWED.queryset"
+      :preloading="!VIEWED.load"
     />
   </div>
-
 </template>
 
 <script>
@@ -29,6 +27,9 @@
           this.GET_PRODUCTS_BY_IDS(this.VIEWED_IDS).then((data) => {
             this.SET_VIEWED_TO_STATE(data);
           });
+        } else {
+          //  VIEWED_IDS EMPTY, turn off preloader
+          this.SET_VIEWED_TO_STATE([])
         }
       },
       ...mapActions(['GET_PRODUCTS_BY_IDS']),

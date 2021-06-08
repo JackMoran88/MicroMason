@@ -6,16 +6,19 @@ import store from '../index';
 export default {
   state: {
     wish: [],
+    wish_ids: []
   },
   modules: {},
   actions: {
-    GET_WISH({ commit }) {
+    GET_WISH({ commit }, data) {
+      store.dispatch('GET_WISH_IDS')
       return axios(`${store.state.backendUrlApi}/wish/detail/`,
-        window._.merge({
-          method: 'POST',
+        Vue.lodash.merge({
+          method: 'GET',
           data: {},
+          params: data,
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then((resp) => {
           this._vm.$debug_log('Wish обновлен');
           commit('SET_WISH_TO_STATE', resp.data);
@@ -27,15 +30,33 @@ export default {
           return error;
         });
     },
+    GET_WISH_IDS({ commit }) {
+      return axios(`${store.state.backendUrlApi}/wish/ids/`,
+        Vue.lodash.merge({
+          method: 'GET',
+          data: {},
+        },
+        this._vm.$USER_DATA_REQUEST(),))
+        .then((resp) => {
+          this._vm.$debug_log('Wish обновлен');
+          commit('SET_WISH_IDS_TO_STATE', resp.data);
+          return resp;
+        })
+        .catch((error) => {
+          this._vm.$debug_log(error);
+          this._vm.$debug_log(error.response);
+          return error;
+        });
+    },
     ADD_WISH({ commit }, productId) {
       return axios(`${store.state.backendUrlApi}/wish/add/`,
-        window._.merge({
+        Vue.lodash.merge({
           method: 'POST',
           data: {
             product: productId,
           },
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then((resp) => {
           this._vm.$debug_log('В wish добавлен товар');
         })
@@ -49,13 +70,13 @@ export default {
     },
     DELETE_WISH({ commit }, productId) {
       return axios(`${store.state.backendUrlApi}/wish/delete/`,
-        window._.merge({
+        Vue.lodash.merge({
           method: 'POST',
           data: { product: productId },
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then((resp) => {
-          this._vm.$debug_log('В wish добавлен товар');
+          this._vm.$debug_log('Из wish удален товар');
         })
         .catch((error) => {
           this._vm.$debug_log(error);
@@ -68,17 +89,14 @@ export default {
   },
   getters: {
     WISH: (state) => state.wish,
-    WISH_IDS: (state) => {
-      if (state.wish) {
-        return state.wish.map((value) => value.id);
-      }
-      return [];
-    },
-
+    WISH_IDS: (state) => state.wish_ids,
   },
   mutations: {
     SET_WISH_TO_STATE: (state, wish) => {
       Vue.set(state, 'wish', wish);
+    },
+    SET_WISH_IDS_TO_STATE: (state, data) => {
+      Vue.set(state, 'wish_ids', data);
     },
   },
 };
@@ -102,3 +120,4 @@ export default {
 //
 //     },
 // }
+

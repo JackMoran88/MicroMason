@@ -1,0 +1,287 @@
+//Toast
+
+$toast-bg__success: rgb(33, 152, 104);
+$toast-bg__info: rgb(22, 106, 170);
+$toast-bg__error: rgb(185, 42, 7);
+$toast-bg__attention: rgb(183, 129, 1);
+.toasted-container {
+  &.top-right {
+    //right: 1% !important;
+    //max-width: 350px;
+  }
+
+  .toasted {
+    &.toast {
+      padding: 1rem 1.25rem;
+      border-radius: .5rem;
+
+      i {
+        margin-right: 1rem;
+        @include fz(24px);
+      }
+
+      &__success {
+        color: white;
+        background: $toast-bg__success;
+      }
+
+      &__info {
+        color: white;
+        background: $toast-bg__info;
+      }
+
+      &__error {
+        color: white;
+        background: $toast-bg__error;
+      }
+
+      &__attention {
+        color: white;
+        background: $toast-bg__attention;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .toasted-container {
+    bottom: 5px !important;
+
+    .toasted {
+      border-radius: 0 !important;
+    }
+  }
+}
+
+
+#readmore {
+  @include link
+}
+
+li {
+  a {
+    color: inherit;
+  }
+}
+
+@media (max-width: 576px) {
+  .container, .container-fluid, .container-sm, .container-md, .container-lg, .container-xl {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+}
+
+.table {
+  margin: 0;
+  color: var(--text-main);
+
+  &-border {
+    @include def-border;
+  }
+
+  tr {
+    td, th {
+      border: none;
+      text-align: center;
+
+      &:first-of-type {
+        text-align: left;
+      }
+
+      &:last-of-type {
+        text-align: right;
+      }
+    }
+  }
+}
+
+
+.card-btn {
+  box-sizing: content-box;
+  @extend %_material-icons;
+  color: var(--card-button);
+  height: 35px;
+  width: 35px;
+  background: var(--background-light);
+  background-size: 80% 80% !important;
+  background-position: center !important;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.btn {
+  &.disabled, &:disabled {
+    color: var(--btn-disabled-text) !important;
+    background-color: var(--btn-disabled-border) !important;
+    border-color: var(--btn-disabled-background) !important;
+  }
+}
+
+.btn-primary {
+  color: var(--btn-primary-text);
+  background-color: var(--btn-primary-background);
+  border-color: var(--btn-primary-border);
+
+  &:hover, &:focus, &.focus {
+    color: var(--btn-primary-text);
+    background-color: var(--btn-primary-border);
+    border-color: var(--btn-primary-background);
+  }
+}
+
+
+//SCROLL
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e1e1e1;
+  border: 0 none #ffffff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffffff;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #b9cdda;
+}
+
+::-webkit-scrollbar-track {
+  background: #666666;
+  border: 0 none #ffffff;
+  //border-radius: 50px;
+}
+
+::-webkit-scrollbar-track:hover {
+  background: #666666;
+}
+
+::-webkit-scrollbar-track:active {
+  background: #333333;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+//!SCROLL!
+
+.breadcrumb-container {
+  margin: 1rem 0;
+
+  .breadcrumb {
+    display: flex;
+    flex-wrap: nowrap;
+    background: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-radius: .25rem;
+    white-space: nowrap;
+    overflow-x: auto;
+    @extend %_scroll-hide;
+
+    &-item {
+      a {
+        @include link;
+      }
+
+      span {
+        color: var(--text-second);
+      }
+
+      @include fz(14px);
+
+      &:before {
+        color: var(--text-light) !important;
+      }
+    }
+  }
+}
+
+fieldset {
+  span.invalid {
+    @include fz(14px);
+    color: var(--input-text-error);
+  }
+}
+
+
+.vue-skeleton-loading {
+  .square {
+    background-color: var(--card-background-preload) !important;
+  }
+}
+
+.v-select {
+
+  /*  fix white-space   */
+  .vs__dropdown-toggle {
+    justify-content: space-between;
+  }
+
+  .vs__selected-options {
+    /*  if clearable is exist -41px  */
+    max-width: calc(100% - 28px);
+    flex-wrap: nowrap;
+  }
+
+  .vs__selected {
+    max-width: 100%;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  /*  fix white-space   */
+
+
+  .vs__dropdown-toggle {
+    border-color: var(--input-border);
+  }
+
+  .vs__actions {
+    svg {
+      color: var(--input-action);
+      fill: var(--input-action);
+    }
+  }
+
+  .vs__selected-options {
+    * {
+      color: var(--text-main);
+    }
+  }
+
+  .vs__dropdown-option {
+    &, * {
+      color: var(--text-main);
+      background-color: var(--input-background) !important;
+    }
+  }
+
+  .vs__dropdown-menu {
+    &, * {
+      color: var(--text-main);
+      background-color: var(--background-content) !important;
+    }
+  }
+
+  input::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+
+
+
+

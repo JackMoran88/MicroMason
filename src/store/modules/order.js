@@ -22,9 +22,9 @@ export default {
   actions: {
     GET_ORDERS({commit}) {
       return axios(`${store.state.backendUrlApi}/order/list/`,
-        window._.merge(
-          {method: 'POST'},
-          store.getters.USER_DATA_REQUEST,
+        Vue.lodash.merge(
+          {method: 'GET'},
+          this._vm.$USER_DATA_REQUEST(),
         ))
         .then((response) => {
           commit('ORDERS_TO_STATE', response.data);
@@ -38,9 +38,11 @@ export default {
     },
     GET_ADDRESS({commit}) {
       return axios(`${store.state.backendUrlApi}/address/detail/`,
-        window._.merge(
-          {method: 'POST'},
-          store.getters.USER_DATA_REQUEST,
+        Vue.lodash.merge(
+          {
+            method: 'GET',
+          },
+          this._vm.$USER_DATA_REQUEST(),
         ))
         .then((response) => {
           commit('ADDRESS_TO_STATE', response.data);
@@ -54,9 +56,9 @@ export default {
     },
     GET_SHIPPING({commit}) {
       return axios(`${store.state.backendUrlApi}/shipping/list/`,
-        window._.merge(
-          {method: 'POST'},
-          store.getters.USER_DATA_REQUEST,
+        Vue.lodash.merge(
+          {method: 'GET'},
+          this._vm.$USER_DATA_REQUEST(),
         ))
         .then((response) => {
           commit('SHIPPING_TO_STATE', response.data);
@@ -70,9 +72,9 @@ export default {
     },
     GET_PAYMENT({commit}) {
       return axios(`${store.state.backendUrlApi}/payment/list/`,
-        window._.merge(
-          {method: 'POST'},
-          store.getters.USER_DATA_REQUEST,
+        Vue.lodash.merge(
+          {method: 'GET'},
+          this._vm.$USER_DATA_REQUEST(),
         ))
         .then((response) => {
           commit('PAYMENT_TO_STATE', response.data);
@@ -86,12 +88,12 @@ export default {
     },
     CREATE_ADDRESS({commit}, data) {
       return axios(`${store.state.backendUrlApi}/address/add/`,
-        window._.merge(
+        Vue.lodash.merge(
           {
             method: 'POST',
             data,
           },
-          store.getters.USER_DATA_REQUEST,
+          this._vm.$USER_DATA_REQUEST(),
         ))
         .then((response) => {
           store.dispatch('GET_ADDRESS');
@@ -105,14 +107,14 @@ export default {
     },
     DELETE_ADDRESS({commit}, id) {
       return axios(`${store.state.backendUrlApi}/address/delete/`,
-        window._.merge(
+        Vue.lodash.merge(
           {
             method: 'POST',
             data: {
               id,
             },
           },
-          store.getters.USER_DATA_REQUEST,
+          this._vm.$USER_DATA_REQUEST(),
         ))
         .then((response) => {
           store.dispatch('GET_ADDRESS');
@@ -128,14 +130,14 @@ export default {
     GET_LIQPAY_DATA({commit}, order_id) {
       return new Promise((resolve, reject) => {
         return axios(`${store.state.backendUrlApi}/order/pay/`,
-          window._.merge(
+          Vue.lodash.merge(
             {
               method: 'POST',
               data: {
                 order_id,
               },
             },
-            store.getters.USER_DATA_REQUEST,
+            this._vm.$USER_DATA_REQUEST(),
           ))
           .then((response) => {
             resolve(response.data)
@@ -151,12 +153,12 @@ export default {
     MAKE_ORDER({commit}) {
       return new Promise((resolve, reject) => {
         axios(`${store.state.backendUrlApi}/order/add/`,
-          window._.merge(
+          Vue.lodash.merge(
             {
               method: 'POST',
               data: store.getters.CHECKOUT,
             },
-            store.getters.USER_DATA_REQUEST,
+            this._vm.$USER_DATA_REQUEST(),
           ))
           .then((response) => {
             this._vm.$debug_log('Заказ оформлен');
@@ -191,25 +193,28 @@ export default {
           },
         )
           .then((response) => {
-            if (response.data.success == true) {
+            this._vm.$debug_log(response);
+            if (response.data.success === true) {
               resolve(response.data);
               return response;
             }
 
-          })
+          }).finally(() => {
+          commit('SET_TOKEN_TO_HEADERS')
+        })
       });
     },
     GET_BRANCH_BY_QUERY({commit}, query) {
       return new Promise((resolve, reject) => {
         axios(`${store.state.backendUrlApi}/novaposhta/search/`,
-          window._.merge(
+          Vue.lodash.merge(
             {
               method: 'POST',
               data: {
                 query: query
               }
             },
-            store.getters.USER_DATA_REQUEST,
+            this._vm.$USER_DATA_REQUEST(),
           ))
           .then((response) => {
             resolve(response.data);

@@ -15,15 +15,39 @@
       <div slot="center">
         <v-slider
           place="home"
-          crop="standard"
+          :crop="IS_MOBILE ? 'mobile' : 'standard'"
+        />
+         <div v-if="IS_MOBILE" >
+            <span></span>
+          </div>
+        <v-btn
+          v-if="IS_MOBILE"
+          v-b-modal.catalogModal
+          BtnName="Каталог товаров"
+          BtnStyle="success"
+          class="w-100"
         />
         <v-custom-products-line
           class="no-effect"
           title="Новинки"
-          :data="PRODUCTS_LAST"
+          :data="PRODUCTS_LAST.queryset"
+          :preloading="!PRODUCTS_LAST.load"
+        />
+        <v-custom-products-line
+          class="no-effect"
+          title="Популярные товары"
+          :data="PRODUCTS_POPULAR.queryset"
+          :preloading="!PRODUCTS_POPULAR.load"
         />
         <v-viewed-products
           class="no-effect"
+        />
+
+        <v-custom-products-line
+          class="no-effect"
+          title="Самые желаемые товары"
+          :data="PRODUCTS_POPULAR_WISH.queryset"
+          :preloading="!PRODUCTS_POPULAR_WISH.load"
         />
       </div>
 
@@ -33,7 +57,7 @@
 </template>
 
 <script>
-  import {mapActions, mapGetters} from 'vuex';
+  import {mapActions, mapGetters, mapMutations} from 'vuex';
   import vDropCatalogMain from '@/components/app/catalog/v-drop-catalog-main.vue';
 
   export default {
@@ -43,12 +67,21 @@
     },
     methods: {
       load() {
-        this.GET_PRODUCT_LAST()
+        this.GET_PRODUCTS_QUERYSETS({type: 'last'}).then((data) => {
+          this.SET_PRODUCT_LAST_TO_STATE(data)
+        })
+        this.GET_PRODUCTS_QUERYSETS({type: 'popular'}).then((data) => {
+          this.SET_PRODUCT_POPULAR_TO_STATE(data)
+        })
+        this.GET_PRODUCTS_QUERYSETS({type: 'popular_wish'}).then((data) => {
+          this.SET_PRODUCT_POPULAR_WISH_TO_STATE(data)
+        })
       },
-      ...mapActions(['GET_PRODUCT_LAST'])
+      ...mapActions(['GET_PRODUCTS_QUERYSETS']),
+      ...mapMutations(['SET_PRODUCT_LAST_TO_STATE', 'SET_PRODUCT_POPULAR_TO_STATE', 'SET_PRODUCT_POPULAR_WISH_TO_STATE',])
     },
     computed: {
-      ...mapGetters(['CATEGORIES', 'SLIDERS', 'IS_MOBILE', 'IS_DESKTOP', 'PRODUCTS_LAST']),
+      ...mapGetters(['IS_MOBILE', 'IS_DESKTOP', 'PRODUCTS_LAST', 'PRODUCTS_POPULAR', 'PRODUCTS_POPULAR_WISH']),
     },
     mounted() {
       this.load()

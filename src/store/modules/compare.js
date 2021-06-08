@@ -12,9 +12,9 @@ export default {
   actions: {
     GET_COMPARE_DETAIL({ commit }) {
       return new Promise((resolve, reject) => axios(`${store.state.backendUrlApi}/compare/list/`,
-        window._.merge(
-          { method: 'POST' },
-          store.getters.USER_DATA_REQUEST,
+        Vue.lodash.merge(
+          { method: 'GET' },
+          this._vm.$USER_DATA_REQUEST(),
         ))
         .then((resp) => {
           this._vm.$debug_log('Compare обновлен');
@@ -31,13 +31,13 @@ export default {
     },
     ADD_TO_COMPARE({ commit }, productId) {
       return axios(`${store.state.backendUrlApi}/compare/add/`,
-        window._.merge({
+        Vue.lodash.merge({
           method: 'POST',
           data: {
             product: productId,
           },
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then(() => {
           this._vm.$debug_log('В compare добавлен товар');
         })
@@ -51,15 +51,15 @@ export default {
     },
     DELETE_FROM_COMPARE({ commit }, productId) {
       return axios(`${store.state.backendUrlApi}/compare/delete/`,
-        window._.merge({
+        Vue.lodash.merge({
           method: 'POST',
           data: {
             product: productId,
           },
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then(() => {
-          this._vm.$debug_log('В compare добавлен товар');
+          this._vm.$debug_log('Из compare удален товар');
         })
         .catch((error) => {
           this._vm.$debug_log(error);

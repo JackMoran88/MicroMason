@@ -5,14 +5,17 @@ import store from '../index';
 
 export default {
   state: {
-    categories: [],
+    categories: {
+      queryset: [],
+      load: false,
+    },
   },
   modules: {},
   actions: {
     GET_CATEGORY_LIST({ commit }) {
       return axios(`${store.state.backendUrlApi}/categories/`,
         {
-          method: 'POST',
+          method: 'GET',
         })
         .then((resp) => {
           commit('SET_CATEGORY_LIST_TO_STATE', resp.data);
@@ -30,7 +33,9 @@ export default {
   },
   mutations: {
     SET_CATEGORY_LIST_TO_STATE: (state, categories) => {
-      Vue.set(state, 'categories', categories);
+      Vue.set(state.categories, 'queryset', categories);
+      Vue.set(state.categories, 'load', true);
+      // localStorage.setItem('categories', JSON.stringify(state.categories))
     },
   },
 };

@@ -10,6 +10,7 @@
         class="form-control"
         type="text"
         placeholder="Поиск"
+        aria-label="Поиск"
         v-model="input"
         @input="dynamic"
         @click="dynamic"

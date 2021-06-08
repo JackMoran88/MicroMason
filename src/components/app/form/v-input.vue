@@ -27,6 +27,8 @@
 
       placeholder="—"
 
+      aria-label="input"
+
       @keypress="InputNumberOnly ? isNumber($event): ''"
 
       :min="InputNumberMin ? InputNumberMin : 0"
@@ -135,7 +137,7 @@
 <style scoped lang="scss">
 
   label {
-    @include fz(14);
+    @include fz(14px);
     color: var(--label-text);
     width: 100%;
     margin: .5rem 0 !important;
@@ -179,13 +181,14 @@
   input {
     border: none;
     border-bottom: 1px solid var(--input-border);
-    background: var(--background-content);
+    /*background: var(--background-content);*/
+    background: var(--input-background);
 
 
     &.input-minimal {
       border: none;
       border-bottom: 1px solid var(--input-border);
-      color: var(--text-dark);
+      color: var(--text-main);
       border-radius: 0;
       transition: none;
 

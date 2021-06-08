@@ -44,6 +44,7 @@ export default ({
       }
       data = JSON.stringify(data)
       Vue.prototype.$socket.send(data)
+      console.log('::WebSocket::')
     },
     SOCKET_CATCH(context, message) {
       let route = router.history.current

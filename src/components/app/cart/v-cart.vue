@@ -134,13 +134,13 @@
   .cart-footer {
     position: sticky;
     bottom: 0;
-    background: var(--background-content);
+    background: var(--account-board-bg);
 
     display: flex;
     justify-content: flex-end;
     padding: 1rem 0;
     z-index: 20;
-    box-shadow: 0px -10px 20px 0px rgba(var(--background-light), 1);
+    box-shadow: 0px -10px 20px 0px rgba(var(--product-board-border), 1);
 
     &-total {
       display: flex;
@@ -148,7 +148,7 @@
       justify-content: center;
       padding: 0 1rem;
       font-weight: 500;
-      @include fz(20)
+      @include fz(20px)
 
     }
   }

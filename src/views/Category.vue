@@ -1,6 +1,5 @@
 <template>
   <div class="category">
-    <!--        {{PRODUCTS.paginate}}-->
     <Breadcrumbs/>
 
     <v-mobile-filter
@@ -31,6 +30,12 @@
           :options="SORT_TYPES"
         />
       </div>
+
+
+      <v-filter-items-board v-if="IS_DESKTOP"/>
+
+
+
     </section>
 
     <section class="category__body" :class="{'mobile': IS_MOBILE}">
@@ -110,6 +115,7 @@
   import vCard from '@/components/app/card/v-card.vue';
   import vCardLine from '@/components/app/container/v-card-line.vue';
   import vMobileFilter from '@/components/app/mobile/slideFilter.vue';
+  import vFilterItemsBoard from '@/components/app/container/v-filter-items-board'
 
   import {mapActions, mapGetters} from 'vuex';
 
@@ -121,7 +127,7 @@
       },
     },
     components: {
-      vCard, vCardLine, vMobileFilter,
+      vCard, vCardLine, vMobileFilter,vFilterItemsBoard,
     },
     data() {
       return {
@@ -140,6 +146,7 @@
         });
       },
       loadCategory() {
+        this.GET_SORT_TYPES()
         this.setLoading(true);
         const data = {
           slug: this.$route.params.slug,
@@ -155,7 +162,7 @@
           });
       },
 
-      ...mapActions(['GET_PRODUCTS', 'BREADCRUMBS']),
+      ...mapActions(['GET_PRODUCTS', 'BREADCRUMBS', 'GET_SORT_TYPES']),
     },
     computed: {
       ...mapGetters(['PRODUCTS', 'SORT_TYPES', 'IS_DESKTOP', 'IS_MOBILE']),
@@ -241,52 +248,5 @@
     }
   }
 
-  .category__body-list {
-    display: flex;
-    flex-wrap: wrap;
-    height: min-content;
-
-    .card {
-      min-width: calc(100% / 4);
-      max-width: calc(100% / 4);
-      flex: 1;
-    }
-  }
-
-  @media (max-width: 1200px) {
-    .category__body-list {
-      .card {
-        min-width: calc(100% / 3);
-        max-width: calc(100% / 3);
-      }
-    }
-  }
-
-  @media (max-width: 960px) {
-    .category__body-list {
-      .card {
-        min-width: calc(100% / 2);
-        max-width: calc(100% / 2);
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .category__body-list {
-      .card {
-        min-width: calc(100% / 2);
-        max-width: calc(100% / 2);
-      }
-    }
-  }
-
-  @media (max-width: 360px) {
-    .category__body-list {
-      .card {
-        min-width: calc(100% / 1);
-        max-width: calc(100% / 1);
-      }
-    }
-  }
 
 </style>

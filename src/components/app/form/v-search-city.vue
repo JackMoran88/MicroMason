@@ -23,7 +23,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-
 export default {
   name: 'v-search-city',
   props: {
@@ -115,7 +114,6 @@ export default {
       this.$emit('blur');
       this.close();
     },
-
     ...mapActions(['GET_CITY_BY_QUERY']),
   },
   computed: {},
@@ -135,10 +133,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
   .v-search-city {
     position: relative;
-
     ul {
       position: absolute;
       top: calc(100% - .5rem);
@@ -147,19 +143,15 @@ export default {
       padding: 0;
       width: 100%;
       z-index: 9999;
-
       background: var(--background-content);
       color: var(--link);
-
       list-style-type: none;
-
       li {
         padding: .25rem 1rem;
         cursor: pointer;
-        border-bottom: 1px solid #e5e5e5;
+        border-bottom: 1px solid var(--input-border);
         border-top: none;
       }
     }
   }
-
 </style>

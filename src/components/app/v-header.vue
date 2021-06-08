@@ -21,7 +21,7 @@
           />
           <v-dropdown
             v-if="IS_LOGGED_IN"
-            :data="dropData()"
+            :data="USER_DROP_DATA"
             class="header__item"
           />
         </div>
@@ -83,7 +83,7 @@
     </nav>
 
     <v-mobile-menu
-      :menu="dropData"
+      :menu="USER_DROP_DATA"
     />
 
   </section>
@@ -91,13 +91,8 @@
 </template>
 
 <script>
-  import vDropdown from '@/components/popup/v-dropdown.vue';
-  import vMobileMenu from '@/components/app/mobile/slideMenu.vue';
-  import vThemeSwitcher from '@/components/app/v-theme-switcher.vue';
   import {eventBus} from '@/main';
-  import {
-    mapGetters, mapActions, mapMutations, mapState,
-  } from 'vuex';
+  import {mapGetters} from 'vuex';
 
   export default {
     name: 'v-header',
@@ -108,7 +103,9 @@
       };
     },
     components: {
-      vDropdown, vMobileMenu, vThemeSwitcher,
+      vDropdown: () => import('@/components/popup/v-dropdown.vue'),
+      vMobileMenu: () => import('@/components/app/mobile/slideMenu.vue'),
+      vThemeSwitcher: () => import('@/components/app/v-theme-switcher.vue'),
     },
     methods: {
       toggleCategory() {
@@ -117,30 +114,9 @@
       logout() {
         this.$store.dispatch('LOGOUT');
       },
-      dropData() {
-        if (this.$store.state.user) {
-          return {
-            icon: 'person',
-            name: this.$store.getters.FULL_USER_NAME || 'Пользователь',
-            link: '/account',
-            exit: true,
-            items: [
-              {icon: 'person', text: 'Мой профиль', link: '/account'},
-              {icon: 'favorite', text: 'Мой список желаемого', link: '/account/wish'},
-              {icon: 'toc', text: 'Мои заказы', link: '/account/orders'},
-              {icon: 'compare_arrows', text: 'Мои сравнения', link: '/account/comparison'},
-              {icon: 'rate_review', text: 'Мои отзывы', link: '/account/reviews'},
-            ],
-
-          };
-        }
-      },
     },
     computed: {
-      ...mapGetters(['CART_IDS', 'SETTINGS', 'IS_MOBILE', 'IS_DESKTOP', 'IS_LOGGED_IN']),
-    },
-    updated() {
-      this.dropData();
+      ...mapGetters(['CART_IDS', 'SETTINGS', 'IS_MOBILE', 'IS_DESKTOP', 'IS_LOGGED_IN', 'USER_DROP_DATA']),
     },
   };
 
@@ -180,6 +156,7 @@
 
         &-item {
           align-items: center;
+
           &__left {
             .header__item {
               padding-right: 1rem;
@@ -234,7 +211,6 @@
       padding-right: 1rem;
       margin: 0 0 0 .7rem;
       font-size: 2.2rem;
-      //@extend %_ffMono
 
     }
 

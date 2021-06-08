@@ -7,6 +7,5 @@ export default function formattedDate(value) {
     hour: 'numeric',
     minute: 'numeric',
   };
-  const parts = new Date(value).toLocaleTimeString('ru', options);
-  return parts;
+  return new Date(value).toLocaleTimeString('ru', options);
 }

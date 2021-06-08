@@ -18,8 +18,6 @@
       :InputNumberOnly="true"
       @change.native="change"
       ref="to"
-
-
     />
     <vue-slider
       :min="minmax[0]"

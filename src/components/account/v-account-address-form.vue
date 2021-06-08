@@ -18,7 +18,7 @@
         placeholder="Выберите адрес доставки"
         :options="address_options"
         :clearable="false"
-        autocomplete="off"
+        :searchable="false"
       ></v-select>
 
 
@@ -108,7 +108,9 @@
     </div>
 
     <v-btn
-      BtnName="Удалить"
+      v-if="curAddress"
+      :BtnIcon="IS_MOBILE ? 'delete': ''"
+      :BtnName="IS_DESKTOP ? 'Удалить': ''"
       BtnStyle="danger"
       class="mr-auto"
       slot="footer+"
@@ -117,15 +119,14 @@
     <v-btn
       v-if="isBtnAdd"
       BtnStyle="secondary"
-      BtnIcon="add"
-      BtnName="Добавить новый адресс"
+      :BtnIcon="IS_MOBILE ? 'add': ''"
+      :BtnName="IS_DESKTOP ? 'Добавить новый адресс': ''"
       slot="footer+"
       @click.native="createNewAddress"
     />
     <v-btn
       v-if="!isBtnAdd && IS_LOGGED_IN"
       BtnStyle="secondary"
-      BtnIcon="add"
       BtnName="Персонализировать"
       slot="footer+"
       @click.native="personalizeNewAddress"
@@ -148,11 +149,8 @@
         isSelector: false,
         isBtnAdd: true,
         addressLength: null,
-
         address_options: [],
-
         loading: false,
-
         addressData: {
           first_name: '',
           last_name: '',
@@ -181,12 +179,11 @@
             this.SET_CHECKOUT_ADDRESS(this.curAddress);
             // Обновляю селектор, чтобы отобразился адрес
             this.isSelector = true;
-            this.isBtnAdd = true
           } else {
             this.addressLength = null;
             this.clearAddressForm();
           }
-
+          this.isBtnAdd = true
           this.setLoading(false)
         });
       },
@@ -207,7 +204,9 @@
         for (const key of Object.keys(this.addressData)) {
           this.addressData[key] = '';
         }
-        this.$refs.form.reset()
+        if (this.$refs.form) {
+          this.$refs.form.reset()
+        }
       },
       createNewAddress() {
         this.isSelector = false;
@@ -215,8 +214,8 @@
         this.clearAddressForm();
         this.addressLength = 1;
       },
-      personalizeNewAddress(){
-        if(this.IS_LOGGED_IN){
+      personalizeNewAddress() {
+        if (this.IS_LOGGED_IN) {
           this.addressData.first_name = this.USER.first_name
           this.addressData.last_name = this.USER.last_name
           this.addressData.email = this.USER.email
@@ -228,7 +227,6 @@
           this.$refs.account_form.toggle();
           return;
         }
-
         this.$refs.form.validate().then((success) => {
           if (!success) {
             return;
@@ -241,12 +239,11 @@
             this.load();
           });
           this.$refs.account_form.toggle();
-        });
+        })
       },
       close() {
         this.load();
       },
-
       loadAddress_options() {
         this.address_options = this.ADDRESS.map((value) => {
           return {
@@ -267,7 +264,7 @@
       this.load();
     },
     computed: {
-      ...mapGetters(['ADDRESS', 'IS_LOGGED_IN', 'USER']),
+      ...mapGetters(['ADDRESS', 'IS_LOGGED_IN', 'USER', 'IS_DESKTOP', 'IS_MOBILE']),
     },
     watch: {
       'curAddress'() {
@@ -276,15 +273,15 @@
       'ADDRESS.length'() {
         this.load();
       },
+      'USER'() {
+        this.load()
+      }
     },
-
   };
 </script>
 
 <style scoped lang="scss">
-
   .v-select {
     margin: .5rem 0;
   }
-
 </style>

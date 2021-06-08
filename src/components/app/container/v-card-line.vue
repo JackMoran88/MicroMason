@@ -1,12 +1,17 @@
 <template>
 
   <div class="v-card-line"
-       v-dragscroll.x="IS_MOBILE ? false : true"
+       v-dragscroll.x="!IS_MOBILE"
        @dragscrollstart="onDragStart"
        @click.capture="onDragClick"
   >
+    <v-card-preloader
+      v-if="preloading"
+      v-for="i in 10"
+    />
+
     <v-card
-      v-if="Products.length"
+      v-if="!preloading && Products.length"
       v-for="product in Products"
       :Product="product"
     />
@@ -27,9 +32,11 @@
       vCard,
     },
     props: {
-      Products: {
-        type: Array,
-      },
+      Products: {},
+      preloading:{
+        type: Boolean,
+        default: false,
+      }
     },
     directives: {
       dragscroll,
@@ -42,7 +49,6 @@
       load() {
 
       },
-
       // Fix click after drag
       onDragStart() {
         clearTimeout(this.dragTimeout);
@@ -66,11 +72,11 @@
     mounted() {
 
     },
-
   };
 </script>
 
 <style lang="scss">
+
 
   .v-card-line {
     display: flex;

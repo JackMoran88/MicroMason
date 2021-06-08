@@ -8,14 +8,18 @@
                       ProductSlug: Product.slug
                     }}"
       >
-        <img v-lazy="this.$store.state.backendUrl + Product.main_image.card">
+        <img
+          v-lazy="this.$store.state.backendUrl + Product.main_image.card"
+          :alt="Product.name"
+          :title="Product.name"
+        >
       </router-link>
     </div>
     <div class="card__title">
       <router-link
         :to="{name: 'Product', params:{slug: Product.category_slug, ProductSlug: Product.slug}}"
       >
-        <h5>{{Product.name}}</h5>
+        <div class="card__title-name" :title="Product.name">{{Product.name}}</div>
       </router-link>
     </div>
     <div class="card__reviews">
@@ -52,6 +56,7 @@
       />
       <button
         class="btn btn-quick-view card-btn"
+        aria-label="button quick-view"
         @click="SHOW_QUICK_VIEW(Product.slug)"
       ></button>
     </div>
@@ -81,23 +86,48 @@
       },
     },
     methods: {
-      ...mapActions(['ADD_TO_CART', 'DELETE_FROM_CART', 'GET_CART_DETAIL', 'GET_PRELOADER', 'SHOW_QUICK_VIEW']),
+      ...mapActions(['ADD_TO_CART', 'DELETE_FROM_CART', 'GET_CART_DETAIL', 'SHOW_QUICK_VIEW']),
     },
     computed: {
       ...mapGetters(['CART_IDS']),
     },
     mounted() {
-      // Могут быть проблемы(слишком часто будет вызывтся)
-      // this.GET_CART_DETAIL()
-      this.GET_PRELOADER();
+
     },
   };
 </script>
 
 <style lang="scss">
 
+  .btn-quick-view {
+    @include fz(26px !important);
+    transition: background-image .25s ease-in-out;
+
+    &:after {
+      content: 'visibility';
+    }
+
+    &.fill {
+      color: royalblue;
+
+      &:after {
+        content: 'visibility';
+        color: royalblue;
+      }
+    }
+
+    &:hover {
+      color: royalblue;
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+
   .card {
-    @extend %_shadow;
+    //@extend %_shadow;
     display: flex;
     flex-direction: column;
 
@@ -125,9 +155,7 @@
 
       border-radius: 6px;
 
-      transform: scale(1.02);
-      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
-
+      transform: scale(1.05);
       transition: all 0.2s ease-in-out;
     }
 
@@ -172,13 +200,13 @@
       a {
         color: var(--card-text);
 
-        h5 {
+        div.card__title-name {
           display: -webkit-box;
 
           height: 32px;
           margin: 0 !important;
 
-          @include fz(14);
+          @include fz(14px);
           line-height: 16px;
           -webkit-line-clamp: 2; /* number of lines to show */
           -webkit-box-orient: vertical;
@@ -202,11 +230,11 @@
         align-items: center;
 
         span {
-          @include fz(24);
+          @include fz(24px);
         }
 
         .currency {
-          @include fz(20);
+          @include fz(20px);
         }
       }
 
@@ -280,54 +308,5 @@
     }
   }
 
-
-  .card-preload {
-    overflow: hidden;
-
-    .skeleton-bac-animation {
-      left: 0;
-      top: 0;
-      z-index: 12 !important;
-    }
-
-    * {
-      overflow: hidden;
-    }
-
-    .card__image {
-      * {
-        height: 100% !important;
-      }
-
-      padding-top: 100% !important;
-
-      > * {
-        position: absolute;
-        top: 0;
-      }
-    }
-
-    .card__title, .card__reviews, .card__price {
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
-    .card__title {
-      .square, & {
-        height: 32px !important;
-      }
-    }
-
-    .card__reviews {
-      .square, & {
-        height: 24px !important;
-      }
-    }
-
-    .card__price {
-      .square, & {
-        height: 36px !important;
-      }
-    }
-  }
 
 </style>

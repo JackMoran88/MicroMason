@@ -1,26 +1,23 @@
 import Vue from 'vue';
 import App from './App.vue';
+import router from './router';
+import service from './service';
+import store from './store';
 import './registerServiceWorker';
-import Vuex, {mapActions} from 'vuex';
-// jQuery
-import jQuery from 'jquery';
-// Валидация форм
-import Vuelidate from 'vuelidate';
-import 'popper.js';
+import Vuex from 'vuex';
 // axios
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 // LazyLoad IMG
 import VueLazyLoad from 'vue-lazyload';
-// FA-iconso
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {
-  faGoogle, faInstagram, faTelegram, faYoutube
-} from '@fortawesome/free-brands-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 // Bootstrap
-import 'bootstrap';
-import {BootstrapVue, IconsPlugin} from 'bootstrap-vue';
+import 'popper.js';
+import { CarouselPlugin, ModalPlugin, VBTogglePlugin, SidebarPlugin} from 'bootstrap-vue'
+Vue.use(CarouselPlugin)
+Vue.use(ModalPlugin)
+Vue.use(VBTogglePlugin)
+Vue.use(SidebarPlugin)
+
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 // BreadCrumbs
 import VueBreadcrumbs from 'vue-2-breadcrumbs';
@@ -33,9 +30,9 @@ import Paginate from 'vuejs-paginate';
 import '@/bank/globalComponents';
 // Checkbox
 import PrettyCheckbox from 'pretty-checkbox-vue';
-// Дополнительные функции (глубокое слиянение объектов)
+// Глубокое слиянение объектов
 import VueLodash from 'vue-lodash';
-import lodash from 'lodash';
+import merge from 'lodash/merge'
 // Toast
 import Toasted from 'vue-toasted';
 // Social oAuth
@@ -46,6 +43,7 @@ import VueClipboard from 'vue-clipboard2';
 import VueMeta from 'vue-meta';
 // Vue select
 import vSelect from 'vue-select'
+
 Vue.component('v-select', vSelect)
 import 'vue-select/dist/vue-select.css';
 // Vee Validate
@@ -53,18 +51,17 @@ import {extend, ValidationObserver, ValidationProvider} from 'vee-validate';
 import {
   alpha, confirmed, email, required,
 } from 'vee-validate/dist/rules';
-import PhoneNumber from 'awesome-phonenumber';
+// import PhoneNumber from 'awesome-phonenumber';
+
 //VueSkeletonLoading
-//https://github.com/jiingwang/vue-skeleton-loading
 import VueSkeletonLoading from 'vue-skeleton-loading';
-//
-import router from './router';
-import service from './service';
-import store from './store';
 //Vue WebSocket
 import VueNativeSock from 'vue-native-websocket'
+//Switchers
+import ToggleButton from 'vue-js-toggle-button'
 
-Vue.use(VueNativeSock, 'ws://localhost:8000/ws/notifications/', {
+
+Vue.use(VueNativeSock, `ws://${process.env.VUE_APP_BACKEND_IP}/api/ws/notifications/`, {
   store: store,
   format: 'json',
   reconnection: true,
@@ -72,12 +69,11 @@ Vue.use(VueNativeSock, 'ws://localhost:8000/ws/notifications/', {
   reconnectionDelay: 5000,
 })
 
-//Switchers
-import ToggleButton from 'vue-js-toggle-button'
-import {faCopy} from "@fortawesome/free-solid-svg-icons";
+import "@/assets/styles/bootstrap.scss";
+import "@/assets/styles/styles.scss";
+import 'pretty-checkbox/src/pretty-checkbox.scss';
 
 Vue.use(ToggleButton)
-
 
 Vue.use(VueClipboard);
 Vue.component('ValidationProvider', ValidationProvider);
@@ -87,43 +83,39 @@ Vue.use(Vuex);
 
 Vue.use(VueSkeletonLoading);
 
-window.$ = window.jQuery = jQuery;
-
-Vue.use(Vuelidate);
-
 Vue.use(VueAxios, axios);
 Vue.prototype.$axios = axios;
 
 Vue.use(VueLazyLoad);
 
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-library.add(faInstagram, faYoutube, faTelegram, faGoogle, faCopy);
 Vue.config.productionTip = false;
 
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
 Vue.use(LoadScript);
 Vue.component('paginate', Paginate);
 Vue.use(PrettyCheckbox);
-Vue.use(VueLodash, {name: 'custom', lodash});
+Vue.use(VueLodash, {name: 'custom', lodash: {merge}});
 Vue.use(Toasted);
+
 Vue.use(VueSocialauth, {
   providers: {
     google: {
       clientId: '1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com',
-      redirectUri: 'http://localhost:8080', // Your client app URL
+      redirectUri: process.env.VUE_APP_BACKEND_URL, // Your client app URL
       // redirectUri: 'https://oauth2.googleapis.com/token' // Your client app URL
     },
   },
 });
+
 Vue.use(VueMeta, {
   // optional pluginOptions
   refreshOnceOnNavigation: true,
 });
+
 Vue.use(service);
 Vue.use(service, {
   someOption: true,
 });
+
 
 // Breadcrumbs template
 Vue.use(VueBreadcrumbs, {
@@ -148,29 +140,14 @@ new Vue({
   store,
 
   methods: {
-    ...mapActions(['START']),
+    // ...mapActions(['START']),
   },
 
   mounted() {
-    this.START();
+    store.dispatch('GET_SHOP_SLIDERS');
   },
   render: (h) => h(App)
 }).$mount('#app');
-
-// http://localhost:8080/?code=4%2F0AY0e-g4QywM-gFjVs3kpTH56mFoHlMpIg7Wo2CYepaPZw__wGHq8RSQOd06vGeX23V1HOA&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+openid&authuser=0&prompt=none
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 extend('required', {
   ...required,
@@ -210,8 +187,8 @@ extend('minmax', {
 extend('phone', {
   validate(value) {
     return new Promise((resolve) => {
-      const phone = new PhoneNumber(value);
-      resolve({valid: phone.isValid()});
+      let re = /\+380\d{3}\d{2}\d{2}\d{2}$/
+      resolve({valid: re.test(value)});
     });
   },
   message(value) {

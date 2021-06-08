@@ -9,46 +9,52 @@
     <v-product-info
       :Product="PRODUCT"
     />
+    <v-product-tab-spec
+      :ProductSpecs="PRODUCT.options"
+    />
   </section>
 
 </template>
 
 <script>
-import vProductInfo from '@/components/product/boards/v-product-info.vue';
-import vGallery from '@/components/product/boards/v-gallery.vue';
-import { mapActions, mapGetters } from 'vuex';
+  import vProductInfo from '@/components/product/boards/v-product-info.vue';
+  import vGallery from '@/components/product/boards/v-gallery.vue';
+  import {mapActions, mapGetters} from 'vuex';
+  import vProductTabSpec from '@/components/product/tabs/v-product-tab-spec.vue';
 
-export default {
-  name: 'v-quick-view',
-  props: {
-    ProductSlug: {
-      type: String,
+  export default {
+    name: 'v-quick-view',
+    components: {
+      vProductInfo, vGallery, vProductTabSpec,
     },
-  },
-  data() {
-    return {
-      product: null,
-      loaded: false,
-      slides: [],
-    };
-  },
-  components: {
-    vProductInfo, vGallery,
-  },
+    props: {
+      ProductSlug: {
+        type: String,
+      },
+    },
+    data() {
+      return {
+        product: null,
+        loaded: false,
+        slides: [],
+      };
+    },
 
-  methods: {
-    ...mapActions(['GET_PRODUCT', 'SOCKET_SEND_MESSAGES', 'SOCKET_CATCH']),
-  },
-  computed: {
-    ...mapGetters(['PRODUCT', 'PRODUCT_SLIDES']),
-  },
-  mounted() {
-    this.GET_PRODUCT(this.ProductSlug).then(() => {
-      this.SOCKET_SEND_MESSAGES(['Product']);
-      this.loaded = true;
-    });
-  },
-};
+    methods: {
+      ...mapActions(['GET_PRODUCT', 'SOCKET_SEND_MESSAGES']),
+    },
+    computed: {
+      ...mapGetters(['PRODUCT', 'PRODUCT_SLIDES']),
+    },
+    mounted() {
+      this.GET_PRODUCT(this.ProductSlug).then(() => {
+        try {
+          this.SOCKET_SEND_MESSAGES(['Product']);
+        } catch {}
+        this.loaded = true;
+      });
+    },
+  };
 </script>
 
 <style lang="scss">

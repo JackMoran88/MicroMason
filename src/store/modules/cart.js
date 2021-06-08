@@ -12,13 +12,14 @@ export default {
   actions: {
     GET_CART_DETAIL({ commit }) {
       return axios(`${store.state.backendUrlApi}/cart/detail/`,
-        window._.merge({
-          method: 'POST',
+        Vue.lodash.merge({
+          method: 'GET',
           data: {},
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then((resp) => {
           commit('SET_CART_TO_STATE', resp.data);
+          this._vm.$debug_log(resp);
           return resp;
         })
         .catch((error) => {
@@ -29,11 +30,11 @@ export default {
     },
     ADD_TO_CART({ commit }, data) {
       return axios(`${store.state.backendUrlApi}/cart/add/`,
-        window._.merge({
+        Vue.lodash.merge({
           method: 'POST',
           data,
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then((resp) => {
           store.dispatch('GET_CART_DETAIL');
           this._vm.$debug_log('Товар добавлен в корзину');
@@ -47,11 +48,11 @@ export default {
     },
     DELETE_FROM_CART({ commit }, data) {
       return axios(`${store.state.backendUrlApi}/cart/delete/`,
-        window._.merge({
+        Vue.lodash.merge({
           method: 'POST',
           data,
         },
-        store.getters.USER_DATA_REQUEST))
+        this._vm.$USER_DATA_REQUEST(),))
         .then((resp) => {
           store.dispatch('GET_CART_DETAIL');
           this._vm.$debug_log('Товар удален из корзины');

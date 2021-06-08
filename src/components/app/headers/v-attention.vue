@@ -19,7 +19,7 @@ export default {
         display: block;
         width: 100%;
         color: var(--background-dark-second);
-        @include fz(22);
+        @include fz(22px);
         font-weight: 400;
     }
 

@@ -24,12 +24,14 @@
       <slot name="footer+"></slot>
       <slot name="footer">
         <v-btn
-          BtnName="Отмена"
+          :BtnIcon="IS_MOBILE ? 'clear': ''"
+          :BtnName="IS_DESKTOP ? 'Отмена': ''"
           @click.native="toggle"
           BtnStyle="secondary"
         />
         <v-btn
-          BtnName="Сохранить"
+          :BtnIcon="IS_MOBILE ? 'save': ''"
+          :BtnName="IS_DESKTOP ? 'Сохранить': ''"
           @click.native="save"
           :BtnDisabled="FormSubmitDisabled"
           BtnStyle="success"
@@ -40,6 +42,8 @@
 </template>
 
 <script>
+  import {mapGetters} from "vuex";
+
   export default {
     name: 'v-account-form',
     props: {
@@ -87,6 +91,9 @@
         this.$emit('save');
       },
     },
+    computed: {
+      ...mapGetters(['IS_DESKTOP', 'IS_MOBILE'])
+    },
     mounted() {
       this.load();
     },
@@ -110,11 +117,11 @@
 
     fieldset {
       label {
-        @include fz(12);
+        @include fz(12px);
         color: var(--text-second);
 
         input, input:focus, input:disabled, textarea {
-          @include fz(14);
+          @include fz(14px);
           height: 30px;
           background: var(--account-board-bg);
         }
@@ -131,7 +138,7 @@
         color: var(--text-second);
 
         input, input:disabled {
-          @include fz(14);
+          @include fz(14px);
           background: var(--account-board-bg);
           border: none;
           padding: 0;
@@ -162,7 +169,7 @@
     }
 
     .form__title {
-      @include fz(18);
+      @include fz(18px);
       margin-bottom: .5rem;
       //color: var(--text-second);
       display: inline-flex;
@@ -184,7 +191,7 @@
       .btn.edit {
         @include link($hover: none);
         @extend %_material-icons;
-        @include fz(20);
+        @include fz(20px);
         //@extend %_shadow;
         position: absolute;
         top: 0;

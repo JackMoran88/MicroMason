@@ -1,15 +1,27 @@
 <template>
   <div class="catalog__container catalog__main" :class="{'full-border': fullBorder}">
     <ul>
+
+      <skeleton-loading
+        v-if="!CATEGORIES.load"
+      >
+        <square-skeleton
+          :count="10"
+          :boxProperties="{height: '24px',bottom: '8px',}"
+          class="catalog__main-item"
+        >
+        </square-skeleton>
+      </skeleton-loading>
+
+
       <li
         class="catalog__main-item"
-        v-for="Category in CATEGORIES" :key="Category.slug"
+        v-for="Category in CATEGORIES.queryset" :key="Category.slug"
       >
         <router-link
           :to="{name: 'Category', params:{slug: Category.slug}}"
           @mouseover.native="timerOn(Category.id, Category.children)"
           @mouseout.native="timerOff()"
-
         >
           {{Category.name}}
         </router-link>
@@ -19,62 +31,69 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { eventBus } from '@/main';
+  import {mapActions, mapGetters} from 'vuex';
+  import {eventBus} from '@/main';
 
-let timer = 0;
+  let timer = 0;
 
-export default {
-  name: 'v-drop-catalog-main',
-  data: () => ({
-    fullBorder: false,
-  }),
-  methods: {
-    load(){
-      if (!this.CATEGORIES.length){
-        return
+  export default {
+    name: 'v-drop-catalog-main',
+    data: () => ({
+      fullBorder: false,
+    }),
+    methods: {
+      load() {
+        // if (this.CATEGORIES.length){
+        //   this.$debug_log('Категория не пуста')
+        //   return
+        // }
+        //
+        // this.$debug_log('Категория ПУСТА')
+        // this.$debug_log(this.CATEGORIES.length)
+        // this.GET_CATEGORY_LIST().then(() => {
+        //   this.curCategory(this.CATEGORIES[0].id, 0);
+        // });
+      },
+      timerOn(id, children) {
+        if (children.length === 0) {
+          this.fullBorder = true;
+        } else {
+          this.fullBorder = false;
+        }
+        timer = window.setTimeout(this.curShow, 400);
+        this.curCategory(id, children);
+      },
+      timerOff() {
+        if (timer) window.clearTimeout(timer);
+      },
+
+      curShow() {
+        eventBus.$emit('drop-category__open');
+      },
+      curCategory(id) {
+        eventBus.$emit('drop-category__current-category', id);
+      },
+
+      ...mapActions(['GET_CATEGORY_LIST']),
+    },
+    computed: {
+      ...mapGetters(['CATEGORIES']),
+    },
+    mounted() {
+      this.load()
+    },
+    beforeDestroy() {
+      this.timerOff();
+    },
+    watch: {
+      $route() {
+        this.isOpen = false;
+      },
+      'CATEGORIES.queryset'() {
+        this.curCategory(this.CATEGORIES.queryset[0].id, 0)
       }
-      this.GET_CATEGORY_LIST().then(() => {
-        this.curCategory(this.CATEGORIES[0].id, 0);
-      });
     },
-    timerOn(id, children) {
-      if (children.length === 0) {
-        this.fullBorder = true;
-      } else {
-        this.fullBorder = false;
-      }
-      timer = window.setTimeout(this.curShow, 400);
-      this.curCategory(id, children);
-    },
-    timerOff() {
-      if (timer) window.clearTimeout(timer);
-    },
-
-    curShow() {
-      eventBus.$emit('drop-category__open');
-    },
-    curCategory(id) {
-      eventBus.$emit('drop-category__current-category', id);
-    },
-
-    ...mapActions(['GET_CATEGORY_LIST']),
-  },
-  computed: {
-    ...mapGetters(['CATEGORIES']),
-  },
-  mounted() {
-   this.load()
-  },
-  beforeDestroy() {
-    this.timerOff();
-  },
-  watch: {
-    $route() {
-      this.isOpen = false;
-    },
-  },
-};
+  };
 </script>
 
 <style scoped lang="scss">

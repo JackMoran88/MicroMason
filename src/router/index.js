@@ -1,17 +1,30 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Meta from 'vue-meta';
-import Index from '@/views/Index.vue';
-import Empty from '@/views/Empty.vue';
-import Category from '@/views/Category.vue';
-import Search from '@/views/Search.vue';
-import Categories from '@/views/Categories.vue';
-import NotFound from '@/views/NotFound.vue';
-import ServerProblem from '@/views/ServerProblem.vue';
-import Checkout from '@/views/Checkout.vue';
-import Product from '../views/Product.vue';
 import store from '../store/index.js';
-import Comparison from '../views/Comparison';
+
+// import Index from '@/views/Index.vue';
+// import Empty from '@/views/Empty.vue';
+// import Category from '@/views/Category.vue';
+// import Search from '@/views/Search.vue';
+// import NotFound from '@/views/NotFound.vue';
+// import ServerProblem from '@/views/ServerProblem.vue';
+// import Checkout from '@/views/Checkout.vue';
+// import Product from '../views/Product.vue';
+// import Comparison from '../views/Comparison';
+
+
+const Index = () => import('@/views/Index.vue');
+const Empty = () => import('@/views/Empty.vue');
+const Category = () => import('@/views/Category.vue');
+const Search = () => import('@/views/Search.vue');
+const NotFound = () => import('@/views/NotFound.vue');
+const ServerProblem = () => import('@/views/ServerProblem.vue');
+const Checkout = () => import('@/views/Checkout.vue');
+const Product = () => import('../views/Product.vue');
+
+const Comparison = () => import('../views/Comparison');
+
 
 Vue.use(VueRouter);
 Vue.use(Meta);

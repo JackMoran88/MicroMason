@@ -1,7 +1,7 @@
 <template>
     <div class="catalog__container">
         <div class="catalog__sub"
-             v-for="Category in CATEGORIES" :key="Category.slug"
+             v-for="Category in CATEGORIES.queryset" :key="Category.slug"
              v-show="currentCategory === Category.id"
              v-if="Category.children.length"
         >
@@ -117,7 +117,7 @@ export default {
         overflow-y: auto;
         z-index: 99;
         padding: 1rem .5rem;
-        background: var(--background-light-accent);
+        background: var(--background-light);
         width: 100%;
         height: 100%;
         display: flex;

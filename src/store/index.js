@@ -18,9 +18,9 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    backendIp: 'localhost',
-    backendUrlApi: 'http://192.168.1.228:8000/api/v2',
-    backendUrl: 'http://192.168.1.228:8000',
+    backendIp: process.env.VUE_APP_BACKEND_IP,
+    backendUrlApi: process.env.VUE_APP_BACKEND_URL_API,
+    backendUrl: process.env.VUE_APP_BACKEND_URL,
     debug: true,
   },
   mutations: {},

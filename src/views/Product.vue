@@ -55,114 +55,131 @@
       v-if="currentTab === 'tab-review'"
       :ProductId="PRODUCT.id"
     />
+    <v-custom-products-line
+      class="no-effect"
+      title="Товары категории"
+      :data="PRODUCTS_FROM_CATEGORY.queryset"
+      :preloading="!PRODUCTS_FROM_CATEGORY.load"
+    />
     <v-viewed-products/>
   </div>
 </template>
 
 <script>
-import vGallery from '@/components/product/boards/v-gallery.vue';
-import vProductInfo from '@/components/product/boards/v-product-info.vue';
-import tabs from 'vue-tabs-with-active-line';
+  import vGallery from '@/components/product/boards/v-gallery.vue';
+  import vProductInfo from '@/components/product/boards/v-product-info.vue';
+  import tabs from 'vue-tabs-with-active-line';
 
-import vProductTabSpec from '@/components/product/tabs/v-product-tab-spec.vue';
-import vTabReviews from '@/components/product/tabs/v-tab-reviews.vue';
-import vRating from '@/components/product/v-rating.vue';
+  import vProductTabSpec from '@/components/product/tabs/v-product-tab-spec.vue';
+  import vTabReviews from '@/components/product/tabs/v-tab-reviews.vue';
+  import vRating from '@/components/product/v-rating.vue';
 
-import vProductDescription from '@/components/product/boards/v-product-description.vue';
+  import vProductDescription from '@/components/product/boards/v-product-description.vue';
 
-import { mapActions, mapGetters } from 'vuex';
+  import {mapActions, mapGetters, mapMutations} from 'vuex';
 
-export default {
-  name: 'Product',
-  props: ['ProductSlug', 'tab'],
-  components: {
-    vGallery,
-    vProductInfo,
-    tabs,
-    vProductTabSpec,
-    vTabReviews,
-    vRating,
-    vProductDescription,
-  },
-  data() {
-    return {
-      tabs: [
-        { title: 'Всё о товаре', value: 'tab-main' },
-        { title: 'Характиристики', value: 'tab-spec' },
-        { title: 'Отзывы', value: 'tab-review' },
-      ],
-      currentTab: 'tab-main',
-      gallery: false,
-    };
-  },
-  methods: {
-    setBreadCrumbs() {
-      this.BREADCRUMBS({
-        route: this.$route,
-        breadcrumbs: this.$breadcrumbs,
-      });
+  export default {
+    name: 'Product',
+    props: ['ProductSlug', 'tab'],
+    components: {
+      vGallery,
+      vProductInfo,
+      tabs,
+      vProductTabSpec,
+      vTabReviews,
+      vRating,
+      vProductDescription,
     },
-    loadProduct() {
-      this.GET_PRODUCT(this.ProductSlug).then(() => {
-        this.setBreadCrumbs();
-
-        this.ADD_VIEWED_PRODUCTS(this.PRODUCT.id);
-        this.SOCKET_SEND_MESSAGES(['Product']);
-
-        this.currentTab = this.$route.meta.tab || 'tab-main';
-      });
+    data() {
+      return {
+        tabs: [
+          {title: 'Всё о товаре', value: 'tab-main'},
+          {title: 'Характиристики', value: 'tab-spec'},
+          {title: 'Отзывы', value: 'tab-review'},
+        ],
+        currentTab: 'tab-main',
+        gallery: false,
+      };
     },
-    changeTab(newTab) {
-      let tab = '';
-      switch (newTab) {
-        case 'tab-main':
-          tab = 'Product';
-          break;
-        case 'tab-spec':
-          tab = 'Product characteristics';
-          break;
-        case 'tab-review':
-          tab = 'Product review';
-          break;
-        default:
-          tab = 'Product';
-          break;
-      }
-      this.$scrollToTop();
-      this.$router.replace({ name: tab, params: { ProductSlug: this.ProductSlug } })
-        .catch(() => {});
-      this.currentTab = newTab;
-    },
+    methods: {
+      setBreadCrumbs() {
+        this.BREADCRUMBS({
+          route: this.$route,
+          breadcrumbs: this.$breadcrumbs,
+        });
+      },
+      loadProduct() {
+        this.GET_PRODUCT(this.ProductSlug).then(() => {
+          this.setBreadCrumbs();
 
-    ...mapActions(['GET_PRODUCT', 'SOCKET_SEND_MESSAGES', 'SOCKET_CATCH', 'BREADCRUMBS', 'ADD_VIEWED_PRODUCTS']),
-  },
-  computed: {
-    ...mapGetters(['PRODUCT', 'PRODUCT_SLIDES']),
-  },
-  mounted() {
-    this.loadProduct();
-  },
-  watch: {
-    $route() {
-      if (this.currentTab !== this.$route.meta.tab) {
-        this.currentTab = this.$route.meta.tab || 'tab-main';
-      }
+          this.ADD_VIEWED_PRODUCTS(this.PRODUCT.id);
+          try{
+            this.SOCKET_SEND_MESSAGES(['Product']);
+          }catch{}
+
+          this.currentTab = this.$route.meta.tab || 'tab-main';
+
+          this.GET_PRODUCTS_QUERYSETS({type: 'popular_from_category', id: this.PRODUCT.category_id}).then((data) => {
+            this.SET_PRODUCT_FROM_CATEGORY_TO_STATE(data)
+          })
+        });
+      },
+      changeTab(newTab) {
+        let tab = '';
+        switch (newTab) {
+          case 'tab-main':
+            tab = 'Product';
+            break;
+          case 'tab-spec':
+            tab = 'Product characteristics';
+            break;
+          case 'tab-review':
+            tab = 'Product review';
+            break;
+          default:
+            tab = 'Product';
+            break;
+        }
+        this.$scrollToTop();
+        this.$router.replace({name: tab, params: {ProductSlug: this.ProductSlug}})
+          .catch(() => {
+          });
+        this.currentTab = newTab;
+      },
+
+      ...mapActions(['GET_PRODUCT', 'BREADCRUMBS', 'ADD_VIEWED_PRODUCTS', 'CLEAR_PRODUCT', 'SOCKET_SEND_MESSAGES', 'GET_PRODUCTS_QUERYSETS']),
+      ...mapMutations(['SET_PRODUCT_FROM_CATEGORY_TO_STATE',])
     },
-    '$route.params.ProductSlug'() {
-      this.gallery = false;
+    computed: {
+      ...mapGetters(['PRODUCT', 'PRODUCT_SLIDES', 'PRODUCTS_FROM_CATEGORY']),
+    },
+    mounted() {
       this.loadProduct();
     },
-    PRODUCT_SLIDES() {
-      this.gallery = false;
-      this.gallery = true;
+    watch: {
+      $route() {
+        if (this.currentTab !== this.$route.meta.tab) {
+          this.currentTab = this.$route.meta.tab || 'tab-main';
+        }
+      },
+      '$route.params.ProductSlug'() {
+        this.gallery = false;
+        this.loadProduct();
+      },
+      PRODUCT_SLIDES() {
+        this.gallery = false;
+        this.gallery = true;
+      },
     },
-  },
-  metaInfo() {
-    return {
-      title: this.PRODUCT.name,
-    };
-  },
-};
+    metaInfo() {
+      return {
+        title: this.PRODUCT.name,
+      };
+    },
+    destroyed() {
+      this.CLEAR_PRODUCT()
+    }
+  };
 
 </script>
 
@@ -243,8 +260,7 @@ export default {
       margin-right: 1rem;
       border: none;
       background: none;
-      @include fz(14);
-      @extend %_ffMONO;
+      @include fz(14px);
       color: var(--text-main);
 
       &:hover {

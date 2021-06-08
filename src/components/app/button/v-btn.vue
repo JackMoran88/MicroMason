@@ -3,6 +3,7 @@
     :type="BtnType"
     :disabled="BtnDisabled()"
     :class="BtnStyle"
+    :aria-label="BtnAriaLabel"
   >
     <i>{{BtnIcon}}</i>{{BtnName}}
   </button>
@@ -27,6 +28,10 @@
         type: String,
         default: '',
       },
+      BtnAriaLabel: {
+        type: String,
+        default: 'button',
+      },
       BtnDisabled: {
         type: Function,
         default: () => false,
@@ -48,7 +53,7 @@
     align-items: center;
     justify-content: center;
 
-    @include fz(14);
+    @include fz(14px);
 
     i {
       @extend %_material-icons;
@@ -80,6 +85,7 @@
     }
 
     &:hover {
+      color: var(--button-success-text);
       background: var(--accent-hover);
     }
   }
@@ -154,7 +160,7 @@
   button.search {
     color: var(--text-light);
     text-transform: uppercase;
-    @include fz(14);
+    @include fz(14px);
     font-weight: 500;
 
     i {
@@ -180,7 +186,7 @@
 
     color: var(--button-burger-text);
     text-transform: uppercase;
-    @include fz(14);
+    @include fz(14px);
     font-weight: 500;
 
     i {
@@ -189,14 +195,12 @@
     }
 
     &.active {
-      //color: $accent-hover;
-      //color: var(--background-light-accent);
       &:hover {
       }
     }
 
-    &:hover {
-      color: var(--text-muted);
-    }
+    /*&:hover {*/
+    /*  color: var(--text-muted);*/
+    /*}*/
   }
 </style>

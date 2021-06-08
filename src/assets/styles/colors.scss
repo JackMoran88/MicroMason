@@ -10,7 +10,6 @@
   --accent-hover: #d5410b;
 
   --background-light: #efefef;
-  --background-light-accent: #ECECEC;
   --background-light-second: #e9e9e9;
 
   --link: #3e77aa;
@@ -19,33 +18,16 @@
   --text-main: black;
   --text-light: #d1d1d2;
   --text-muted: lightgray;
-  --text-dark: #424E65;
   --text-second: #B2B2B3;
 
-
-  --background-danger: #D41131;
-  --background-success: #3FD411;
-  --background-warning: #D8AE1C;
-
-  --background-btn-disabled: gray;
-  --text-btn-disabled: #dbdbdb;
-  --border-btn-disabled: #717171;
+  --btn-disabled-background: gray;
+  --btn-disabled-text: #dbdbdb;
+  --btn-disabled-border: #717171;
 
 
-  --background-btn-primary: #3b4a63;
-  --text-btn-primary: #fff;
-  --border-btn-primary: #2d3c54;
-
-  --background-btn-secondary: #606E83;
-  --text-btn-secondary: #fff;
-  --border-btn-secondary: #525f74;
-
-
-  --background-btn-info: #405069;
-  --text-btn-info: #fff;
-  --border-btn-info: #303E56;
-
-  --background-info: #FDFACF;
+  --btn-primary-text: #fff;
+  --btn-primary-background: #3b4a63;
+  --btn-primary-border: #2d3c54;
 
   --card-background: rgb(245, 246, 248);
   --card-text: #0a1926;
@@ -55,8 +37,9 @@
 
 
   --label-text: var(--text-main);
-  --input-background: transperent;
+  --input-background: inherit;
   --input-text: var(--text-main);
+  --input-text-error: red;
   --input-border: #e5e5e5;
   --input-action: gray;
 
@@ -86,7 +69,6 @@
   --accent-hover: #d5410b;
 
   --background-light: rgb(24, 26, 27);
-  --background-light-accent: #232627;
   --background-light-second: #242729;
 
   --link: rgb(116, 165, 204);
@@ -95,43 +77,28 @@
   --text-main: rgb(232, 230, 227);
   --text-light: #d1d1d2;
   --text-muted: gray;
-  --text-dark: #424E65;
   --text-second: #B2B2B3;
 
 
-  --background-danger: #D41131;
-  --background-success: #3FD411;
-  --background-warning: #D8AE1C;
 
-  --background-btn-disabled: gray;
-  --text-btn-disabled: #dbdbdb;
-  --border-btn-disabled: #717171;
+  --btn-disabled-text: #dbdbdb;
+  --btn-disabled-background: gray;
+  --btn-disabled-border: #717171;
 
-
-  --background-btn-primary: #3b4a63;
-  --text-btn-primary: #fff;
-  --border-btn-primary: #2d3c54;
-
-  --background-btn-secondary: #606E83;
-  --text-btn-secondary: #fff;
-  --border-btn-secondary: #525f74;
-
-
-  --background-btn-info: #405069;
-  --text-btn-info: #fff;
-  --border-btn-info: #303E56;
-
-  --background-info: #FDFACF;
+  --btn-primary-text: #fff;
+  --btn-primary-background: #3b4a63;
+  --btn-primary-border: #2d3c54;
 
   --card-background: #181a1b;
   --card-text: white;
-  --card-border: rgba(255, 255, 255, 0.125);
+  --card-border: rgba(255, 255, 255, 0.075);
   --card-button: var(--card-text);
   --card-background-preload: var(--background-content);
 
   --label-text: var(--text-main);
-  --input-background: transperent;
+  --input-background: var(--background-content);
   --input-text: var(--text-main);
+  --input-text-error: #D41131;
   --input-border: rgb(55, 60, 62);
   --input-action: gray;
 

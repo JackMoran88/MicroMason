@@ -49,9 +49,6 @@
 </template>
 
 <script>
-import {
-  required, email, minLength, maxLength, sameAs, between,
-} from 'vuelidate/lib/validators';
 import vTextArea from '@/components/app/form/v-text-area.vue';
 
 import { mapActions, mapGetters } from 'vuex';
@@ -124,7 +121,7 @@ export default {
             padding: .3rem;
 
             label {
-                @include fz(14);
+                @include fz(14px);
                 width: 100%;
                 margin: .5rem 0 !important;
             }

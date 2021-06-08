@@ -1,5 +1,5 @@
 <template>
-  <div class="cart-item">
+  <div class="cart-item" :class="{'mobile': IS_MOBILE}">
     <div class="cart-item-img">
       <img v-lazy="this.$store.state.backendUrl + Product.main_image.cart" :alt="Product.name">
     </div>
@@ -30,38 +30,42 @@
 </template>
 
 <script>
-import vMore from '@/components/app/button/v-more.vue';
-import formattedPrice from '@/filters/formatPrice';
+  import vMore from '@/components/app/button/v-more.vue';
+  import formattedPrice from '@/filters/formatPrice';
+  import {mapGetters} from "vuex";
 
-export default {
-  name: 'v-cart-item',
-  components: {
-    vMore,
-  },
-  filters: {
-    formattedPrice,
-  },
-  props: {
-    Product: {
-      type: Object,
+  export default {
+    name: 'v-cart-item',
+    components: {
+      vMore,
     },
-  },
-  methods: {
-    SetQtyItem(value) {
-      this.$emit('changeQty', this.Product.id, value);
+    filters: {
+      formattedPrice,
     },
-  },
-};
+    props: {
+      Product: {
+        type: Object,
+      },
+    },
+    computed: {
+      ...mapGetters(['IS_MOBILE'])
+    },
+    methods: {
+      SetQtyItem(value) {
+        this.$emit('changeQty', this.Product.id, value);
+      },
+    },
+  };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
   .cart-item {
     display: grid;
     grid-template-columns: 96px 1fr 96px;
     grid-template-rows: max-content min-content;
     margin: .25rem 0;
     padding: .25rem 0;
-    border-bottom: 1px solid var(--background-light);
+    border-bottom: 1px solid var(--product-board-border);
 
     &-img {
       img {
@@ -77,7 +81,7 @@ export default {
       flex-grow: 1;
       margin: .2rem .7rem;
       height: 100%;
-      @include fz(16);
+      @include fz(16px);
 
       a {
         span {
@@ -117,4 +121,30 @@ export default {
     }
   }
 
+
+  .cart-item.mobile {
+    grid-template-columns: 72px 1fr 72px !important;
+
+    .cart-item-title{
+      @include fz(14px);
+    }
+    .cart-item-price{
+      &, & * {
+        font-size: 14px !important;
+      }
+    }
+
+    .cart-item-img {
+      img {
+        max-width: 72px;
+        height: 72px;
+        flex-basis: 72px;
+        object-fit: contain;
+      }
+    }
+
+    .cart-item-action {
+      width: 72px;
+    }
+  }
 </style>

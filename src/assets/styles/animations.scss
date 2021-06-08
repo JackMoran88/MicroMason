@@ -83,23 +83,4 @@
 
 //Animations
 
-@keyframes rotateCircle {
-  from {
-    transform: rotate(0deg) scale(1);
-  }
-  to {
-    transform: rotate(360deg) scale(1);
-  }
-}
 
-@keyframes pulse {
-  0% {
-    background-color: var(--background-light-second);
-  }
-  50% {
-    background-color: var(--background-light);
-  }
-  100% {
-    background-color: var(--background-light-second);
-  }
-}

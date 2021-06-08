@@ -2,7 +2,6 @@
   <div>
 
     <b-sidebar id="mobileMenu" shadow backdrop no-header #default="{ hide }">
-      <!--<b-sidebar id="mobileMenu" shadow backdrop title="micromason">-->
       <div class="header">
         <router-link to="/"><strong>MicroMason</strong></router-link>
         <i @click="hide" class="close">close</i>
@@ -16,10 +15,10 @@
             class="header__content-top-item mr-auto"
           />
           <li class="userline__nav-link user" v-b-modal.authModal v-if="!IS_LOGGED_IN">
-            <a>Вход</a>
+            <span>Вход</span>
           </li>
           <li class="userline__nav-link user h9P" @click="logout" v-else>
-            <a>Выход</a>
+            <span>Выход</span>
           </li>
         </ul>
 
@@ -28,15 +27,7 @@
             <i>view_list</i>
             <span>Каталог товаров</span>
           </div>
-          <router-link :to="item.link" v-for="item in menu().items" :key="item.link"
-                       v-if="IS_LOGGED_IN">
-            <div>
-              <i>{{item.icon}}</i>
-              <span>{{item.text}}</span>
-            </div>
-          </router-link>
-
-          <a v-b-modal.authModal v-for="item in menu().items" :key="item.text" v-if="!IS_LOGGED_IN">
+          <a v-for="item in menu.items" @click="click(item)">
             <div>
               <i>{{item.icon}}</i>
               <span>{{item.text}}</span>
@@ -55,13 +46,13 @@
   import {
     mapGetters, mapActions, mapMutations, mapState,
   } from 'vuex';
-import vThemeSwitcher from '@/components/app/v-theme-switcher.vue';
+  import vThemeSwitcher from '@/components/app/v-theme-switcher.vue';
 
   export default {
     name: 'slideMenu',
     props: {
       menu: {
-        type: Function,
+        type: Object,
       },
     },
     components: {
@@ -71,12 +62,19 @@ import vThemeSwitcher from '@/components/app/v-theme-switcher.vue';
       logout() {
         this.$store.dispatch('LOGOUT');
       },
+      click(item) {
+        if (this.IS_LOGGED_IN){
+          this.$router.push(item.link.href)
+        }
+        else if (!item.isAuth) {
+          this.$router.push(item.link.href)
+        } else if (item.isAuth && !this.IS_LOGGED_IN) {
+          this.$bvModal.show('authModal')
+        }
+      },
     },
     computed: {
       ...mapGetters(['IS_LOGGED_IN']),
-    },
-    mounted() {
-      this.menu();
     },
   };
 </script>
@@ -84,10 +82,11 @@ import vThemeSwitcher from '@/components/app/v-theme-switcher.vue';
 <style lang="scss">
 
   #mobileMenu {
-    i{
+    i {
       @extend %_material-icons;
       font-size: 24px;
-      &.close{
+
+      &.close {
         color: var(--modal-close);
         text-shadow: none;
         opacity: 1;
@@ -112,7 +111,7 @@ import vThemeSwitcher from '@/components/app/v-theme-switcher.vue';
         color: white;
 
         strong {
-          @include fz(34);
+          @include fz(34px);
         }
       }
     }
@@ -145,7 +144,7 @@ import vThemeSwitcher from '@/components/app/v-theme-switcher.vue';
           align-items: center;
           color: white;
           padding: .7rem 0;
-          @include fz(20);
+          @include fz(20px);
 
           i {
             color: var(--text-second);

@@ -1,13 +1,14 @@
 <template>
   <div class="auth">
     <v-form
-      v-if="methodAuth === 1"
+      v-show="methodAuth === 1"
       novalidate
       class="type-1"
+      @submit.prevent="login"
+      ref="form__login"
     >
       <div slot="body">
         <ValidationObserver ref="obs__login">
-          <form @submit.prevent="login" ref="form__login">
             <fieldset>
               <ValidationProvider name="email" rules="required|email">
                 <div slot-scope="{ errors }">
@@ -30,7 +31,6 @@
                 </div>
               </ValidationProvider>
             </fieldset>
-          </form>
         </ValidationObserver>
       </div>
       <div slot="footer">
@@ -55,9 +55,11 @@
         </div>
         <v-btn
           BtnName="Войти"
+          BtnType="submit"
           BtnStyle="success"
           class="w-100"
           @click.native="login"
+          @click.native.prevent
         />
         <v-social-auth/>
         <v-btn
@@ -78,10 +80,11 @@
       v-show="methodAuth === 2"
       novalidate
       class="type-1"
+      @submit.prevent="register"
+      ref="form__register"
     >
       <div slot="body">
         <ValidationObserver ref="obs__register">
-          <form @submit.prevent="register" ref="form__register">
             <fieldset>
               <ValidationProvider name="first_name" rules="required|alpha">
                 <div slot-scope="{ errors }">
@@ -138,7 +141,6 @@
               </ValidationProvider>
 
             </fieldset>
-          </form>
         </ValidationObserver>
       </div>
       <div slot="footer">
@@ -146,7 +148,9 @@
           BtnName="Регистрация"
           class="w-100"
           @click.native="register"
+          @click.native.prevent
           BtnStyle="success"
+          BtnType="submit"
         />
         <v-btn
           BtnName="Войти"
@@ -164,7 +168,7 @@
     </v-form>
 
     <v-form
-      v-if="methodAuth === 3"
+      v-show="methodAuth === 3"
       novalidate
       class="type-1"
     >
@@ -199,6 +203,7 @@
           BtnName="Отправить"
           class="w-100"
           @click.native="reset_password()"
+          @click.native.prevent
         />
         <v-btn
           BtnStyle="secondary"
@@ -247,7 +252,7 @@
     },
     methods: {
       setModalTitle(value) {
-        window.$('#authModal .modal-header h5').text(value);
+        document.querySelector('#authModal .modal-header h5').innerHTML = value
       },
       setMethodAuth(value) {
         this.methodAuth = value;
@@ -402,6 +407,9 @@
         display: flex;
         justify-content: center;
       }
+    }
+    button.secondary.w-100{
+      margin: .75rem 0;
     }
   }
 

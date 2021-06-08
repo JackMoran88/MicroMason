@@ -1,5 +1,6 @@
 <template>
   <div class="checkout" v-if="!checkout_success">
+
     <v-title
       text="Оформление заказа"
       type="main"

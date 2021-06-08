@@ -9,10 +9,13 @@ export default {
     token: localStorage.getItem('token') || sessionStorage.getItem('token') || '',
     token_type: localStorage.getItem('token_type') || sessionStorage.getItem('token_type') || 'Token',
     user: JSON.parse(sessionStorage.getItem('user')) || '',
-    anonymous: JSON.parse(sessionStorage.getItem('anonymous')),
+    anonymous: sessionStorage.getItem('anonymous'),
 
     viewed_ids: JSON.parse(sessionStorage.getItem('viewed_ids')),
-    viewed: '',
+    viewed: {
+      queryset: [],
+      load: false,
+    },
     user_reviews: '',
   },
   modules: {},
@@ -31,8 +34,10 @@ export default {
               resolve();
             });
         } else if (anonymous) {
-          resolve();
-          //  НЕ ТРОЖ, БУДЕТ ЦИКЛ ВСЕХ ЦИКЛОВ, ВЗЛЕТИШЬ К Е МАТЕРИ
+          store.dispatch('GET_CHECK_ANONYMOUS_TOKEN').finally(() => {
+            resolve();
+          })
+
         } else {
           store.dispatch('LOGOUT').then(() => {
             store.dispatch('GET_ANONYMOUS_USER')
@@ -46,7 +51,7 @@ export default {
     GET_ANONYMOUS_USER({commit}) {
       return axios(`${store.state.backendUrlApi}/anonymous/`,
         {
-          method: 'POST',
+          method: 'GET',
         })
         .then((resp) => {
           commit('SET_ANONYMOUS_TO_STATE', resp.data);
@@ -79,16 +84,35 @@ export default {
           return error;
         });
     },
+    GET_CHECK_ANONYMOUS_TOKEN({commit}) {
+      axios(`${store.getters.getServerUrlApi}/anonymous/check/`,
+        {
+          method: 'POST',
+          data: {token: store.getters.ANONYMOUS}
+        })
+        .then((resp) => {
+          this._vm.$debug_log('Токен анонима подтвержден');
+          return resp;
+        })
+        .catch((error) => {
+          this._vm.$debug_log(error);
+          this._vm.$debug_log(error.response);
+          commit('SET_NULL_TO_ANONYMOUS')
+          store.dispatch('LOGOUT');
+
+          return error;
+        });
+    },
     GET_CUSTOMER_DETAIL({commit}, token) {
       if (token) {
         return new Promise((resolve, reject) => {
           axios.defaults.headers.common.Authorization = `${store.getters.TOKEN_TYPE} ${token}`;
           return axios(`${store.state.backendUrlApi}/customer/detail/`,
-            window._.merge({
-                method: 'POST',
+            Vue.lodash.merge({
+                method: 'GET',
                 data: {},
               },
-              store.getters.USER_DATA_REQUEST))
+              this._vm.$USER_DATA_REQUEST(),))
 
             .then((resp) => {
               commit('SET_NULL_TO_ANONYMOUS');
@@ -167,33 +191,37 @@ export default {
     },
     LOGOUT({commit}) {
       this._vm.$debug_log('LOGOUT');
-      if (!axios.defaults.headers.common.Authorization) return
+      if (!axios.defaults.headers.common.Authorization) {
+        this._vm.$debug_log('LOGOUT cancel')
+        return
+      }
       return new Promise((resolve, reject) => {
         axios(`${store.getters.getServerUrlApi}/auth/token/logout/`,
-          window._.merge({
+          Vue.lodash.merge({
               method: 'POST',
               data: {},
             },
-            store.getters.USER_DATA_REQUEST))
+            this._vm.$USER_DATA_REQUEST(),))
           .then((response) => {
-            commit('LOGOUT_STATE', response);
             resolve();
           })
           .catch((error) => {
             this._vm.$debug_log(error.response);
-            commit('LOGOUT_STATE', error);
             reject();
+          })
+          .finally(() => {
+            commit('LOGOUT_STATE');
           });
       });
     },
 
     GET_USER_REVIEWS({commit}) {
       return new Promise((resolve, reject) => axios(`${store.state.backendUrlApi}/review/customer/`,
-        window._.merge({
+        Vue.lodash.merge({
             method: 'POST',
             data: {},
           },
-          store.getters.USER_DATA_REQUEST))
+          this._vm.$USER_DATA_REQUEST(),))
         .then((resp) => {
           commit('SET_USER_REVIEWS_TO_STATE', resp.data);
           resolve(resp);
@@ -244,13 +272,13 @@ export default {
     SET_CUSTOMER_CHANGES({commit}, data) {
       return new Promise((resolve, reject) => {
         axios(
-          window._.merge(
+          Vue.lodash.merge(
             {
               url: `${store.state.backendUrlApi}/customer/change/`,
               data,
               method: 'POST',
             },
-            store.getters.USER_DATA_REQUEST,
+            this._vm.$USER_DATA_REQUEST(),
           )
         )
           .then((resp) => {
@@ -346,40 +374,23 @@ export default {
     USER: (state) => state.user,
     ANONYMOUS: (state) => state.anonymous,
 
-    USER_DATA_REQUEST: () => {
-      if (store.getters.TOKEN) {
-        axios.defaults.headers.common.Authorization = `${store.getters.TOKEN_TYPE} ${store.getters.TOKEN}`;
-        return {
-          headers: {
-            // 'Accept-Version': 1,
-            // 'Accept': 'application/json',
-            // 'Accept': "application/json, text/plain, */*",
-            // 'Access-Control-Allow-Origin': '*',
-            // "Access-Control-Allow-Origin" : "*",
-            // "Content-type": "Application/json",
-            Authorization: `${store.getters.TOKEN_TYPE} ${store.getters.TOKEN}`,
-          },
-        };
-      }
-      if (store.getters.ANONYMOUS) {
-        return {
-          data: {anonymous: store.getters.ANONYMOUS},
-        };
-      }
-    },
-
     VIEWED_IDS: (state) => state.viewed_ids,
     VIEWED: (state) => state.viewed,
     USER_REVIEWS: (state) => state.user_reviews,
   },
   mutations: {
+    SET_TOKEN_TO_HEADERS: (state) => {
+      if (store.getters.TOKEN) {
+        axios.defaults.headers.common.Authorization = `${store.getters.TOKEN_TYPE} ${store.getters.TOKEN}`;
+      }
+    },
     SET_NULL_TO_ANONYMOUS: (state) => {
       Vue.set(state, 'anonymous', null);
       sessionStorage.removeItem('anonymous');
     },
     SET_ANONYMOUS_TO_STATE: (state, anonymous) => {
-      Vue.set(state, 'anonymous', anonymous.id);
-      sessionStorage.setItem('anonymous', anonymous.id);
+      Vue.set(state, 'anonymous', anonymous.token);
+      sessionStorage.setItem('anonymous', anonymous.token);
     },
     SET_TOKEN_STATE: (state, token) => {
       Vue.set(state, 'token', token);
@@ -405,18 +416,22 @@ export default {
       Vue.set(state, 'status', 'error');
     },
     LOGOUT_STATE: (state, response) => {
+      delete axios.defaults.headers.common.Authorization;
+
       Vue.set(state, 'status', null);
       Vue.set(state, 'token', null);
 
+      Vue.set(state, 'anonymous', null);
+      sessionStorage.removeItem('anonymous');
+
       localStorage.removeItem('token');
       sessionStorage.removeItem('token');
-      delete axios.defaults.headers.common.Authorization;
 
       Vue.set(state, 'user', null);
       localStorage.removeItem('user');
       sessionStorage.removeItem('user');
 
-      store.dispatch('GET_ANONYMOUS_USER');
+
       store.dispatch('START');
     },
 
@@ -426,7 +441,8 @@ export default {
       Vue.set(state, 'viewed_ids', data);
     },
     SET_VIEWED_TO_STATE: (state, data) => {
-      Vue.set(state, 'viewed', data);
+      Vue.set(state.viewed, 'queryset', data);
+      Vue.set(state.viewed, 'load', true);
     },
 
     SET_USER_REVIEWS_TO_STATE: (state, data) => {

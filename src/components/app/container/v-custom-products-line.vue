@@ -1,13 +1,15 @@
 <template>
   <div class="v-custom-products-line"
-       v-if="data && data.length >= minCount"
+
   >
     <v-title
       :text="title"
       type="second"
+      v-if="data && data.length >= minCount"
     />
     <v-card-line
       :Products="data"
+      :preloading="preloading"
     />
   </div>
 </template>
@@ -26,6 +28,10 @@
       },
       title: {
         type: String,
+      },
+      preloading:{
+        type: Boolean,
+        default: false,
       },
       minCount: {
         type: Number,

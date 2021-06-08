@@ -75,18 +75,18 @@ export default {
 
       &-header {
         @extend %_shadow;
-        @include def-border;
+        //@include def-border;
         padding: 0;
         display: flex;
         align-items: center;
-        background: var(--background-content);
+        background: var(--account-board-bg);
         cursor: pointer;
         margin-bottom: .5rem;
         overflow: hidden;
 
         p {
           color: var(--text-second);
-          @include fz(12);
+          @include fz(12px);
           margin: 0;
 
           white-space: nowrap;
@@ -112,7 +112,7 @@ export default {
 
       &-body {
         @extend %_shadow;
-        background: var(--background-content);
+        background: var(--account-board-bg);
         border-radius: 7px;
         overflow: hidden;
 
@@ -140,6 +140,7 @@ export default {
 
         i {
           @include def-border;
+          border: 0;
           padding: .25rem;
           background: var(--background-light);
           color: var(--text-main);

@@ -1,5 +1,6 @@
 import store from './store';
 import router from '@/router';
+import axios from "axios";
 
 export default {
 
@@ -8,7 +9,7 @@ export default {
       google: {
         client_id: '1072563183925-8t7ri7d7ikbjcrfna2bu123pt93t90su.apps.googleusercontent.com',
         client_secret: 'IWH3HU3Lpvcp25_PHXeuhL6q',
-        redirect_uri: 'http://localhost:8080',
+        redirect_uri: process.env.VUE_APP_BACKEND_URL,
       },
     };
 
@@ -98,7 +99,6 @@ export default {
       this.$store.dispatch('GET_PRODUCTS', data)
     }
 
-
     Vue.prototype.$request_errors = function (request) {
       let result = [];
       let errors = [];
@@ -117,6 +117,29 @@ export default {
 
       return result;
     };
+
+    Vue.prototype.$USER_DATA_REQUEST = function () {
+      if (store.getters.TOKEN) {
+        axios.defaults.headers.common.Authorization = `${store.getters.TOKEN_TYPE} ${store.getters.TOKEN}`;
+        return {
+          headers: {
+            // 'Accept-Version': 1,
+            // 'Accept': 'application/json',
+            // 'Accept': "application/json, text/plain, */*",
+            // 'Access-Control-Allow-Origin': '*',
+            // "Access-Control-Allow-Origin" : "*",
+            // "Content-type": "Application/json",
+            Authorization: `${store.getters.TOKEN_TYPE} ${store.getters.TOKEN}`,
+          },
+        };
+      }
+      if (store.getters.ANONYMOUS) {
+        return {
+          data: {anonymous: store.getters.ANONYMOUS},
+          params: {anonymous: store.getters.ANONYMOUS},
+        };
+      }
+    },
 
     Vue.prototype.$toast = function (type, message = 'Text', duration = 5000, position = 2) {
       switch (position) {

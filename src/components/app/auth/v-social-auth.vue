@@ -9,32 +9,40 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+  import {mapActions} from 'vuex';
+  import {library} from "@fortawesome/fontawesome-svg-core";
+  import {faGoogle} from '@fortawesome/free-brands-svg-icons';
+  import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
-export default {
-  name: 'v-social-auth',
-  data() {
-    return {};
-  },
-  methods: {
-    AuthProvider(provider) {
-      this.$auth.authenticate(provider).then((response) => {
-        const data = {
-          provider,
-          response,
-          code: response.code,
-        };
-        this.SOCIAL_AUTH(data);
-      }).catch((error) => {
-        console.log(error);
-      });
+  library.add(faGoogle);
+
+  export default {
+    name: 'v-social-auth',
+    components: {
+      FontAwesomeIcon
     },
-    ...mapActions(['SOCIAL_AUTH']),
-  },
-  mounted() {
+    data() {
+      return {};
+    },
+    methods: {
+      AuthProvider(provider) {
+        this.$auth.authenticate(provider).then((response) => {
+          const data = {
+            provider,
+            response,
+            code: response.code,
+          };
+          this.SOCIAL_AUTH(data);
+        }).catch((error) => {
+          console.log(error);
+        });
+      },
+      ...mapActions(['SOCIAL_AUTH']),
+    },
+    mounted() {
 
-  },
-};
+    },
+  };
 </script>
 
 <style scoped lang="scss">

@@ -1,59 +1,54 @@
 <template>
   <div class="page">
+
+    {{$store.state.user_drop_data}}
     <v-header/>
+
     <div class="page__wrapper container">
       <transition name="fade" mode="out-in">
         <router-view/>
       </transition>
-      <v-drop-catalog/>
+      <v-drop-catalog
+        v-if="IS_DESKTOP"
+      />
     </div>
+
     <v-footer/>
+    <v-modals/>
 
-      <v-modals/>
+    <!--    <v-loading/>-->
 
-    <v-loading/>
     <v-back-to-top/>
   </div>
 </template>
 
 <script>
-import vHeader from '@/components/app/v-header.vue';
-import vFooter from '@/components/app/v-footer.vue';
-import vMobileMenu from '@/components/app/mobile/slideMenu.vue';
-import vModals from '@/components/modal/v-modals.vue';
-import vLoading from '@/components/app/func/v-loading.vue';
-import vDropCatalog from '@/components/app/catalog/v-drop-catalog.vue';
+  import {mapGetters} from 'vuex';
+  import vHeader from '@/components/app/v-header.vue';
+  import vFooter from '@/components/app/v-footer.vue';
+  import vMobileMenu from '@/components/app/mobile/slideMenu.vue';
+  import vModals from '@/components/modal/v-modals.vue';
+  import vLoading from '@/components/app/func/v-loading.vue';
+  import vDropCatalog from '@/components/app/catalog/v-drop-catalog.vue';
+  import store from "../store";
 
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  name: 'MainLayout',
-  components: {
-    vHeader, vFooter, vMobileMenu, vModals, vDropCatalog, vLoading,
-  },
-  data: () => ({}),
-  methods: {
-    json() {
-      return {
-        public_key: 'i00000000',
-        version: '3',
-        action: 'pay',
-        amount: '3',
-        currency: 'UAH',
-        description: 'test',
-        order_id: '000001',
-      };
+  export default {
+    name: 'MainLayout',
+    components: {
+      vHeader, vFooter, vMobileMenu, vModals, vDropCatalog, vLoading,
+      // vHeader: () => import('@/components/app/v-header.vue'),
+      // vFooter: () => import('@/components/app/v-footer.vue'),
+      // vMobileMenu: () => import('@/components/app/mobile/slideMenu.vue'),
+      // vModals: () => import('@/components/modal/v-modals.vue'),
+      // vLoading: () => import('@/components/app/func/v-loading.vue'),
+      // vDropCatalog: () => import('@/components/app/catalog/v-drop-catalog.vue'),
     },
-
-    ...mapActions(['GET_CATEGORY_LIST', 'GET_SOCKET']),
-  },
-  computed: {
-    ...mapGetters(['CATEGORIES', 'SETTINGS', 'SOCKET']),
-  },
-  mounted() {
-    // this.GET_SOCKET();
-  },
-};
+    data: () => ({}),
+    methods: {},
+    computed: {
+      ...mapGetters(['IS_DESKTOP']),
+    },
+  };
 </script>
 
 <style lang="scss">
@@ -100,55 +95,6 @@ export default {
 </style>
 
 <style lang="scss">
-  $toast-bg__success: rgb(33, 152, 104);
-  $toast-bg__info: rgb(22, 106, 170);
-  $toast-bg__error: rgb(185, 42, 7);
-  $toast-bg__attention: rgb(183, 129, 1);
-  $toast-bg__test: rgb(44, 47, 49);
 
-  .toasted-container {
-    &.top-right {
-      right: 1% !important;
-      max-width: 350px;
-    }
-
-    .toasted {
-      &.toast {
-        padding: 1rem 1.25rem;
-        border-radius: .5rem !important;
-
-        i {
-          margin-right: 1rem;
-          @include fz(24);
-        }
-
-        &__success {
-          color: white;
-          background: $toast-bg__success;
-        }
-
-        &__info {
-          color: white;
-          background: $toast-bg__info;
-        }
-
-        &__error {
-          color: white;
-          background: $toast-bg__error;
-        }
-
-        &__attention {
-          color: white;
-          background: $toast-bg__attention;
-        }
-
-        &__test {
-          color: white;
-          background: $toast-bg__test;
-        }
-      }
-    }
-
-  }
 
 </style>

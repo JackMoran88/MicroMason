@@ -8,15 +8,31 @@ export default {
     slides: [],
     products: [],
 
-    products_last: [],
+    products_last: {
+      queryset: [],
+      load: false,
+    },
+    products_popular: {
+      queryset: [],
+      load: false,
+    },
+    products_popular_wish: {
+      queryset: [],
+      load: false,
+    },
+    products_from_category: {
+      queryset: [],
+      load: false,
+    },
 
     filters: [],
+    choice_filters: {},
 
     comments: [],
   },
   modules: {},
   actions: {
-    SET_PRODUCT_SLIDES({ commit }) {
+    SET_PRODUCT_SLIDES({commit}) {
       const slides = [];
       let slide = {
         src: store.state.backendUrl + store.getters.PRODUCT.main_image.gallery,
@@ -35,7 +51,7 @@ export default {
       commit('SET_SLIDES_TO_STATE', slides);
       return slides;
     },
-    GET_PRODUCT({ commit }, slug) {
+    GET_PRODUCT({commit}, slug) {
       return axios(`${store.state.backendUrlApi}/product/`,
         {
           method: 'POST',
@@ -55,11 +71,11 @@ export default {
           return error;
         });
     },
-    GET_FILTERS({ commit }, slug) {
+    GET_FILTERS({commit}, slug) {
       return axios(`${store.state.backendUrlApi}/category/detail/`,
         {
-          method: 'POST',
-          data: {
+          method: 'GET',
+          params: {
             slug,
           },
         })
@@ -75,7 +91,7 @@ export default {
         });
     },
 
-    GET_PRODUCT_BY_ID({ commit }, id) {
+    GET_PRODUCT_BY_ID({commit}, id) {
       return axios(`${store.state.backendUrlApi}/product/`,
         {
           method: 'POST',
@@ -90,28 +106,33 @@ export default {
         })
         .catch((error) => {
           this._vm.$debug_log(error);
-          this._vm.$debug_log(error.responce);
+          this._vm.$debug_log(error.response);
           return error;
         });
     },
 
-    GET_PRODUCT_LAST({ commit }, count) {
-      return axios(`${store.state.backendUrlApi}/products/last/${count ? `?count=${count}` : ''}`,
-        {
-          method: 'GET',
-        })
-        .then((resp) => {
-          commit('SET_PRODUCT_LAST_TO_STATE', resp.data)
-          return resp.data;
-        })
-        .catch((error) => {
-          this._vm.$debug_log(error);
-          this._vm.$debug_log(error.responce);
-          return error;
-        });
+    GET_PRODUCTS_QUERYSETS({commit}, data) {
+      return new Promise((resolve, reject) => {
+        axios(`${store.state.backendUrlApi}/products/querysets/`,
+          {
+            method: 'GET',
+            params: data,
+          })
+          .then((resp) => {
+            resolve(resp.data)
+            return resp.data;
+          })
+          .catch((error) => {
+            this._vm.$debug_log(error);
+            this._vm.$debug_log(error.response);
+            resolve([])
+            return error;
+          });
+      })
     },
 
-    GET_PRODUCTS_BY_IDS({ commit }, data) {
+
+    GET_PRODUCTS_BY_IDS({commit}, data) {
       return axios(`${store.state.backendUrlApi}/products/`,
         {
           method: 'POST',
@@ -128,13 +149,13 @@ export default {
         });
     },
 
-    GET_PRODUCTS({ commit }, data) {
-      return axios(`${store.state.backendUrlApi}/category/products/`+
-      `${data.filters ? `${data.filters}` : ''}`,
-      {
-        method: 'POST',
-        data,
-      })
+    GET_PRODUCTS({commit}, data) {
+      return axios(`${store.state.backendUrlApi}/category/products/` +
+        `${data.filters ? `${data.filters}` : ''}`,
+        {
+          method: 'GET',
+          params: data,
+        })
         .then((resp) => {
           commit('SET_PRODUCTS_TO_STATE', resp.data);
           return resp;
@@ -147,14 +168,15 @@ export default {
         });
     },
 
-    GET_PRODUCT_BY_SEARCH({ commit }, data) {
+    GET_PRODUCT_BY_SEARCH({commit}, data) {
       return axios(`${store.state.backendUrlApi}/products/search/detail/`,
         {
-          method: 'POST',
-          data,
+          method: 'GET',
+          params: data,
         })
         .then((resp) => {
           commit('SET_PRODUCTS_TO_STATE', resp.data);
+          console.log(resp)
           return resp;
         })
         .catch((error) => {
@@ -164,7 +186,7 @@ export default {
         });
     },
 
-    SEND_COMMENT({ commit }, data) {
+    SEND_COMMENT({commit}, data) {
       return axios(`${store.state.backendUrlApi}/review/add/`,
         {
           method: 'POST',
@@ -183,7 +205,7 @@ export default {
           return error;
         });
     },
-    SEND_ANSWER({ commit }, data) {
+    SEND_ANSWER({commit}, data) {
       return axios(`${store.state.backendUrlApi}/review/answer/`,
         {
           method: 'POST',
@@ -200,7 +222,7 @@ export default {
           return error;
         });
     },
-    DELETE_COMMENT({ commit }, data) {
+    DELETE_COMMENT({commit}, data) {
       return axios(`${store.state.backendUrlApi}/review/delete/`,
         {
           method: 'POST',
@@ -209,7 +231,9 @@ export default {
         .then((resp) => {
           store.dispatch('GET_COMMENTS', data.product);
           store.dispatch('GET_USER_REVIEWS');
-          store.dispatch('GET_PRODUCT', store.getters.PRODUCT.slug)
+          if (store.getters.PRODUCT && store.getters.PRODUCT.slug) {
+            store.dispatch('GET_PRODUCT', store.getters.PRODUCT.slug)
+          }
           return resp;
         })
         .catch((error) => {
@@ -218,14 +242,12 @@ export default {
           return error;
         });
     },
-    GET_COMMENTS({ commit }, id) {
+    GET_COMMENTS({commit}, id) {
       if (id.id) id = id.id;
       return axios(`${store.state.backendUrlApi}/review/detail/`,
         {
-          method: 'POST',
-          data: {
-            id,
-          },
+          method: 'GET',
+          params: {id},
         })
         .then((resp) => {
           commit('SET_COMMENTS_TO_STATE', resp.data);
@@ -237,22 +259,44 @@ export default {
           return error;
         });
     },
+
+
+    CLEAR_PRODUCT({commit}) {
+      commit('SET_PRODUCT_TO_STATE', [])
+    }
   },
   getters: {
     PRODUCT: (state) => state.product,
     PRODUCTS_LAST: (state) => state.products_last,
+    PRODUCTS_POPULAR: (state) => state.products_popular,
+    PRODUCTS_POPULAR_WISH: (state) => state.products_popular_wish,
+    PRODUCTS_FROM_CATEGORY: (state) => state.products_from_category,
     PRODUCT_SLIDES: (state) => state.slides,
     PRODUCTS: (state) => state.products,
     COMMENTS: (state) => state.comments,
 
     FILTERS: (state) => state.filters,
+    CHOICE_FILTERS: (state) => state.choice_filters,
   },
   mutations: {
     SET_PRODUCT_TO_STATE: (state, product) => {
       Vue.set(state, 'product', product);
     },
     SET_PRODUCT_LAST_TO_STATE: (state, product) => {
-      Vue.set(state, 'products_last', product);
+      Vue.set(state.products_last, 'queryset', product);
+      Vue.set(state.products_last, 'load', true);
+    },
+    SET_PRODUCT_POPULAR_TO_STATE: (state, product) => {
+      Vue.set(state.products_popular, 'queryset', product);
+      Vue.set(state.products_popular, 'load', true);
+    },
+    SET_PRODUCT_POPULAR_WISH_TO_STATE: (state, product) => {
+      Vue.set(state.products_popular_wish, 'queryset', product);
+      Vue.set(state.products_popular_wish, 'load', true);
+    },
+    SET_PRODUCT_FROM_CATEGORY_TO_STATE: (state, product) => {
+      Vue.set(state.products_from_category, 'queryset', product);
+      Vue.set(state.products_from_category, 'load', true);
     },
     SET_SLIDES_TO_STATE: (state, slides) => {
       Vue.set(state, 'slides', slides);
@@ -268,8 +312,15 @@ export default {
     SET_COMMENTS_TO_STATE: (state, comments) => {
       Vue.set(state, 'comments', comments);
     },
-    CLEAR_FILTERS:(state)=>{
-       Vue.set(state, 'filters', []);
+
+    SET_CHOICE_FILTER: (state, data) => {
+      Vue.set(state.choice_filters, data.key, data.data)
+    },
+    CLEAR_CHOICE_FILTER: (state, data) => {
+      for (const [key, value] of Object.entries(state.choice_filters)) {
+        Vue.set(state.choice_filters, key, [])
+      }
     }
+
   },
 };

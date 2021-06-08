@@ -73,6 +73,7 @@
         i {
           font-size: 24px;
           @extend %_material-icons;
+          padding: 0 .25rem;
         }
 
         @include link($hover: none);

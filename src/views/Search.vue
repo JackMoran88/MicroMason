@@ -50,7 +50,7 @@
         />
 
         <skeleton-loading
-          v-for="i in 24" :key="i"
+          v-for="i in 24"
           class="card card-preload"
           v-if="loading"
         >
@@ -159,6 +159,7 @@
           if (this.$route.query.page) {
             data.page = this.$route.query.page;
           }
+          console.log(data)
 
           this.GET_CATEGORY_BY_SEARCH_LIST({query: this.$route.query.text}).then((data) => {
             this.categories = data.data

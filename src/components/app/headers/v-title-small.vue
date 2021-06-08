@@ -28,17 +28,17 @@ export default {
         display: block;
         width: 100%;
         color: var(--text-second);
-        @include fz(14);
+        @include fz(14px);
         font-weight: 400;
         margin: .1rem 0;
 
         &__main {
-            @include fz(16);
+            @include fz(16px);
             font-weight: 500;
         }
 
         &__second {
-            @include fz(12);
+            @include fz(12px);
         }
     }
 

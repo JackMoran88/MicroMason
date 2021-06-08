@@ -1,14 +1,22 @@
 <template>
   <div class="v-filter-board">
     <slot name="header">
-      <v-title
-        text="Фильтр"
+      <div class="d-flex" v-if="showFilters">
+        <v-title
+        text="Фильтры"
         type="second"
         class="mt-0"
-        v-if="FILTERS.filters"
       />
+      <v-btn
+        BtnName="Очистить"
+        BtnStyle="item"
+        style="color: red"
+        @click.native="clearFilters"
+      />
+      </div>
     </slot>
-    <v-filter-container name="Цена" v-if="FILTERS.filters && FILTERS.filters.prices">
+    <v-filter-container name="Цена" v-if="showFilters"
+    >
       <v-filter-price
         slot="default"
       />
@@ -63,10 +71,19 @@
       loadQueryFromUrl() {
         // Можно не писать, поскольку, это уже отрабатывает sort_by
       },
+       clearFilters() {
+        this.CLEAR_CHOICE_FILTER()
+        this.$router.replace({query: null}).catch(() => {
+        })
+         this.$update_query_url()
+      },
       ...mapActions(['GET_PRODUCTS', 'GET_FILTERS']),
-      ...mapMutations(['CLEAR_FILTERS'])
+      ...mapMutations(['CLEAR_CHOICE_FILTER'])
     },
     computed: {
+      showFilters(){
+        return this.FILTERS.filters && this.FILTERS.filters.prices &&  this.FILTERS.filters.prices[1] > 0
+      },
       ...mapGetters(['FILTERS']),
     },
     mounted() {
@@ -74,7 +91,6 @@
     },
     watch: {
       $route() {
-        this.CLEAR_FILTERS()
         this.load();
       },
     },
@@ -83,7 +99,10 @@
 
 <style scoped lang="scss">
 
+
+
   .v-filter-board {
+
     .v-filter-container {
       margin: .5rem 0;
     }
