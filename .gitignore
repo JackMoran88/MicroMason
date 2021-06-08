@@ -23,4 +23,4 @@ static/ckeditor/
 celerybeat-schedule
 celeryd.pid
 
-#privat_settings.py
+privat_settings.py
