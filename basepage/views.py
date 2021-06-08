@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, generics, viewsets, mixins
 
+
 from .serializers import *
 from .models import *
 from shop_settings.models import *
@@ -36,14 +37,18 @@ import requests
 from django.conf import settings
 from oauth2_provider.models import Application
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 
 class CategoryViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ProductFilter
 
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
-        queryset = cache_tree_children(Category.objects.all().order_by('id'))
+        queryset = cache_tree_children(Category.objects.all().filter(level__lte=2))
         serializer = CategoriesListSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -52,14 +57,14 @@ class CategoryViewSet(viewsets.GenericViewSet):
             'filters': {}
         }
 
-        if (request.data.get('slug')):
-            categories = Category.objects.all().filter(slug=request.data.get('slug')).get_descendants(
+        if (request.GET.get('slug')):
+            categories = Category.objects.all().filter(slug=request.GET.get('slug')).get_descendants(
                 include_self=True).values_list('slug', flat=True)
 
             products = Product.objects.filter(category__slug__in=categories)
-            cur_category = Category.objects.all().filter(slug=request.data.get('slug')).values()
+            cur_category = Category.objects.all().filter(slug=request.GET.get('slug')).values()
 
-            filters_of_category = Filter.objects.all().values().filter(category__slug=request.data.get('slug'), state=1)
+            filters_of_category = Filter.objects.all().values().filter(category__slug=request.GET.get('slug'), state=1)
 
             def rename_key(arr):
                 for dict in arr:
@@ -139,8 +144,8 @@ class CategoryViewSet(viewsets.GenericViewSet):
             return JsonResponse(response)
 
     def detail_products(self, request):
-        if (request.data.get('slug')):
-            parent_category = get_object_or_404(Category, slug=request.data.get('slug'))
+        if (request.GET.get('slug')):
+            parent_category = get_object_or_404(Category, slug=request.GET.get('slug'))
             category = parent_category.get_descendants(include_self=True)
 
             queryset = Product.objects.filter(category__in=category)
@@ -152,14 +157,13 @@ class CategoryViewSet(viewsets.GenericViewSet):
 
             serializer = smProductDetailSerializer(page, many=True)
 
-            # return Response(serializer.data)
             return self.get_paginated_response(serializer.data)
         else:
             return Response(status=400)
 
     def search_list(self, request):
-        if (request.data.get('query')):
-            query = request.data.get('query')
+        if (request.GET.get('query')):
+            query = request.GET.get('query')
 
             queryset = Category.objects.filter(name__icontains=query)
             queryset = queryset[:5]
@@ -170,8 +174,8 @@ class CategoryViewSet(viewsets.GenericViewSet):
             return Response(status=400)
 
 
-class WishViewSet(viewsets.ViewSet):
-
+class WishViewSet(viewsets.GenericViewSet):
+    pagination_class = PaginationProducts
     def list(self, request):
         user = get_user(request)
         if 'customer' in user.keys():
@@ -181,9 +185,26 @@ class WishViewSet(viewsets.ViewSet):
             user = user['anonymous']
             queryset = Product.objects.all().filter(product__anonymous_customer=user)
 
+
         queryset = get_product_annotate(queryset)
-        serializer = smProductDetailSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = smProductDetailSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def ids(self, request):
+        user = get_user(request)
+        if 'customer' in user.keys():
+            user = user['customer']
+            queryset = Product.objects.all().filter(product__customer=user)
+        elif 'anonymous' in user.keys():
+            user = user['anonymous']
+            queryset = Product.objects.all().filter(product__anonymous_customer=user)
+
+
+        # queryset = get_product_annotate(queryset)
+        queryset = queryset.values_list('id', flat=True)
+        # serializer = smProductDetailSerializer(page, many=True)
+        return Response(queryset)
 
     def create(self, request):
         user = get_user(request)
@@ -344,9 +365,9 @@ class ReviewViewSet(viewsets.ViewSet):
             return Response(status=200)
 
     def list(self, request):
-        if (request.data.get('id')):
+        if (request.GET.get('id')):
             reviews = Review.objects.all().filter(
-                product=request.data.get('id')
+                product=request.GET.get('id')
             )
             serializer = ReviewDetailSerializer(reviews, many=True)
             return Response(serializer.data)
@@ -378,30 +399,25 @@ class CustomerViewSet(viewsets.ViewSet):
             if not (customer):
                 customer = Customer.objects.filter(oauth2_provider_accesstoken__token=token).first()
 
-            if (request.data.get('anonymous')):
-                anonymous_token = request.data.get('anonymous')
-                cart = Cart.objects.filter(anonymous_customer=anonymous_token)
-                compare = Compare.objects.filter(anonymous_customer=anonymous_token)
-                # wish = Wish.objects.filter(anonymous_customer=anonymous_token)
-                if not (Cart.objects.filter(customer=customer.id)):
-                    cart.update(customer=customer)
-                    cart.update(anonymous_customer=None)
-                else:
-                    cart.delete()
+            if (request.GET.get('anonymous')):
+                anonymous_token = request.GET.get('anonymous')
+                anonymous = AnonymousCustomer.objects.filter(token=anonymous_token).first()
+                if anonymous:
+                    cart = Cart.objects.filter(anonymous_customer=anonymous)
+                    compare = Compare.objects.filter(anonymous_customer=anonymous)
+                    # wish = Wish.objects.filter(anonymous_customer=anonymous_token)
+                    if not (Cart.objects.filter(customer=customer.id)):
+                        cart.update(customer=customer)
+                        cart.update(anonymous_customer=None)
+                    else:
+                        cart.delete()
+                    if not (Compare.objects.filter(customer=customer.id)):
+                        compare.update(customer=customer)
+                        compare.update(anonymous_customer=None)
+                    else:
+                        compare.delete()
+                    anonymous.delete()
 
-                if not (Compare.objects.filter(customer=customer.id)):
-                    compare.update(customer=customer)
-                    compare.update(anonymous_customer=None)
-                else:
-                    compare.delete()
-
-                # if not (Wish.objects.filter(customer=customer.id)):
-                #     wish.update(customer=customer)
-                #     wish.update(anonymous_customer=None)
-                # else:
-                #     wish.delete()
-
-                AnonymousCustomer.objects.filter(id=anonymous_token).delete()
             serializer = CustomerDetailSerializer(customer)
             return Response(serializer.data)
         else:
@@ -425,7 +441,6 @@ class CustomerViewSet(viewsets.ViewSet):
             data = {
                 'current_password': password,
             }
-
             if (request.data.get('first_name')):
                 user.first_name = request.data.get('first_name')
             if (request.data.get('last_name')):
@@ -435,21 +450,22 @@ class CustomerViewSet(viewsets.ViewSet):
 
             if (request.data.get('email') and user.email != request.data.get('email')):
                 data['new_email'] = request.data.get('email')
-                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
-                try:
-                    response = r.json()
-                except:
-                    response = r
-                return Response(response, status=r.status_code)
+                user.email = data['new_email']
+                # r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
+                # try:
+                #     response = r.json()
+                # except:
+                #     response = r
+                # return Response(response, status=r.status_code)
             if (request.data.get('new_password')):
                 data['new_password'] = request.data.get('new_password')
-                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data,
-                                  headers=headers)
-                try:
-                    response = r.json()
-                except:
-                    response = r
-                return Response(response, status=r.status_code)
+                user.set_password(data['new_password'])
+                # r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data, headers=headers)
+                # try:
+                #     response = r.json()
+                # except:
+                #     response = r
+                # return Response(response, status=r.status_code)
 
             user.save()
             return Response(status=200)
@@ -488,12 +504,19 @@ class CustomerSocial(viewsets.ViewSet):
 
 class AnonymousViewSet(viewsets.ViewSet):
     def create(self, request):
-        anonymous = AnonymousCustomerCreateSerializer(data=request.data)
-        if anonymous.is_valid():
-            anonymous.save()
-            return Response(anonymous.data)
-        else:
-            return Response(status=400)
+        anonymous = AnonymousCustomer.objects.create()
+        if anonymous:
+            serializer = AnonymousCustomerDetailSerializer(anonymous)
+            return Response(serializer.data)
+        return Response(status=400)
+
+    def check(self, request):
+        if (request.data.get('token')):
+            user = AnonymousCustomer.objects.filter(token=request.data.get('token')).first()
+            if user:
+                return Response()
+
+        return Response(status=400)
 
 
 class RedirectToFront(viewsets.ViewSet):
@@ -512,5 +535,3 @@ class NovaPoshtaViewSet(viewsets.ViewSet):
             'description').distinct()
         serializer = NovaPoshtaCitySerializer(queryset, many=True)
         return Response(serializer.data, status=200)
-
-

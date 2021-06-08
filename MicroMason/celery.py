@@ -15,6 +15,6 @@ app.conf.beat_schedule = {
     },
     'send-email-every-ten-minutes': {
         'task': 'basepage.tasks.np_update_invoice',
-        'schedule': crontab(minute='*/1')
+        'schedule': crontab(minute='*/10')
     },
 }

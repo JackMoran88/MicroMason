@@ -5,15 +5,15 @@ from basepage.views import *
 
 urlpatterns = [
     #
-    path('connection/', TestConnection.as_view({'post': 'post'})),
+    path('connection/', TestConnection.as_view({'get': 'post'})),
     #
-    path('settings/', SettingsViewSet.as_view({'post': 'list'})),
+    path('settings/', SettingsViewSet.as_view({'get': 'list'})),
     #
-    path('settings/parameters/', ParametersViewSet.as_view({'post': 'sortType'})),
+    path('settings/parameters/', ParametersViewSet.as_view({'get': 'sortType'})),
     #
-    path('breadcrumbs/', BreadCrumbsViewSet.as_view({'post': 'list'})),
+    path('breadcrumbs/', BreadCrumbsViewSet.as_view({'get': 'list'})),
     #
-    path('settings/sliders/', SliderViewSet.as_view({'post': 'list'})),
+    path('settings/sliders/', SliderViewSet.as_view({'get': 'list'})),
     #
 
 ]

@@ -25,11 +25,15 @@ from django.conf import settings
 from basepage.views import *
 from django.conf.urls.i18n import i18n_patterns
 
+admin.site.site_header = 'MicroMason'  # default: "Django Administration"
+admin.site.index_title = 'Администрирование MicroMason'  # default: "Site administration"
+admin.site.site_title = 'Администрирование MicroMason'  # default: "Django site admin"
+
 urlpatterns = [
-                  path('admin/', admin.site.urls),
-                  path('api-auth/', include('rest_framework.urls')),
+                  path('api/admin/', admin.site.urls),
+                  path('api/api-auth/', include('rest_framework.urls')),
                   #
-                  path('ckeditor/', include('ckeditor_uploader.urls')),
+                  path('api/ckeditor/', include('ckeditor_uploader.urls')),
                   #
                   path('api/v2/auth/', include('djoser.urls')),
                   path('api/v2/auth/', include('djoser.urls.authtoken')),
@@ -46,12 +50,10 @@ urlpatterns = [
                   path('user/password/reset/confirm/<str:uid>/<str:token>',
                        RedirectToFront.as_view({'get': 'pass_reset_confirm'})),
                   #
-                  path('api/v2/novaposhta/', include('novaposhta.urls')),
+                  # path('api/v2/novaposhta/', include('novaposhta.urls')),
                   path('api/v2/novaposhta/search/', NovaPoshtaViewSet.as_view({'post': 'search'})),
 
                   path('i18n/', include('django.conf.urls.i18n')),
-
-
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

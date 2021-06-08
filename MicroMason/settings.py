@@ -23,19 +23,22 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
+# SECURITY WARNING: keep the9 secret key used in production secret!
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(" ")
 
 # FRONT_END_HOST = 'http://192.168.1.243:8080/'
-FRONT_END_HOST = 'http://localhost:8080'
-BACK_END_HOST = 'http://192.168.1.228:8000'
+FRONT_END_HOST = os.environ.get("HOSTING_URL", default="http://localhost")
+BACK_END_HOST = os.environ.get("HOSTING_URL", default="http://localhost")
 
 SITE_NAME = 'MicroMason'
-# Application definition
 
+# Application definition
 INSTALLED_APPS = [
     'modeltranslation',
     'django.contrib.admin',
@@ -64,15 +67,12 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'versatileimagefield',
-    # доп функционал, reset_db
     'django_extensions',
     'django_filters',
 
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
-
-    'novaposhta',
 
     'celery',
     'django_celery_beat',
@@ -118,33 +118,17 @@ TEMPLATES = [
 ]
 
 AUTH_USER_MODEL = 'basepage.Customer'
-
 SOCIAL_AUTH_USER_MODEL = 'basepage.Customer'
 
 # Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'MicroMason_18',
-#         'USER': 'root',
-#         'PASSWORD': '',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#
-#     }
-# }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MicroMason_1',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': '3306',
-
+    "default": {
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("POSTGRES_DB", os.path.join(BASE_DIR, "db.sqlite3")),
+        "USER": os.environ.get("POSTGRES_USER", "user"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "password"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
 
@@ -190,15 +174,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-
-        # OAuth
-        # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
-        #     'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 24,
@@ -216,7 +196,6 @@ DJOSER = {
     'SERIALIZERS': {},
     'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
-
 }
 
 # Настройка auth
@@ -252,12 +231,9 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [
-    STATICFILES_DIR
-]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # Для ckeditor
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -267,23 +243,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = False
 
-# CORS_ORIGIN_WHITELIST = [
-#     "http://localhost:8000",
-#     "http://localhost:8080",
-#     "http://localhost:8081",
-#
-#     "http://127.0.0.1:8000",
-#     "http://127.0.0.1:8080",
-#     "http://127.0.0.1:8081",
-#
-#     "http://192.168.1.243:8080",
-#     "http://192.168.1.243:8081",
-#     "http://192.168.1.243:8000",
-#
-#     'http://localhost:5000',
-#     'http://127.0.0.1:5000',
-#
-# ]
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:8000",
+    "http://localhost:8080",
+    "http://localhost:8081",
+]
 
 CORS_ALLOW_HEADERS = [
     'accept',
@@ -297,8 +261,8 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-# WSGI_APPLICATION = 'MicroMason.wsgi.application'
-ASGI_APPLICATION = "MicroMason.routing.application"
+WSGI_APPLICATION = 'MicroMason.wsgi.application'
+ASGI_APPLICATION = "MicroMason.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
@@ -324,6 +288,7 @@ VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
     'slider_img': [
         ('full', 'url'),
         ('standard', 'thumbnail__1200x400'),
+        ('mobile', 'thumbnail__960x320'),
     ]
 }
 
@@ -442,9 +407,10 @@ LOGOUT_URL = 'auth/token/logout/'
 REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 
-CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
+
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

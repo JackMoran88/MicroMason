@@ -5,6 +5,7 @@ from basepage.serializers import *
 async def update_product(product):
     group_name = ProductDetailSerializer(product).get_group_name()
     channel_layer = get_channel_layer()
+    print(f'Product #{product.id} updated')
     content = {
         "type": "UPDATE_PRODUCT",
         "payload": product.id,

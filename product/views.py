@@ -13,24 +13,14 @@ from channels.layers import get_channel_layer
 from mptt.templatetags.mptt_tags import cache_tree_children
 import json
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
-class ProductPaginationGeneric(viewsets.ReadOnlyModelViewSet):
-    serializer_class = ProductDetailSerializer
-    pagination_class = PaginationProducts
-
-    def get_queryset(self):
-        if (self.request.data.get('slug')):
-            parent_category = Category.objects.get(slug=self.request.data.get('slug'))
-            category = parent_category.get_descendants(include_self=True)
-
-            queryset = Product.objects.filter(category__in=category)
-            queryset = queryset.annotate(parent_category=Value(parent_category, output_field=CharField()))
-            queryset = get_product_annotate(queryset)
-            return queryset
 
 
 class ProductViewSet(viewsets.GenericViewSet):
     pagination_class = PaginationProducts
+
     def retrieve(self, request):
         if request.data.get('id'):
             product = Product.objects.all()
@@ -60,8 +50,8 @@ class ProductViewSet(viewsets.GenericViewSet):
 
     def search_detail(self, request):
 
-        if (request.data.get('query')):
-            query = request.data.get('query')
+        if (request.GET.get('query')):
+            query = request.GET.get('query')
 
             queryset = Product.objects.filter(name__icontains=query)
             queryset = get_product_annotate(queryset)
@@ -70,7 +60,6 @@ class ProductViewSet(viewsets.GenericViewSet):
             serializer = ProductDetailSerializer(page, many=True)
 
             return self.get_paginated_response(serializer.data)
-            # returnв Response(serializer.data)
         else:
             return Response(status=400)
 
@@ -87,11 +76,37 @@ class ProductViewSet(viewsets.GenericViewSet):
         else:
             return Response(status=400)
 
-    def last_added(self, request):
-        count = 10
-        if(request.GET.get('count')):
-            count = int(request.GET.get('count'))
-        products = Product.objects.all().filter(~Q(status=0)).order_by('-id')[:count]
-        products = get_product_annotate(products)
-        serializer = ProductDetailSerializer(products, many=True)
-        return Response(serializer.data)
+    @method_decorator(cache_page(60 * 60 * 2))
+    def querysets(self, request):
+        if (request.GET.get('type')):
+            type = request.GET.get('type')
+
+            count = 10
+            if (request.GET.get('count')):
+                count = int(request.GET.get('count'))
+
+            if type == 'last':
+                products = Product.objects.filter(~Q(status=0)).order_by('-id')[:count]
+                products = get_product_annotate(products)
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)
+
+            if type == 'popular':
+                products = Product.objects.filter(~Q(status=0))
+                products = get_product_annotate(products).order_by('rating_avg')[:count]
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)
+
+            if type == 'popular_from_category':
+                products = Product.objects.filter(~Q(status=0), category_id=request.GET.get('id'))
+                products = get_product_annotate(products).order_by('rating_avg')[:count]
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)
+
+            if type == 'popular_wish':
+                favorite_wish = Wish.objects.all().values('product_id').annotate(total=Count('product_id')).order_by(
+                    '-total').values_list('product_id', flat=True)
+                products = Product.objects.filter(~Q(status=0), id__in=favorite_wish)
+                products = get_product_annotate(products).order_by('rating_avg')[:count]
+                serializer = smProductDetailSerializer(products, many=True)
+                return Response(serializer.data)

@@ -4,36 +4,36 @@
  * Copyright 2011-2020 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
-:root {
-  --blue: #007bff;
-  --indigo: #6610f2;
-  --purple: #6f42c1;
-  --pink: #e83e8c;
-  --red: #dc3545;
-  --orange: #fd7e14;
-  --yellow: #ffc107;
-  --green: #28a745;
-  --teal: #20c997;
-  --cyan: #17a2b8;
-  --white: #fff;
-  --gray: #6c757d;
-  --gray-dark: #343a40;
-  --primary: #007bff;
-  --secondary: #6c757d;
-  --success: #28a745;
-  --info: #17a2b8;
-  --warning: #ffc107;
-  --danger: #dc3545;
-  --light: #f8f9fa;
-  --dark: #343a40;
-  --breakpoint-xs: 0;
-  --breakpoint-sm: 576px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 992px;
-  --breakpoint-xl: 1200px;
-  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
+//:root {
+//  --blue: #007bff;
+//  --indigo: #6610f2;
+//  --purple: #6f42c1;
+//  --pink: #e83e8c;
+//  --red: #dc3545;
+//  --orange: #fd7e14;
+//  --yellow: #ffc107;
+//  --green: #28a745;
+//  --teal: #20c997;
+//  --cyan: #17a2b8;
+//  --white: #fff;
+//  --gray: #6c757d;
+//  --gray-dark: #343a40;
+//  --primary: #007bff;
+//  --secondary: #6c757d;
+//  --success: #28a745;
+//  --info: #17a2b8;
+//  --warning: #ffc107;
+//  --danger: #dc3545;
+//  --light: #f8f9fa;
+//  --dark: #343a40;
+//  --breakpoint-xs: 0;
+//  --breakpoint-sm: 576px;
+//  --breakpoint-md: 768px;
+//  --breakpoint-lg: 992px;
+//  --breakpoint-xl: 1200px;
+//  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+//  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+//}
 
 *,
 *::before,
@@ -58,7 +58,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
+  //color: #212529;
   text-align: left;
   background-color: #fff;
 }
@@ -7089,80 +7089,80 @@ button.bg-dark:focus {
   }
 }
 
-@media print {
-  .d-print-none {
-    display: none !important;
-  }
-  .d-print-inline {
-    display: inline !important;
-  }
-  .d-print-inline-block {
-    display: inline-block !important;
-  }
-  .d-print-block {
-    display: block !important;
-  }
-  .d-print-table {
-    display: table !important;
-  }
-  .d-print-table-row {
-    display: table-row !important;
-  }
-  .d-print-table-cell {
-    display: table-cell !important;
-  }
-  .d-print-flex {
-    display: -ms-flexbox !important;
-    display: flex !important;
-  }
-  .d-print-inline-flex {
-    display: -ms-inline-flexbox !important;
-    display: inline-flex !important;
-  }
-}
+//@media print {
+//  .d-print-none {
+//    display: none !important;
+//  }
+//  .d-print-inline {
+//    display: inline !important;
+//  }
+//  .d-print-inline-block {
+//    display: inline-block !important;
+//  }
+//  .d-print-block {
+//    display: block !important;
+//  }
+//  .d-print-table {
+//    display: table !important;
+//  }
+//  .d-print-table-row {
+//    display: table-row !important;
+//  }
+//  .d-print-table-cell {
+//    display: table-cell !important;
+//  }
+//  .d-print-flex {
+//    display: -ms-flexbox !important;
+//    display: flex !important;
+//  }
+//  .d-print-inline-flex {
+//    display: -ms-inline-flexbox !important;
+//    display: inline-flex !important;
+//  }
+//}
 
-.embed-responsive {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: 0;
-  overflow: hidden;
-}
-
-.embed-responsive::before {
-  display: block;
-  content: "";
-}
-
-.embed-responsive .embed-responsive-item,
-.embed-responsive iframe,
-.embed-responsive embed,
-.embed-responsive object,
-.embed-responsive video {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.embed-responsive-21by9::before {
-  padding-top: 42.857143%;
-}
-
-.embed-responsive-16by9::before {
-  padding-top: 56.25%;
-}
-
-.embed-responsive-4by3::before {
-  padding-top: 75%;
-}
-
-.embed-responsive-1by1::before {
-  padding-top: 100%;
-}
+//.embed-responsive {
+//  position: relative;
+//  display: block;
+//  width: 100%;
+//  padding: 0;
+//  overflow: hidden;
+//}
+//
+//.embed-responsive::before {
+//  display: block;
+//  content: "";
+//}
+//
+//.embed-responsive .embed-responsive-item,
+//.embed-responsive iframe,
+//.embed-responsive embed,
+//.embed-responsive object,
+//.embed-responsive video {
+//  position: absolute;
+//  top: 0;
+//  bottom: 0;
+//  left: 0;
+//  width: 100%;
+//  height: 100%;
+//  border: 0;
+//}
+//
+//.embed-responsive-21by9::before {
+//  padding-top: 42.857143%;
+//}
+//
+//.embed-responsive-16by9::before {
+//  padding-top: 56.25%;
+//}
+//
+//.embed-responsive-4by3::before {
+//  padding-top: 75%;
+//}
+//
+//.embed-responsive-1by1::before {
+//  padding-top: 100%;
+//}
 
 .flex-row {
   -ms-flex-direction: row !important;

@@ -83,7 +83,9 @@ def clear_token(request):
 
 def sort_by_choice(request):
     if (request.data.get('sort_by')):
-        sort_by = ProductSortType.objects.get(id=request.data.get('sort_by'))
+        sort_by = ProductSortType.objects.get(field=request.data.get('sort_by'))
+    elif(request.GET.get('sort_by')):
+        sort_by = ProductSortType.objects.get(field=request.GET.get('sort_by'))
     else:
         sort_by = ProductSortType.objects.get(order=1)
     return sort_by.field
@@ -111,7 +113,10 @@ def get_user(request):
             customer = Customer.objects.filter(oauth2_provider_accesstoken__token=token).first()
         return {'customer': customer}
     elif (request.data.get('anonymous')):
-        anonymous = AnonymousCustomer.objects.get(id=request.data.get('anonymous'))
+        anonymous = AnonymousCustomer.objects.get(token=request.data.get('anonymous'))
+        return {'anonymous': anonymous}
+    elif (request.GET.get('anonymous')):
+        anonymous = AnonymousCustomer.objects.get(token=request.GET.get('anonymous'))
         return {'anonymous': anonymous}
     else:
         return {}

@@ -7,10 +7,8 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         await self.accept()
 
-
     async def notify(self, event):
         await self.send_json(event["content"])
-
 
     async def receive_json(self, content, **kwargs):
         groups = self.get_groups(data=content['data'])
@@ -32,4 +30,3 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
             groups_name.append(ProductDetailSerializer().get_group_name())
 
         return groups_name
-

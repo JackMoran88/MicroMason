@@ -1,0 +1,28 @@
+{
+  "name": "Home",
+  "place": "home",
+  "width": "1200",
+  "height": "400",
+  "slides": [
+    {
+      "img": "1",
+      "title": "Dualshock",
+      "url": "https://google.ua/"
+    },
+    {
+      "img": "2",
+      "title": "Samsung buds",
+      "url": "https://google.com/"
+    },
+    {
+      "img": "3",
+      "title": "Распродажа",
+      "url": "https://google.ru/"
+    },
+    {
+      "img": "4",
+      "title": "Бесплатная доставка",
+      "url": "https://google.en/"
+    }
+  ]
+}

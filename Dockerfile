@@ -1,29 +1,34 @@
-FROM python:3.7
+# pull official base image
+FROM python:3.8.3-alpine
 
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update
-RUN apt-get install -y libmagic-dev
-RUN apt-get install -y cron
-RUN apt install gettext -y
+# create the app user
+RUN addgroup -S app && adduser -S app -G app --home /usr/src/app
 
-#ADD crontab /etc/crontab
-RUN chmod 0644 /etc/crontab
+# install psycopg2 dependencies
+RUN apk update \
+    && apk add postgresql-dev gcc python3-dev musl-dev
+RUN apk add --no-cache libffi-dev libxml2-dev libxslt-dev
+RUN apk --update add libxml2-dev libxslt-dev libffi-dev gcc musl-dev libgcc openssl-dev curl
+RUN apk add jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev
+RUN apk add libmagic
 
-WORKDIR /usr/src/micromason
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+RUN pip install djangorestframework==3.11.2
 
-COPY req.txt /usr/src/req.txt
+# copy project
+COPY . .
 
-RUN python -m pip install --upgrade pip
+# chown all the files to the app user
+RUN chown -R app:app .
 
-RUN pip install -r /usr/src/req.txt
-RUN pip install django-novaposhta
-
-
-COPY . /usr/src/micromason
-
-#EXPOSE 8000
-
-#CMD ["python", "manage.py", "migrate"]
-#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["sh", "/usr/src/app/entrypoint.sh"]

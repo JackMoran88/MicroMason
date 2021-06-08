@@ -12,6 +12,9 @@ from django.db.models import Sum, F, FloatField, Avg, IntegerField, Value, Count
 
 from channels.layers import get_channel_layer
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 
 class TestConnection(viewsets.ViewSet):
     def post(self, request):
@@ -19,7 +22,7 @@ class TestConnection(viewsets.ViewSet):
 
 
 class SettingsViewSet(viewsets.ViewSet):
-
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request):
         settings = Setting.objects.all()
         serializer = SettingDetailSerializer(settings, many=True)
@@ -37,7 +40,7 @@ class ParametersViewSet(viewsets.ViewSet):
 class BreadCrumbsViewSet(viewsets.ViewSet):
 
     def list(self, request):
-        crumb = request.data.get('breadcrumb')
+        crumb = request.GET.get('breadcrumb')
         CategoryQuery = Category.objects.filter(slug=crumb).first()
         if(CategoryQuery):
             serializer = BreadCrumbCategorySerializer(CategoryQuery)
