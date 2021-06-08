@@ -441,7 +441,6 @@ class CustomerViewSet(viewsets.ViewSet):
             data = {
                 'current_password': password,
             }
-
             if (request.data.get('first_name')):
                 user.first_name = request.data.get('first_name')
             if (request.data.get('last_name')):
@@ -451,21 +450,22 @@ class CustomerViewSet(viewsets.ViewSet):
 
             if (request.data.get('email') and user.email != request.data.get('email')):
                 data['new_email'] = request.data.get('email')
-                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
-                try:
-                    response = r.json()
-                except:
-                    response = r
-                return Response(response, status=r.status_code)
+                user.email = data['new_email']
+                # r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_email/', data=data, headers=headers)
+                # try:
+                #     response = r.json()
+                # except:
+                #     response = r
+                # return Response(response, status=r.status_code)
             if (request.data.get('new_password')):
                 data['new_password'] = request.data.get('new_password')
-                r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data,
-                                  headers=headers)
-                try:
-                    response = r.json()
-                except:
-                    response = r
-                return Response(response, status=r.status_code)
+                user.set_password(data['new_password'])
+                # r = requests.post(f'{settings.BACK_END_HOST}/api/v2/auth/users/set_password/', data=data, headers=headers)
+                # try:
+                #     response = r.json()
+                # except:
+                #     response = r
+                # return Response(response, status=r.status_code)
 
             user.save()
             return Response(status=200)

@@ -51,18 +51,18 @@ logger = logging.getLogger('wb')
 
 SETTINGS = {
     'product': {
-        'clear': 1,
+        'clear': 0,
         'product': 1,
-        'image': 0,
-        'images': 0,
+        'image': 1,
+        'images': 1,
     },
     'category': {
-        'clear': 1,
-        'category': 1,
-        'image': 1,
+        'clear': 0,
+        'category': 0,
+        'image': 0,
     },
     'option': {
-        'clear': 1,
+        'clear': 0,
     },
 }
 

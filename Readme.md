@@ -25,7 +25,7 @@ Start FTP(+restart)
 ```
 service vsftpd start
 ```
-Docker clean
+Docker clean 
 ```
 docker system prune
 ```

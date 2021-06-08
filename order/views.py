@@ -152,7 +152,6 @@ class OrderViewSet(viewsets.ViewSet):
                 order = Order.objects.get(id=response['order_id'])
                 order.paid = 2
                 order.save()
-
         return Response(status=200)
 
 

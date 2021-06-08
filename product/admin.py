@@ -47,7 +47,6 @@ class ProductOptionsInline(admin.TabularInline):
             product_id = request.resolver_match.kwargs['object_id']
             category = Product.objects.get(id=product_id).category
             kwargs["queryset"] = Option.objects.filter(Q(category=category) | Q(category=None))
-            print(kwargs["queryset"])
         return super(ProductOptionsInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Product)
